@@ -1,7 +1,51 @@
 {
   "expo": {
-    "name": "kssparkle",
-    "slug": "kssparkle",
-    "version": "1.0.0"
+    "name": "Ksasparkle",
+    "slug": "Ksasparkle",
+    "version": "1.0.0",
+    "plugins": [
+      "@react-native-community/datetimepicker",
+      "@react-native-firebase/messaging",
+      "react-native-video",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static",
+            "buildReactNativeFromSource": true
+          }
+        }
+      ],
+      [
+        "expo-document-picker",
+        {
+          "iCloudContainerEnvironment": "Production"
+        }
+      ]
+    ],
+    "android": {
+      "permissions": [
+        "android.permission.RECEIVE_BOOT_COMPLETED",
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.POST_NOTIFICATIONS"
+      ],
+      "package": "com.ksasparkle"
+    },
+    "ios": {
+      "bundleIdentifier": "com.ksasparkle",
+      "infoPlist": {
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": true,
+          "FirebaseAppDelegateProxyEnabled": true
+        },
+        "NSPhotoLibraryUsageDescription": "Please allow $(PRODUCT_NAME) Photos access so that you will able to upload the your profile photo. Else you won't able to update the profile photo"
+      },
+      "appleTeamId": "B6V3ASHDT3"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "523df740-5756-45da-8e8d-dd3d44c497ff"
+      }
+    }
   }
 }

@@ -1,0 +1,37 @@
+import axios, { HttpStatusCode } from 'axios';
+import { API_KEY, BASE_URL } from '../utils/config';
+import { _retrieveData } from '../utils/storage';
+
+export const confirmPaypalPaymment = async (message, paymentStatusId, payment_pp_pro_callback) => {
+    try {
+        const url = `${BASE_URL}${payment_pp_pro_callback}`;
+         const lang = await _retrieveData('SELECT_LANG');
+        const cur = await _retrieveData('SELECT_CURRENCY');
+        const user = await _retrieveData("USER");
+        const sessionId = await _retrieveData('SESSION_ID');
+        const headers = {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            Key: API_KEY,
+        };
+
+        const body = {
+            code: lang?.code,
+            currency: cur?.code,
+            customer_id: user[0]?.customer_id,
+            sessionid: sessionId,
+            message: message,
+            payment_pp_pro_order_status_id: paymentStatusId,
+            
+        }
+
+        console.log("body order id", body)
+        const response = await axios.post(url, body, { headers: headers });
+
+        if (response.status === HttpStatusCode.Ok) {
+            return response.data;
+        }
+
+    } catch (error) {
+        throw error;
+    }
+};
