@@ -3,8 +3,8 @@ import { View, Text, ScrollView, Image } from 'react-native';
 import HTMLView from 'react-native-htmlview';
 
 const TEXT_COLOR = '#FFFFFF';
-const FONT_SIZE = 19;
-const LINE_HEIGHT = 26;
+const FONT_SIZE = 17;
+const LINE_HEIGHT = 16;
 
 
 const HtmlViewComponent = ({ descriptionData }) => {

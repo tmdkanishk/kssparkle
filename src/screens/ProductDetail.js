@@ -41,6 +41,7 @@ import TabbyPromoWebView from '../components/customcomponents/TabbyPromoWebView'
 import TabbyPromoGlassCard from '../components/customcomponents/TabbyPromoGlassCard';
 import { buildTabbyHTML } from '../components/customcomponents/buildTabbyHTML';
 import CustomSearchBar from './CustomSearchBar'
+import PriceView from '../components/customcomponents/PriceView'
 
 const ProductDetail = ({ navigation, route }) => {
   const [showSpecs, setShowSpecs] = useState(false);
@@ -136,7 +137,7 @@ const ProductDetail = ({ navigation, route }) => {
   const [attributeGroups, setAttributeGroups] = useState([]);
   const [activeSeachingScreen, setActiveSeachingScreen] = useState(false);
   const [price, setPrice] = useState('');
-  
+
 
   useEffect(() => {
     const getCustomerId = async () => {
@@ -648,20 +649,20 @@ const ProductDetail = ({ navigation, route }) => {
   }
 
   const toggleSearch = () => {
-  setActiveSeachingScreen(prev => !prev);
-};
+    setActiveSeachingScreen(prev => !prev);
+  };
 
 
 
 
 
-if (activeSeachingScreen) {
-  return (
-    <CustomSearchBar
-      setActiveSeachingScreen={setActiveSeachingScreen}
-    />
-  );
-}
+  if (activeSeachingScreen) {
+    return (
+      <CustomSearchBar
+        setActiveSeachingScreen={setActiveSeachingScreen}
+      />
+    );
+  }
 
 
   //   {"attribute_groups": [], "continue": "http://192.168.0.135/customclient/2025/oct/sparkleksa", "customer_name": "", "description": "", "discounts": [], "heading_title": " اضاءة رينق لايت 13IMN قوة 10W من RTAO", "images": [{"popup": null}, {"popup": null}], "manufacturers": "http://192.168.0.135/customclient/2025/oct/sparkleksa/index.php?route=product/manufacturer/info&amp;manufacturer_id=", "minimum": "1", "off": "", "options": [], "optionsstatus": false, "points": "0", "price": "$18.37", "prodpage_addtocartbtn_text": "Add Cart", "prodpage_buynowbtn_text": "Buy Now", "prodpage_continuebtn_text": "Continue", "prodpage_descriptiontab_text": "Description", "prodpage_inclusivetax": "Inclusive All", "prodpage_lowestprice_text": "Product Image", "prodpage_off_text": "Off ", "prodpage_productallreview_text": "All Review", "prodpage_productseeall_text": "See All", "prodpage_relatedprodt_heading": "Related Product", "prodpage_reviewtab_text": "Review", "prodpage_specificationtab_text": "Specification", "prodpage_write_a_reviewbtn_text": "Write A Review", "product_id": 708, "products": [], "productsdetail": [{"text": "Manufacturer ", "value": null}, {"text": "Model ", "value": " اضاءة رينق لايت 13IMN قوة 10W من RTAO"}, {"text": "Availablity ", "value": "In Stock"}, {"text": "Reward ", "value": null}], "quantity": "9", "rating": 0, "recurrings": [], "review_guest": false, "review_status": "1", "reviews": 0, "reviews_detail": [], "selected_options": [], "share": "http://192.168.0.135/customclient/2025/oct/sparkleksa/اضاءة-رينق-لايت-13imn-قوة-10w-من-rtao", "special": false, "tags": [{"href": "http://192.168.0.135/customclient/2025/oct/sparkleksa/index.php?route=product/search&amp;tag=اضاءة رينق لايت 13IMN قوة 10W من RTAO", "tag": "اضاءة رينق لايت 13IMN قوة 10W من RTAO"}], "tax": false, "wishliststatus": false}
@@ -673,13 +674,13 @@ if (activeSeachingScreen) {
 
         <ScrollView contentContainerStyle={{ paddingBottom: 20, marginTop: Platform.OS === "ios" ? 40 : 0 }} onScroll={(e) => setScrollY(e.nativeEvent.contentOffset.y)} scrollEventThrottle={16} >
           <View style={{ paddingHorizontal: 30 }}>
-            <Header onSearchPress={toggleSearch}/>
+            <Header onSearchPress={toggleSearch} />
           </View>
 
           <TouchableOpacity style={{ marginLeft: 25, marginTop: 20 }} onPress={() => navigation.goBack()}>
             <Image source={require("../assets/images/back.png")} style={{ width: 18, height: 18, tintColor: "#fff", }} />
           </TouchableOpacity>
-          <ProductImageCard headingTitle={productDetail?.heading_title} images={productDetail?.images} price={price}/>
+          <ProductImageCard headingTitle={productDetail?.heading_title} images={productDetail?.images} />
           <View style={{ padding: 20 }}>
             {/* <TextContainer /> */}
             <TabbyPromoWebView html={productDetail?.tebbypromo} />
@@ -1059,6 +1060,9 @@ if (activeSeachingScreen) {
                 {productDetail?.prodpage_descriptiontab_text}
               </Text>
 
+
+
+
               <Text
                 style={{
                   color: '#fff',
@@ -1075,6 +1079,22 @@ if (activeSeachingScreen) {
                 <HtmlViewComponent descriptionData={descriptionData} />
                 {/* {descriptionData} */}
               </Text>
+
+
+              <View style={{ alignItems: 'flex-start' }}>
+                <PriceView
+                  priceHtml={productDetail?.price}
+                  textStyle={{
+                    fontSize: 31,
+                    fontWeight: "700",
+                    color: "white",
+                    marginLeft: 'auto'
+                  }}
+                  width={25}
+                  height={25}
+                />
+
+              </View>
 
               {/* Image directly below text */}
               {/* <Image
@@ -1232,7 +1252,7 @@ if (activeSeachingScreen) {
         visible={reviewModal}
         onClose={() => setReviewModal(false)}
         productId={productId}
-         onReviewSuccess={fetchProductDetail}
+        onReviewSuccess={fetchProductDetail}
       // onUploadImage={handleAddImage}
       // onUploadVideo={handleAddVideo}
       // imageList={imageList}

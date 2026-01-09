@@ -505,8 +505,8 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   videoThumb: {
-    width: 120,
-    height: 80,
+    width: 82,
+    height: 90,
     borderRadius: 8,
     backgroundColor: '#000',
     justifyContent: 'center',
