@@ -210,12 +210,7 @@ const Home = ({ navigation }) => {
     }
 
     const Header = () => (
-        <ScrollView contentContainerStyle={{ marginTop: Platform.OS === "ios" ? 20 : 0 }} >
-
-            {/* <TouchableOpacity style={{ marginLeft: 25, marginTop:20 }} onPress={() => navigation.goBack()}>
-                        <Image source={require("../assets/images/back.png")} style={{ width: 18, height: 18, tintColor: "#fff", }} />
-                    </TouchableOpacity> */}
-
+        <View style={{ marginTop: Platform.OS === "ios" ? 20 : 0 }}>
             <Pressable style={{ width: Platform.OS === "ios" ? '100%' : "100%", paddingHorizontal: Platform.OS === "ios" ? 5 : 20 }}>
                 <PromoCard onSearchPress={toggleSearch} />
             </Pressable>
@@ -223,163 +218,29 @@ const Home = ({ navigation }) => {
             {
                 isModuleData?.length > 0 ? (
                     isModuleData?.map((item, index) => {
-
-                        // if (item?.type == 'categorystory') {
-                        //     return (
-                        //         <View key={index} style={{ gap: 12 }}>
-                        //             <Text style={[commonStyles.heading, { color: Colors.headingColor }]}>{item?.heading}</Text>
-                        //             <FlatList
-                        //                 horizontal
-                        //                 data={item?.data}
-                        //                 keyExtractor={(item, index) => index.toString()}
-                        //                 renderItem={({ item, index }) => (
-                        //                     <CustomCategoryCard item={item} />
-                        //                 )}
-
-                        //                 contentContainerStyle={{ gap: 12 }}
-                        //                 showsHorizontalScrollIndicator={false}
-
-                        //             />
-                        //         </View>
-                        //     )
-                        // }
-
-                        // if (item?.type == 'address') {
-                        //     return (
-                        //         defaultAddress && <View key={index} style={{ flexDirection: 'row', gap: 12, backgroundColor: '#E41253', padding: 10, borderRadius: 12, alignItems: 'center' }}>
-                        //             <IconComponentLocation color={'white'} />
-                        //             <Text style={{ color: 'white', fontWeight: '400', fontSize: 12 }}>{defaultAddress?.city},  {defaultAddress?.zone} - {defaultAddress?.postcode}</Text>
-                        //         </View>
-                        //     )
-                        // }
-
-
-                        // if (item?.type == 'countdown') {
-                        //     return (
-                        //         <CountdownTimer endTime={isData?.jmoduledate} key={index} />
-                        //     )
-                        // }
-
-                        // if (item?.type == 'slider') {
-                        //     return (
-                        //         <View key={index}>
-                        //             <Carousel data={item?.data} imageHeight={item?.height} imageWidth={item?.width} />
-                        //         </View>
-                        //     )
-                        // }
-
-
-                        // if (item?.type == 'featuredcategory') {
-                        //     return (
-                        //         <View key={index} style={{ flexDirection: 'row', flexWrap: 'wrap', width: '100%', justifyContent: 'space-between', gap: 10 }}>
-                        //             {item?.data?.map((item, intex) => (
-                        //                 <SmallProductCard key={intex} data={item} />
-                        //             ))
-                        //             }
-                        //         </View>
-                        //     )
-                        // }
-
-                        // if (item?.type == 'recently') {
-                        //     return (
-                        //         <View style={{ gap: 12 }} key={index}>
-                        //             <Text style={[commonStyles.heading, { color: Colors.headingColor }]}>{item?.heading}</Text>
-
-                        //             <FlatList
-                        //                 horizontal
-                        //                 data={item?.data}
-                        //                 keyExtractor={(item, index) => index.toString()}
-                        //                 renderItem={({ item, index }) => (
-                        //                     <CustomRecentlyProductCard item={item} />
-                        //                 )}
-                        //                 contentContainerStyle={{ gap: 6 }}
-                        //                 showsHorizontalScrollIndicator={false}
-                        //             />
-
-
-                        //         </View>
-                        //     )
-                        // }
-
-                        // if (item?.type == 'products') {
-                        //     // console.log(item);
-                        //     return (
-                        //         <View style={{ gap: 12, }} key={index}>
-                        //             <Text style={[commonStyles.heading, { color: Colors.headingColor }]}>{item?.heading}</Text>
-                        //             <ProductCardList
-                        //                 ContainerWidth={'100%'}
-                        //                 data={item?.data}
-                        //             />
-                        //             {item?.section && <Text onPress={() => { item?.section == 'latest' ? navigation.navigate('LatestCategoryView') : item?.section == 'special' ? navigation.navigate('SpecialProducts') : item?.section == 'Bestseller ' ? navigation.navigate('BestSellerProducts') : null }} style={{ color: Colors.headingColor, fontSize: 16, fontWeight: '600', textDecorationLine: 'underline', alignSelf: 'flex-end', color: Colors?.primary }}>View all</Text>}
-                        //         </View>
-                        //     )
-                        // }
-
-                        // if (item?.type == 'banner') {
-                        //     return (
-                        //         <View key={index}>
-
-                        //             <AutoSlider data={item?.data} imageHeight={item?.height} imageWidth={item?.width} />
-                        //         </View>
-                        //     )
-                        // }
-
-                        // if (item?.type == 'manufacturer') {
-                        //     return (
-                        //         <View style={{ gap: 10}} key={index}>
-                        //             <Text style={[commonStyles.heading, { color: Colors.headingColor }]}>{item?.title}</Text>
-                        //             <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap', gap: 10 }}>
-                        //                 {
-                        //                     item?.data?.length > 0 && (
-                        //                         item?.data?.map((item, index) => (
-                        //                             <BrandCard key={index} width={isLandscape ? '20%' : '30%'} item={item} />
-                        //                         ))
-                        //                     )
-                        //                 }
-                        //             </View>
-                        //             <TouchableOpacity onPress={() => navigation.navigate('Brands')} style={{ alignSelf: 'flex-end' }}>
-                        //                 <Text style={[commonStyles.heading, { color: Colors.headingColor, textDecorationLine: 'underline' }]}>{GlobalText?.extrafield_viewmore}</Text>
-                        //             </TouchableOpacity>
-                        //         </View>
-                        //     )
-                        // }
-
                         if (item?.type === 'categorystory') {
                             return (
-                                <View style={{ marginTop: 20, }}>
+                                <View style={{ marginTop: 20, }} key={index}>
                                     <CategoriesList categories={item?.data} />
                                 </View>
 
                             )
                         }
                         if (item?.type === "products") {
-                            { console.log("products data", item?.data) }
                             return (
+                                <View key={index} style={{ width: '100%', padding:'auto', flexDirection:'row', flexWrap:'wrap', gap:12, marginHorizontal:12}}>
+                                    {
+                                        item?.data?.length && (
+                                            item?.data?.map((item, index) => (
+                                                <ProductGlassCard
+                                                    key={index}
+                                                    item={item}
+                                                />
+                                            ))
+                                        )
+                                    }
 
-
-                                <FlatList
-                                    data={item?.data}
-                                    keyExtractor={(item) => item.product_id}
-                                    numColumns={2}
-                                    renderItem={({ item }) => (
-                                        <ProductGlassCard
-                                            item={item}
-                                            onPress={(product) =>
-                                                navigation.navigate("ProductDetail", {
-                                                    productId: product?.product_id,
-                                                })
-                                            }
-                                        // onAddToCart={(product) => {
-                                        //     setSelectedItem(product);
-                                        //     setAddToCartModalVisible(true);
-                                        // }}
-                                        />
-
-
-                                    )}
-                                    columnWrapperStyle={{ justifyContent: "space-evenly" }}
-                                    showsVerticalScrollIndicator={false}
-                                />
+                                </View>
                             )
                         }
                     }
@@ -387,17 +248,7 @@ const Home = ({ navigation }) => {
                 ) : null
 
             }
-
-            {/* <View style={{ marginTop: 20, }}>
-
-                        <CategoriesList />
-                    </View> */}
-
-            {/* <View style={{ }}> */}
-
-            {/* </View>
-                     */}
-        </ScrollView>
+        </View>
     )
 
 

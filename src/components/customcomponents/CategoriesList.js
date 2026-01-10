@@ -23,12 +23,12 @@ const categories = [
 // Single Category Item (memoized for performance)
 
 
-const CategoriesList = ({categories}) => {
+const CategoriesList = ({ categories }) => {
     console.log("getting categories", categories)
     return (
         <FlatList
             data={categories}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item, index) => index.toString()}
             horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{ paddingHorizontal: 10 }}

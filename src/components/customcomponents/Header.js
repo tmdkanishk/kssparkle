@@ -57,7 +57,7 @@ const Header = ({ onSearchPress, onProfilePress, onLogoPress, paddingHorizontal 
 
 
         {/* App Logo */}
-        <TouchableOpacity onPress={onLogoPress}>
+        <TouchableOpacity hitSlop={40} onPress={onLogoPress}>
           <Image
             source={require("./../../assets/images/sparklelogo.png")}
             style={styles.logo}

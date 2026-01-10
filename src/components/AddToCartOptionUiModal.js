@@ -13,7 +13,7 @@ import { getProductInfo } from '../services/getProductInfo'
 import { BlurView } from '@react-native-community/blur'
 
 const AddToCartOptionUiModal = ({ isModalVisibal, closeModal, items, productId }) => {
-    console.log("items AddToCartOptionUiModal", items)
+    // console.log("items AddToCartOptionUiModal", items)
     const { updateCartCount } = useCartCount();
     const { Colors, GlobalText, EndPoint } = useCustomContext();
     const [isSelectError, setSelectError] = useState(false);
