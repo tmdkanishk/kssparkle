@@ -88,5 +88,11 @@ export const checkAutoLogin = async () => {
 }
 
 
+export const isRTLText = (text = '') => {
+  const rtlRegex = /[\u0600-\u06FF\u0750-\u077F]/;
+  return rtlRegex.test(text);
+};
+
+
 
 

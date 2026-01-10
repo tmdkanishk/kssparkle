@@ -1,19 +1,41 @@
-import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native'
+import { View, Text, TouchableOpacity, StyleSheet, Image, Pressable } from 'react-native'
 import React, { memo } from 'react'
 import GlassContainer from './GlassContainer'
 import LinearGradient from 'react-native-linear-gradient'
 import { Dimensions } from 'react-native'
+import { IconComponentcheckboxsharp, IconComponentClose, IconComponentSquare } from '../../constants/IconComponents'
+import { removeProductFromCart } from '../../services/removeProductFromCart'
+import { useCustomContext } from '../../hooks/CustomeContext'
+import { useCartCount } from '../../hooks/CartContext'
 
-const ShoppingBagProductCard = ({ item }) => {
+const ShoppingBagProductCard = ({ item, toggleCart, cartItems }) => {
     const screenWidth = Dimensions.get('window').width;
+    const { Colors, EndPoint, GlobalText } = useCustomContext();
+    const { updateCartCount } = useCartCount();
+
+    const removeProduct = async () => {
+        try {
+            // setScreenLoader(true);
+            const response = await removeProductFromCart(item?.cart_id, EndPoint?.cart_remove);
+            console.log("response", response);
+            updateCartCount(response?.cartproductcount);
+            if (cartItems?.includes(item)) {
+                toggleCart(item);
+            }
+        } catch (error) {
+            console.log("error", error.message);
+        } finally {
+            // setScreenLoader(false);
+        }
+    }
 
     return (
         <GlassContainer
             padding={0.1}
             style={{
                 flexDirection: "row",
-                alignItems: "center",
-                height: 220,
+                // alignItems: "center",
+                // height:,
                 width: screenWidth * 0.9,
             }}
         >
@@ -22,16 +44,20 @@ const ShoppingBagProductCard = ({ item }) => {
                 colors={["#505050", "#808080"]}
                 style={{
                     width: screenWidth * 0.35,
-                    height: 220,
                     borderRadius: 16,
                     justifyContent: "center",
                     alignItems: "center",
+                    position: 'relative',
                 }}
             >
+                <Pressable hitSlop={40} onPress={() => toggleCart(item)} style={{ position: 'absolute', zIndex: 1, top: 10, left: 10 }}>
+                    {cartItems?.includes(item) ? <IconComponentcheckboxsharp color={'#fff'} size={20} /> : <IconComponentSquare color={'#fff'} size={20} />}
+                </Pressable>
+
                 <Image
                     source={
-                        item.thumb
-                            ? { uri: item.thumb }
+                        item?.thumb
+                            ? { uri: item?.thumb }
                             : require("../../assets/images/headphones.png")
                     }
                     style={styles.image}
@@ -39,25 +65,17 @@ const ShoppingBagProductCard = ({ item }) => {
             </LinearGradient>
 
             {/* RIGHT CONTENT */}
-            <View style={{ marginLeft: 10, marginTop: 20, flex: 1 }}>
+            <View style={{ marginLeft: 10, flex: 1, paddingVertical: 10 }}>
+                <Pressable onPress={removeProduct} style={{ right: 20, alignSelf: 'flex-end' }}>
+                    <IconComponentClose color={'#fff'} size={18} />
+                </Pressable>
                 <Text style={styles.title} numberOfLines={2}>
                     {item.name}
                 </Text>
 
                 <Text style={styles.subText}>{item.model}</Text>
 
-                {/* <View style={styles.row}>
-                    <TouchableOpacity style={styles.optionBox}>
-                        <Text style={styles.optionText}>Size: 4</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.optionBox}>
-                        <Text style={styles.optionText}>Qty: 1</Text>
-                    </TouchableOpacity>
-                    <Text style={styles.stockText}>9 left</Text>
-                </View> */}
-
                 <View style={styles.row}>
-
                     <TouchableOpacity style={styles.optionBox}>
                         <Text style={styles.optionText}>Size: 4</Text>
                     </TouchableOpacity>
@@ -95,14 +113,6 @@ const ShoppingBagProductCard = ({ item }) => {
 };
 
 const styles = StyleSheet.create({
-    imageContainer: {
-        // width: screenWidth,
-        // height: 220,
-        // borderRadius: 16,
-        // justifyContent: "center",
-        // alignItems: "center",
-        // overflow: "hidden",
-    },
     image: {
         width: 100,
         height: 100,

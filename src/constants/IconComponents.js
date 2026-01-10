@@ -85,7 +85,7 @@ export const IconComponentHelp = ({ color, size }) => {
 
 export const IconComponentShare = ({ color, size }) => {
     return (
-        <AntDesign name="sharealt" size={size ? size : 24} color={color ? color : "black"} />
+        <AntDesign name="share-alt" size={size ? size : 24} color={color ? color : "black"} />
     )
 }
 
@@ -383,6 +383,16 @@ export const IconComponentArrowBackSharp = ({ color, size }) => {
         <Ionicons name="arrow-back-outline" size={size ? size : 24} color={color ? color : "black"} />
     )
 }
+
+
+export const IconComponentcheckboxsharp = ({ color, size }) => {
+    return (
+
+        <Ionicons name="checkbox-sharp" size={size ? size : 24} color={color ? color : "black"} />
+    )
+}
+
+
 
 
 

@@ -1,9 +1,7 @@
 import React, { useCallback, useRef, useState } from "react";
-import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, Platform, useWindowDimensions, FlatList } from "react-native";
+import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, Platform, useWindowDimensions, FlatList, Pressable } from "react-native";
 import BackgroundWrapper from "../components/customcomponents/BackgroundWrapper";
 import GlassContainer from "../components/customcomponents/GlassContainer";
-import GlassButton from "../components/customcomponents/GlassButton";
-// import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import Header from "../components/customcomponents/Header";
 import GlassmorphismButton from "../components/customcomponents/GlassmorphismButton";
 import LinearGradient from "react-native-linear-gradient";
@@ -19,24 +17,20 @@ import axios, { HttpStatusCode } from "axios";
 import { editProductQty } from "../services/editProductQty";
 import { applyVoucher } from "../services/applyVoucher";
 import { appyCoupon } from "../services/appyCoupon";
-import { checkAutoLogin } from "../utils/helpers";
+import { checkAutoLogin, isRTLText } from "../utils/helpers";
+import { IconComponentcheckboxsharp, IconComponentHeart, IconComponentShare, IconComponentSquare, IconComponentTrash } from "../constants/IconComponents";
+import { removeAllProductFromCart } from "../services/removeAllProductFromCart";
+import { useWishlist } from "../hooks/WishlistContext";
+import SuccessModal from "../components/SuccessModal";
 
 
 const ShoppingBag = ({ navigation }) => {
-    const item = {
-        name: "Beats Studio3 Wireless Headphones",
-        model: "MX3X2LL/A, MQ562PA/A, MX3X2ZM/A",
-        price: "₹14,495",
-        oldPrice: "₹17,934",
-        discount: "20% OFF",
-        image: require("../assets/images/headphones.png"),
-    };
-
     const { language, currency, changeLanguage, changeCurrency } = useLanguageCurrency();
     const { Colors, EndPoint, GlobalText } = useCustomContext();
+    const { success, setSuccess, handleAllWishlistToggle } = useWishlist();
     const { width, height } = useWindowDimensions();
     const isLandscape = width > height;
-    const { updateCartCount } = useCartCount();
+    const { updateCartCount, cartCount } = useCartCount();
     const size = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
     const [isLogin, setLogin] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -61,12 +55,17 @@ const ShoppingBag = ({ navigation }) => {
     // const scrollY = useRef(new Animated.Value(0)).current;
 
 
+    // multi selection
+    const [cartItem, setCartItem] = useState([]);
+
+
+
     useFocusEffect(
         useCallback(() => {
             checkAutoLogin();
             // checkUserLogin();
             fetchCartData();
-        }, [language, currency])
+        }, [language, currency, cartCount])
     );
 
     const checkUserLogin = async () => {
@@ -111,10 +110,10 @@ const ShoppingBag = ({ navigation }) => {
                 sessionid: sessionId
             }
 
-            console.log("fetchCartData", url, body)
+            // console.log("fetchCartData", url, body)
 
             const response = await axios.post(url, body, { headers: headers });
-            console.log("response", response.data);
+            // console.log("response", response.data);
             if (response.status === HttpStatusCode.Ok) {
                 setShowCouponOption(response.data?.applycoupon_status);
                 setShowGiftOption(response.data?.applyvoucher_status);
@@ -130,16 +129,19 @@ const ShoppingBag = ({ navigation }) => {
         }
     }
 
-    const removeProduct = async (cartId) => {
+    const removeAllProduct = async () => {
         try {
-            setScreenLoader(true);
-            const response = await removeProductFromCart(cartId, EndPoint?.cart_remove);
+            // setScreenLoader(true);
+            const cartIds = cartItem.map(item => item.cart_id);
+            const response = await removeAllProductFromCart(cartIds, EndPoint?.cart_remove);
+            console.log("removeAllProductFromCart response ", response)
             updateCartCount(response?.cartproductcount);
-            fetchCartData();
+            setCartItem([]);
+
         } catch (error) {
-            console.log("error", error.message);
+
         } finally {
-            setScreenLoader(false);
+            // setScreenLoader(false);
         }
     }
 
@@ -204,6 +206,53 @@ const ShoppingBag = ({ navigation }) => {
         fetchCartData();
     }
 
+
+
+    const toggleCart = (item) => {
+        setCartItem(prev =>
+            prev.includes(item)
+                ? prev.filter(id => id?.cart_id !== item?.cart_id) // remove
+                : [...prev, item]               // add
+        );
+    };
+
+    const toggleSelectAll = () => {
+        if (cartItem?.length === isCartProducts?.length) {
+            // Unselect all
+            setCartItem([]);
+        } else {
+            // Select all
+            setCartItem(isCartProducts);
+        }
+    };
+
+    const addAllWishList = () => {
+        try {
+            const productIds = [...new Set(
+                cartItem.map(item => item?.product_id)
+            )]; // find  unique productIds
+
+            handleAllWishlistToggle(productIds);
+
+
+            // console.log("productIds", productIds);
+
+            // const productIds = cartItem.map(item => item.product_id);
+
+        } catch (error) {
+
+        }
+    }
+
+    const addRemoveWishList = () => {
+        try {
+
+        } catch (error) {
+
+        }
+    }
+
+
     return (
         <BackgroundWrapper>
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 20, gap: 16, marginTop: Platform.OS === "ios" ? 40 : 0 }}>
@@ -215,8 +264,15 @@ const ShoppingBag = ({ navigation }) => {
                     <TouchableOpacity style={{ marginBottom: 15 }} onPress={() => navigation.goBack()}>
                         <Image source={require("../assets/images/back.png")} style={{ width: 18, height: 18, tintColor: "#fff", }} />
                     </TouchableOpacity>
+
                     <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", }}>
-                        <Text style={{ color: "#fff", fontSize: 22, fontWeight: "700", }}>{isLabel?.cartshoping_heading}</Text>
+                        <Text style={{ color: "#fff", fontSize: 22, fontWeight: "700" }}>{isLabel?.cartshoping_heading}</Text>
+
+                        {/* <Text style={{
+                            color: "#fff", fontSize: 22, fontWeight: "700", textAlign: isRTLText(isLabel?.cartshoping_heading) ? 'right' : 'left',
+                            writingDirection: isRTLText(isLabel?.cartshoping_heading) ? 'rtl' : 'ltr',
+                        }}>{isLabel?.cartshoping_heading}</Text> */}
+
                         <TouchableOpacity style={{
                             borderWidth: 1,
                             borderColor: "#fff",
@@ -243,20 +299,17 @@ const ShoppingBag = ({ navigation }) => {
                         flexDirection: "row",
                         justifyContent: "space-between",
                         alignItems: "center",
-                        marginTop: 20
+                        marginTop: 20,
                     }}>
                         <View style={{
                             flexDirection: "row",
                             alignItems: "center",
+                            gap: 10
                         }}>
-                            <Image
-                                source={require("../assets/images/checkbox.png")} // white tick image
-                                style={{
-                                    width: 18,
-                                    height: 18,
-                                    marginRight: 8,
-                                }}
-                            />
+                            <Pressable hitSlop={40} onPress={toggleSelectAll} style={{}}>
+                                {cartItem?.length === isCartProducts?.length && isCartProducts?.length > 0 ? <IconComponentcheckboxsharp color={'#fff'} size={20} /> : <IconComponentSquare color={'#fff'} size={20} />}
+                            </Pressable>
+
                             <Text style={{
                                 color: "#fff",
                                 fontSize: 14,
@@ -267,42 +320,30 @@ const ShoppingBag = ({ navigation }) => {
                         <View style={{
                             flexDirection: "row",
                             alignItems: "center",
-                            gap: 10,
+                            gap: 14,
                         }}>
-                            <TouchableOpacity>
-                                <Image source={require("../assets/images/share.png")} style={{
-                                    width: 13,
-                                    height: 13,
-                                    tintColor: "#fff",
-                                }} />
+
+                            <TouchableOpacity >
+                                <IconComponentShare color={'#fff'} size={20} />
                             </TouchableOpacity>
-                            <TouchableOpacity>
-                                <Image source={require("../assets/images/delete.png")} style={{
-                                    width: 13,
-                                    height: 13,
-                                    tintColor: "#fff",
-                                }} />
+                            <TouchableOpacity hitSlop={24} onPress={removeAllProduct}>
+                                <IconComponentTrash color={'#fff'} size={20} />
                             </TouchableOpacity>
-                            <TouchableOpacity>
-                                <Image source={require("../assets/images/heart.png")} style={{
-                                    width: 13,
-                                    height: 13,
-                                    tintColor: "#fff",
-                                }} />
+                            <TouchableOpacity hitSlop={24} onPress={addAllWishList}>
+                                <IconComponentHeart color={'#fff'} size={20} />
                             </TouchableOpacity>
                         </View>
                     </View>
                 </View>
 
                 {/* Product Card */}
-                <FlatList
-                    data={isCartProducts}
-                    keyExtractor={(item) => item.cart_id}
-                    contentContainerStyle={{ gap: 16, paddingVertical: 10 }}
-                    renderItem={({ item }) => (
-                        <ShoppingBagProductCard item={item} />
-                    )}
-                />
+
+                {
+                    isCartProducts?.length ?
+                        (isCartProducts?.map((item, index) => (
+                            <ShoppingBagProductCard item={item} key={index} toggleCart={(item) => toggleCart(item)} cartItems={cartItem} />
+                        ))) : null
+                }
 
                 {/* Available Offers */}
                 <GlassContainer>
@@ -362,7 +403,7 @@ const ShoppingBag = ({ navigation }) => {
 
                     <MokaffaPoints />
 
-                    <GlassmorphismButton title="PROCEED" onPress={() =>checkUserLogin()} />
+                    <GlassmorphismButton title="PROCEED" onPress={() => checkUserLogin()} />
 
                     <View style={styles.footerBottomRow}>
                         <Text style={styles.totalText}>₹16669.25</Text>
@@ -370,6 +411,14 @@ const ShoppingBag = ({ navigation }) => {
                     </View>
                 </View>
             </ScrollView>
+
+            <SuccessModal
+                handleCloseModal={() => setSuccess('')}
+                isModal={success ? true : false}
+                isSuccessMessage={success}
+                onClickClose={() => setSuccess('')}
+            />
+
         </BackgroundWrapper>
     );
 };

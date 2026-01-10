@@ -10,9 +10,6 @@ import SuccessModal from "../SuccessModal";
 import { useCartCount } from "../../hooks/CartContext";
 import PriceView from "./PriceView";
 const ProductGlassCard = ({ item, onPress, onAddToCart }) => {
-
-    console.log("product items", item)
-
     const { Colors, EndPoint, GlobalText } = useCustomContext();
     const { updateCartCount } = useCartCount();
     const navigation = useNavigation();
@@ -59,7 +56,9 @@ const ProductGlassCard = ({ item, onPress, onAddToCart }) => {
             <TouchableOpacity
                 activeOpacity={0.8}
                 style={styles.cardWrapper}
-                onPress={() => onPress?.(item)}
+                onPress={() => navigation.push("ProductDetail", {
+                    productId: item?.product_id,
+                })}
             >
                 {/* ✅ Glass background without blur - using gradient only */}
                 <LinearGradient
@@ -70,10 +69,11 @@ const ProductGlassCard = ({ item, onPress, onAddToCart }) => {
                     <View style={styles.content}>
                         <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
                             <View style={styles.headerStrip}>
-                                <Text style={styles.categoryText}>{item.category}</Text>
+                                <Text style={styles.categoryText}>{item?.category}</Text>
                             </View>
                             {/* 🛍️ Bag Icon */}
                             <TouchableOpacity
+                                hitSlop={60}
                                 activeOpacity={0.8}
                                 onPress={() => { item?.optionsstatus ? onClickAddToCartOption() : onclickAddToCart() }}
                             >
@@ -97,11 +97,11 @@ const ProductGlassCard = ({ item, onPress, onAddToCart }) => {
                         {/* ✅ Product Info */}
                         <View style={styles.infoContainer}>
                             <Text style={styles.productName} numberOfLines={2}>{item?.name}</Text>
-                            <View style={{marginLeft:10}}>
-                            <PriceView
-                                priceHtml={item?.price}
-                                textStyle={styles.price}
-                            />
+                            <View style={{ marginLeft: 10 }}>
+                                <PriceView
+                                    priceHtml={item?.price}
+                                    textStyle={styles.price}
+                                />
                             </View>
 
                             {/* <Text style={styles.price}>{item?.price}</Text> */}
