@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, StyleSheet, Image, Pressable } from 'react-native'
-import React, { memo } from 'react'
+import React, { memo, useState } from 'react'
 import GlassContainer from './GlassContainer'
 import LinearGradient from 'react-native-linear-gradient'
 import { Dimensions } from 'react-native'
@@ -7,11 +7,15 @@ import { IconComponentcheckboxsharp, IconComponentClose, IconComponentSquare } f
 import { removeProductFromCart } from '../../services/removeProductFromCart'
 import { useCustomContext } from '../../hooks/CustomeContext'
 import { useCartCount } from '../../hooks/CartContext'
+import CustomQuantityInput from './CustomQuantityInput'
+import { editProductQty } from '../../services/editProductQty'
 
 const ShoppingBagProductCard = ({ item, toggleCart, cartItems }) => {
+    // console.log("cart item:", item);
     const screenWidth = Dimensions.get('window').width;
     const { Colors, EndPoint, GlobalText } = useCustomContext();
     const { updateCartCount } = useCartCount();
+    const [loading, setLoading] = useState(false);
 
     const removeProduct = async () => {
         try {
@@ -27,6 +31,22 @@ const ShoppingBagProductCard = ({ item, toggleCart, cartItems }) => {
         } finally {
             // setScreenLoader(false);
         }
+    }
+
+
+    const onChangeQty = async (selectedQty) => {
+        try {
+            setLoading(true);
+            console.log("selectedQty", selectedQty);
+            const response = await editProductQty(item?.cart_id, selectedQty, EndPoint?.cart_edit);
+            console.log("onChangeQty responce: ", response);
+            updateCartCount(response?.cartproductcount);
+        } catch (error) {
+            console.log("error", error.response.data);
+        } finally {
+            setLoading(false);
+        }
+
     }
 
     return (
@@ -70,13 +90,30 @@ const ShoppingBagProductCard = ({ item, toggleCart, cartItems }) => {
                     <IconComponentClose color={'#fff'} size={18} />
                 </Pressable>
                 <Text style={styles.title} numberOfLines={2}>
-                    {item.name}
+                    {item?.name}
                 </Text>
 
-                <Text style={styles.subText}>{item.model}</Text>
+                <Text style={styles.subText}>{item?.model}</Text>
+                {
+                    item?.option?.length > 0 && (
+                        item?.option?.map((otp, index) => (
+                            <Text key={index} style={styles.subText}>{`${otp?.name} : ${otp?.value}`}</Text>
+                        )))
+                }
+
+
+                <View style={{ marginTop: 6 }}>
+                    <CustomQuantityInput
+                        initialValue={item?.quantity}
+                        min={1}
+                        onChangeValue={(qty) => onChangeQty(qty)}
+                        loading={loading}
+                    />
+                </View>
+
 
                 <View style={styles.row}>
-                    <TouchableOpacity style={styles.optionBox}>
+                    {/* <TouchableOpacity style={styles.optionBox}>
                         <Text style={styles.optionText}>Size: 4</Text>
                     </TouchableOpacity>
 
@@ -84,7 +121,7 @@ const ShoppingBagProductCard = ({ item, toggleCart, cartItems }) => {
                         <Text style={styles.optionText}>
                             Qty: {item.quantity}
                         </Text>
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
 
                     <Text style={styles.stockText}>9 left</Text>
 

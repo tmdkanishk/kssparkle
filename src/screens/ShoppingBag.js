@@ -1,5 +1,5 @@
 import React, { useCallback, useRef, useState } from "react";
-import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, Platform, useWindowDimensions, FlatList, Pressable } from "react-native";
+import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, Platform, useWindowDimensions, FlatList, Pressable, Share } from "react-native";
 import BackgroundWrapper from "../components/customcomponents/BackgroundWrapper";
 import GlassContainer from "../components/customcomponents/GlassContainer";
 import Header from "../components/customcomponents/Header";
@@ -22,6 +22,9 @@ import { IconComponentcheckboxsharp, IconComponentHeart, IconComponentShare, Ico
 import { removeAllProductFromCart } from "../services/removeAllProductFromCart";
 import { useWishlist } from "../hooks/WishlistContext";
 import SuccessModal from "../components/SuccessModal";
+import CustomCouponSection from "../components/customcomponents/CustomCouponSection";
+import CustomVoucherSection from "../components/customcomponents/CustomVoucherSection";
+import { shareAllUrlProdcuts } from "../services/shareAllUrlProdcuts";
 
 
 const ShoppingBag = ({ navigation }) => {
@@ -52,6 +55,9 @@ const ShoppingBag = ({ navigation }) => {
     const [screenLoader, setScreenLoader] = useState(false);
     const [showCouponOption, setShowCouponOption] = useState(false);
     const [showGiftOption, setShowGiftOption] = useState(false);
+
+    const [isCouponSuccess, setCouponSuccess] = useState(null);
+
     // const scrollY = useRef(new Animated.Value(0)).current;
 
 
@@ -95,7 +101,8 @@ const ShoppingBag = ({ navigation }) => {
             const url = `${BASE_URL}${EndPoint?.cart}`;
             const lang = await _retrieveData('SELECT_LANG');
             const cur = await _retrieveData('SELECT_CURRENCY');
-            const user = await _retrieveData('USER');
+            // const user = await _retrieveData('USER');
+            const user = await _retrieveData("CUSTOMER_ID");
             const sessionId = await _retrieveData('SESSION_ID');
 
             const headers = {
@@ -106,7 +113,7 @@ const ShoppingBag = ({ navigation }) => {
             const body = {
                 code: lang?.code,
                 currency: cur?.code,
-                customer_id: user ? user[0].customer_id : null,
+                customer_id: user,
                 sessionid: sessionId
             }
 
@@ -145,37 +152,22 @@ const ShoppingBag = ({ navigation }) => {
         }
     }
 
-    const onChangeQty = async (cartId, selectedQty) => {
-        try {
-            setScreenLoader(true);
-            const result = await editProductQty(cartId, selectedQty, EndPoint?.cart_edit);
-            console.log(result);
-            updateCartCount(result?.cartproductcount);
-            setCartAnimation(true);
-            setSuccessMgs(result?.success);
-            setSuccessModal(true);
-
-        } catch (error) {
-            console.log("error", error.response.data);
-        } finally {
-            setScreenLoader(false);
-        }
-
-    }
 
     const applyVoucherCode = async (voucher) => {
         try {
-            setScreenLoader(true);
+            // setScreenLoader(true);
             const result = await applyVoucher(voucher, EndPoint?.cart_voucher);
-            setSuccessMgs(result?.success);
-            setSuccessModal(true);
+
+            console.log("result", result);
+            // setSuccessMgs(result?.success);
+            // setSuccessModal(true);
         } catch (error) {
-            if (error.response.data?.error) {
-                setGiftError(error.response.data?.error);
-            } else {
-                setErrorMgs(GlobalText?.extrafield_somethingwrong);
-                setErrorModal(true);
-            }
+            // if (error.response.data?.error) {
+            //     setGiftError(error.response.data?.error);
+            // } else {
+            //     setErrorMgs(GlobalText?.extrafield_somethingwrong);
+            //     setErrorModal(true);
+            // }
         } finally {
             setScreenLoader(false);
         }
@@ -183,12 +175,18 @@ const ShoppingBag = ({ navigation }) => {
 
     const applyCouponCode = async (coupon) => {
         try {
-            setScreenLoader(true);
-            const result = await appyCoupon(coupon, EndPoint?.cart_coupon);
-            setSuccessMgs(result?.success);
-            setSuccessModal(true);
+            // setScreenLoader(true);
+            const response = await appyCoupon(coupon, EndPoint?.cart_coupon);
+            console.log("applyCouponCode response : ", response);
+            if (response?.success) {
+                setCouponSuccess(response?.success);
+                setCouponError(null);
+                fetchCartData();
+            }
+
+            // setSuccessModal(true);
         } catch (error) {
-            console.log("error", error.response.data);
+            console.log("applyCouponCode error : ", error.response.data);
             if (error.response.data?.error) {
                 setCouponError(error.response.data?.error);
             } else {
@@ -196,7 +194,8 @@ const ShoppingBag = ({ navigation }) => {
                 setErrorModal(true);
             }
         } finally {
-            setScreenLoader(false);
+            setCouponSuccess(null);
+            // setScreenLoader(false);
         }
     }
 
@@ -244,13 +243,41 @@ const ShoppingBag = ({ navigation }) => {
         }
     }
 
-    const addRemoveWishList = () => {
+
+    const shareAllProduct = async () => {
         try {
+            const productIds = [...new Set(
+                cartItem.map(item => item?.product_id)
+            )]; // find  unique productIds
+            const response = await shareAllUrlProdcuts(productIds, EndPoint?.share)
 
+            console.log("response", response?.responses);
+
+            if (response?.responses) {
+                const message = response?.responses
+                    .map(item => item)
+                    .join(', ');
+
+                const result = await Share.share({
+                    message: message,
+                });
+                if (result.action === Share.sharedAction) {
+                    if (result.activityType) {
+                        console.log("Shared with activity type:", result.activityType);
+                    } else {
+                        console.log("Shared successfully!");
+                    }
+                } else if (result.action === Share.dismissedAction) {
+                    console.log("Share dismissed.");
+                }
+            }
+            console.log("response shareAllProduct", response);
         } catch (error) {
-
+            console.log("error share product", error.response.data);
         }
     }
+
+
 
 
     return (
@@ -260,7 +287,7 @@ const ShoppingBag = ({ navigation }) => {
                 <Header onLogoPress={() => { navigation.navigate("Home") }} />
 
                 {/* Selected Info */}
-                <View style={{ paddingHorizontal: 16, paddingTop: 20, paddingBottom: 10, }}>
+                <View style={{ paddingTop: 20, paddingBottom: 10, paddingHorizontal: 10 }}>
                     <TouchableOpacity style={{ marginBottom: 15 }} onPress={() => navigation.goBack()}>
                         <Image source={require("../assets/images/back.png")} style={{ width: 18, height: 18, tintColor: "#fff", }} />
                     </TouchableOpacity>
@@ -314,7 +341,7 @@ const ShoppingBag = ({ navigation }) => {
                                 color: "#fff",
                                 fontSize: 14,
                                 fontWeight: "600",
-                            }}>1/1 ITEMS SELECTED (₹14,495)</Text>
+                            }}>{cartItem?.length}/{isCartProducts?.length} ITEMS SELECTED</Text>
                         </View>
 
                         <View style={{
@@ -323,7 +350,7 @@ const ShoppingBag = ({ navigation }) => {
                             gap: 14,
                         }}>
 
-                            <TouchableOpacity >
+                            <TouchableOpacity hitSlop={24} onPress={shareAllProduct}>
                                 <IconComponentShare color={'#fff'} size={20} />
                             </TouchableOpacity>
                             <TouchableOpacity hitSlop={24} onPress={removeAllProduct}>
@@ -364,6 +391,18 @@ const ShoppingBag = ({ navigation }) => {
                     </Text>
                     <Text style={styles.showMore}>▼ Show more</Text>
                 </GlassContainer>
+
+                {/* coupon section */}
+                <CustomCouponSection
+                    onClickApply={(coupon) => applyCouponCode(coupon)}
+                    error={isCouponError}
+                    success={isCouponSuccess}
+                />
+
+                {/* voucher section */}
+                <CustomVoucherSection />
+
+
 
                 {/* Price Details */}
                 <GlassContainer>

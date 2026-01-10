@@ -7,7 +7,8 @@ export const addWishlistProduct = async (productid, accountdashboard_wishlistadd
         const url = `${BASE_URL}${accountdashboard_wishlistadd}`;
         const lang = await _retrieveData('SELECT_LANG');
         const cur = await _retrieveData('SELECT_CURRENCY');
-        const user = await _retrieveData("USER");
+        // const user = await _retrieveData("USER");
+        const user = await _retrieveData("CUSTOMER_ID");
         const sessionId = await _retrieveData('SESSION_ID');
         const headers = {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -18,7 +19,8 @@ export const addWishlistProduct = async (productid, accountdashboard_wishlistadd
             code: lang?.code,
             currency: cur?.code,
             product_id: productid,
-            customer_id: user[0]?.customer_id,
+            // customer_id: user[0]?.customer_id,
+            customer_id: user,
             sessionid: sessionId,
         }
 

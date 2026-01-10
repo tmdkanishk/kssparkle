@@ -8,7 +8,8 @@ export const applyVoucher = async (voucher, cart_voucher) => {
         const lang = await _retrieveData('SELECT_LANG');
         const cur = await _retrieveData('SELECT_CURRENCY');
         const sessionId = await _retrieveData('SESSION_ID');
-        const user = await _retrieveData('USER');
+        const user = await _retrieveData('CUSTOMER_ID');
+        // const user = await _retrieveData('USER');
 
         const headers = {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -20,7 +21,8 @@ export const applyVoucher = async (voucher, cart_voucher) => {
             currency: cur?.code,
             sessionid: sessionId,
             voucher: voucher,
-            customer_id: user ? user[0]?.customer_id : null
+            // customer_id: user ? user[0]?.customer_id : null
+            customer_id: user
         }
 
         const response = await axios.post(url, body, { headers: headers });

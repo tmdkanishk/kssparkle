@@ -7,7 +7,8 @@ export const removeWishlistProduct = async (productid, accountdashboard_wishlist
         const url = `${BASE_URL}${accountdashboard_wishlistremove}`;
         const lang = await _retrieveData('SELECT_LANG');
         const cur = await _retrieveData('SELECT_CURRENCY');
-        const user = await _retrieveData("USER");
+        // const user = await _retrieveData("USER");
+        const user = await _retrieveData("CUSTOMER_ID");
         const sessionId = await _retrieveData('SESSION_ID');
 
         const headers = {
@@ -19,7 +20,8 @@ export const removeWishlistProduct = async (productid, accountdashboard_wishlist
             code: lang?.code,
             currency: cur?.code,
             product_id: productid,
-            customer_id: user ? user[0]?.customer_id : null,
+            // customer_id: user ? user[0]?.customer_id : null,
+            customer_id: user,
             sessionid: sessionId,
         }
 
