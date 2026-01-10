@@ -16,6 +16,7 @@ import { Dimensions } from "react-native";
 import { gatCategoryList } from "../services/gatCategoryList";
 import { useCustomContext } from "../hooks/CustomeContext";
 import CategoryCard from "../components/customcomponents/CategoryCard";
+import CustomSearchBar from "./CustomSearchBar";
 
 
 const categories = [
@@ -63,6 +64,7 @@ const Category = ({ navigation }) => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [activeSeachingScreen, setActiveSeachingScreen] = useState(false);
 
   const handleCategoryPress = useCallback(
     (item) => {
@@ -136,6 +138,23 @@ const Category = ({ navigation }) => {
 
   const groupedCategories = chunkArray(categories, 2);
 
+  const toggleSearch = () => {
+    setActiveSeachingScreen(prev => !prev);
+  };
+
+
+
+
+
+  if (activeSeachingScreen) {
+    return (
+      <CustomSearchBar
+        setActiveSeachingScreen={setActiveSeachingScreen}
+      />
+    );
+  }
+
+
 
   return (
     <BackgroundWrapper>
@@ -154,18 +173,20 @@ const Category = ({ navigation }) => {
         ListHeaderComponent={
           <>
             <View style={styles.headerContainer}>
-              <Header paddingHorizontal={50} title="Categories" />
+              <Header onSearchPress={toggleSearch} paddingHorizontal={50} title="Categories" />
             </View>
 
             <TouchableOpacity
-              style={{ marginLeft: 25, marginBottom: 10 }}
               onPress={() => navigation.goBack()}
+              hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
+              style={{ marginLeft: 25, marginBottom: 10 }}
             >
               <Image
                 source={require("../assets/images/back.png")}
                 style={{ width: 18, height: 18, tintColor: "#fff" }}
               />
             </TouchableOpacity>
+
 
             {/* 🔹 SPECIAL OFFER CARD */}
             <TouchableOpacity
@@ -174,7 +195,7 @@ const Category = ({ navigation }) => {
             >
               <GlassContainer
                 style={{
-                  width: 350,
+                  width: 360,
                   height: 220,
                   justifyContent: "center",
                   alignItems: "center",
@@ -243,7 +264,7 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     marginBottom: 10,
-    marginTop:60,
+    marginTop: 60,
     // width:'100%',
     // alignItems:'center'
   },

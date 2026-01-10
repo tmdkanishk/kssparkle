@@ -17,6 +17,7 @@ import { gatCategoryList } from "../services/gatCategoryList";
 import { useCustomContext } from "../hooks/CustomeContext";
 import CategoryCard from "../components/customcomponents/CategoryCard";
 import { gatSubCategoryOrProduct } from "../services/getSubCategoryOrProduct";
+import CustomSearchBar from "./CustomSearchBar";
 
 
 const categories = [
@@ -81,21 +82,138 @@ const SubCategory = ({ navigation, route }) => {
 
     const screenWidth = Dimensions.get('window').width;
     const screenHeight = Dimensions.get('window').height;
+    const [subCategories, setSubCategories] = useState([]);
+    const [products, setProducts] = useState([]);
 
-    const getCategories = async () => {
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [loading, setLoading] = useState(false);
+    const [activeSeachingScreen, setActiveSeachingScreen] = useState(false);
+
+
+
+    const getSubCategoryProducts = async (pageNumber = 1) => {
+        if (loading || pageNumber > totalPages) return;
+
+        setLoading(true);
         try {
-            const result = await gatSubCategoryOrProduct(categoryId, 1, EndPoint?.newcategories)
-            // const result = await gatCategoryList(1, EndPoint?.category);
-            console.log("result get subCatgories", result);
-            setCategories(result?.category || []);
+            const result = await gatSubCategoryOrProduct(
+                categoryId,
+                pageNumber,
+                EndPoint?.newcategories
+            );
+
+            // ✅ Set subcategories only once
+            if (pageNumber === 1) {
+                setSubCategories(result?.categories || []);
+            }
+
+            const newProducts = result?.products || [];
+
+            setProducts(prev => {
+                if (pageNumber === 1) return newProducts;
+
+                const existingIds = new Set(prev.map(p => p.product_id));
+                const filtered = newProducts.filter(
+                    p => !existingIds.has(p.product_id)
+                );
+
+                return [...prev, ...filtered];
+            });
+
+            setTotalPages(result?.pages || 1);
+            setPage(pageNumber);
         } catch (error) {
-            console.log("getcategires errror", error)
+            console.log("getSubCategoryProducts error", error);
+        } finally {
+            setLoading(false);
         }
-    }
+    };
+
 
     useEffect(() => {
-        getCategories();
-    }, [])
+        setProducts([]);
+        setSubCategories([]);
+        setPage(1);
+        setTotalPages(1);
+        getSubCategoryProducts(1);
+    }, [categoryId]);
+
+
+
+    const loadMoreProducts = () => {
+        if (page < totalPages && !loading) {
+            getSubCategoryProducts(page + 1);
+        }
+    };
+
+
+    const ProductItem = memo(({ item, onPress }) => (
+        <TouchableOpacity
+            style={{ flex: 1, margin: 0 }}
+            onPress={() => onPress(item)}
+        >
+            <GlassContainer style={{ padding: 12 }}>
+                <Image
+                    source={{
+                        uri: item.thumb || "https://via.placeholder.com/150",
+                    }}
+                    style={{ width: "100%", height: 120 }}
+                    resizeMode="contain"
+                />
+                <Text style={{ color: "#fff", marginTop: 8 }} numberOfLines={2}>
+                    {item.name}
+                </Text>
+            </GlassContainer>
+        </TouchableOpacity>
+    ));
+
+    const SubCategoryItem = memo(({ item, navigation }) => (
+        <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() =>
+                navigation.push("SubCategory", {
+                    categoryId: item.category_id,
+                    title: item.name,
+                })
+            }
+            style={{ width: "100%", alignItems: "center", marginBottom: 12, marginTop:15 }}
+        >
+            <GlassContainer
+                style={{
+                    width: 380,
+                    height: 100,
+                    justifyContent: "center",
+                }}
+                padding={12}
+            >
+                {/* ROW LAYOUT */}
+                <View style={styles.subRow}>
+                    {/* LEFT: CIRCULAR IMAGE */}
+                    <View style={styles.subImageWrapper}>
+                        <Image
+                            source={{
+                                uri: item.image || "https://via.placeholder.com/100",
+                            }}
+                            style={styles.subImage}
+                            resizeMode="contain"
+                        />
+                    </View>
+
+                    {/* RIGHT: TEXT */}
+                    <View style={{ flex: 1 }}>
+                        <Text style={styles.subTitle} numberOfLines={2}>
+                            {item.name}
+                        </Text>
+                    </View>
+                </View>
+            </GlassContainer>
+        </TouchableOpacity>
+    ));
+
+
+
+
 
     const chunkArray = (array, size) => {
         const result = [];
@@ -107,96 +225,122 @@ const SubCategory = ({ navigation, route }) => {
 
     const groupedCategories = chunkArray(categories, 2);
 
+    const toggleSearch = () => {
+        setActiveSeachingScreen(prev => !prev);
+    };
+
+
+
+
+
+    if (activeSeachingScreen) {
+        return (
+            <CustomSearchBar
+                setActiveSeachingScreen={setActiveSeachingScreen}
+            />
+        );
+    }
+
+
 
     return (
         <BackgroundWrapper>
-            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.container}>
-                <View style={styles.headerContainer}>
-                    <Header title="Categories" />
-                </View>
-                <TouchableOpacity style={{ marginLeft: 25, marginBottom: 10 }} onPress={() => navigation.goBack()}>
-                    <Image source={require("../assets/images/back.png")} style={{ width: 18, height: 18, tintColor: "#fff", }} />
-                </TouchableOpacity>
-                <TouchableOpacity
-                    activeOpacity={0.8}
-                    onPress={() => console.log('subcategory pressed')}
-                    style={{ width: '100%', alignItems: 'center', marginTop:20 }}
-                >
-                    <GlassContainer
-                        style={{
-                            width: 350,
-                            height: 100,
-                            justifyContent: 'center',
-                            padding: 0,
-                        }}
-                        padding={12}
-                    >
-                        {/* ROW LAYOUT */}
-                        <View
-                            style={{
-                                flexDirection: 'row',
-                                alignItems: 'center',
-                                gap: 14,
-                            }}
+            <FlatList
+                data={products}
+                keyExtractor={(item, index) => `${item.product_id}-${index}`}
+                numColumns={2}
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={{ paddingBottom: 80 }}
+                //   columnWrapperStyle={{
+                //     justifyContent: "space-evenly",
+                //     paddingHorizontal: 10,
+                //   }}
+                columnWrapperStyle={{ justifyContent: "space-between" }}
+
+                /* 🔹 HEADER */
+                ListHeaderComponent={
+                    <>
+                        {/* HEADER */}
+                        <View style={styles.headerContainer}>
+                            <Header
+                                onSearchPress={toggleSearch}
+                                paddingHorizontal={50}
+                                title={route?.params?.title || "Categories"}
+                            />
+                        </View>
+
+                        {/* BACK BUTTON */}
+                        <TouchableOpacity
+                            onPress={() => navigation.goBack()}
+                            hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
+                            style={{ marginLeft: 25, marginBottom: 10 }}
                         >
-                            {/* LEFT: CIRCULAR IMAGE */}
-                            <View
+                            <Image
+                                source={require("../assets/images/back.png")}
+                                style={{ width: 18, height: 18, tintColor: "#fff" }}
+                            />
+                        </TouchableOpacity>
+
+                        {subCategories.length > 0 && (
+                            <Text
                                 style={{
-                                    width: 64,
-                                    height: 64,
-                                    borderRadius: 32,
-                                    backgroundColor: 'rgba(255,255,255,0.2)',
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                    overflow: 'hidden',
+                                    color: "#fff",
+                                    margin: 16,
+                                    fontSize: 16,
+                                    fontWeight: "600",
                                 }}
                             >
-                                <Image
-                                    source={require('../assets/images/specialoffer.png')}
-                                    style={{
-                                        width: 40,
-                                        height: 40,
-                                    }}
-                                    resizeMode="contain"
-                                />
-                            </View>
+                                Sub Categories
+                            </Text>
+                        )}
 
-                            {/* RIGHT: TEXT */}
-                            <View style={{ flex: 1 }}>
-                                <Text
-                                    style={{
-                                        color: '#fff',
-                                        fontSize: 16,
-                                        fontWeight: '600',
-                                    }}
-                                    numberOfLines={2}
-                                >
-                                    Special Offers
-                                </Text>
-                            </View>
-                        </View>
-                    </GlassContainer>
-                </TouchableOpacity>
+                        {/* 🔹 SUBCATEGORIES GRID */}
+                        {subCategories.length > 0 && (
+                            <FlatList
+                                key="sub-category-list"   // 🔥 forces fresh render
+                                data={subCategories}
+                                keyExtractor={(item) => item.category_id}
+                                scrollEnabled={false}
+                                renderItem={({ item }) => <SubCategoryItem item={item} navigation={navigation}  />}
+                            />
+
+                        )}
 
 
-                {/* 🔹 Full Width Special Offers Card */}
-                {/* <CategoryItem
-          item={categories[0]}
-          onPress={handleCategoryPress}
-          fullWidth
-        /> */}
+                        {/* SECTION TITLE */}
+                        {products.length > 0 && (
+                            <Text style={{ color: "#fff", fontSize: 16, fontWeight: "600", marginLeft: 20, marginTop:10 }}>
+                                Products
+                            </Text>
+                        )}
+                    </>
+                }
 
-                {/* 🔹 Other Categories in 2 Columns */}
-                {/* <FlatList
-          data={categoryData}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id.toString()}
-          numColumns={2}
-          scrollEnabled={false}
-          columnWrapperStyle={styles.columnWrapper}
-        /> */}
-            </ScrollView>
+                /* 🔹 ITEMS */
+                renderItem={({ item }) => (
+                    <ProductItem
+                        item={item}
+                        onPress={(product) =>
+                            navigation.navigate("ProductDetail", { productId: product?.product_id })
+                        }
+                    />
+                )}
+
+                /* 🔹 PAGINATION */
+                onEndReached={loadMoreProducts}
+                onEndReachedThreshold={0.3}
+
+                /* 🔹 FOOTER */
+                ListFooterComponent={
+                    loading ? (
+                        <Text style={{ color: "#fff", textAlign: "center", padding: 10 }}>
+                            Loading...
+                        </Text>
+                    ) : null
+                }
+            />
         </BackgroundWrapper>
+
     );
 };
 
@@ -207,6 +351,7 @@ const styles = StyleSheet.create({
     },
     headerContainer: {
         marginBottom: 10,
+        marginTop: 50
     },
     cardWrapper: {
         alignItems: "center",
@@ -262,6 +407,29 @@ const styles = StyleSheet.create({
     },
     columnWrapper: {
         justifyContent: "space-between",
+    },
+    subRow: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 14,
+    },
+    subImageWrapper: {
+        width: 64,
+        height: 64,
+        borderRadius: 32,
+        backgroundColor: "rgba(255,255,255,0.2)",
+        justifyContent: "center",
+        alignItems: "center",
+        overflow: "hidden",
+    },
+    subImage: {
+        width: 40,
+        height: 40,
+    },
+    subTitle: {
+        color: "#fff",
+        fontSize: 16,
+        fontWeight: "600",
     },
 });
 

@@ -8,7 +8,7 @@ export const gatSubCategoryOrProduct = async (path, page, categorydetails) => {
         const lang = await _retrieveData('SELECT_LANG');
         const cur = await _retrieveData('SELECT_CURRENCY');
         const sessionId = await _retrieveData('SESSION_ID');
-        const user = await _retrieveData('USER');
+        const user = await _retrieveData('CUSTOMER_ID');
 
         const headers = {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -17,9 +17,9 @@ export const gatSubCategoryOrProduct = async (path, page, categorydetails) => {
 
         const body = {
             code: lang?.code,
-            currency: cur?.code,
+            currency: cur,
             sessionid: sessionId,
-            customer_id: user ? user[0]?.customer_id : null,
+            customer_id: user,
             path: path,
             page: page
         }
