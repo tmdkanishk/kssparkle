@@ -7,7 +7,8 @@ export const editProductQty = async (cartId, qty, cart_edit) => {
         const url = `${BASE_URL}${cart_edit}`;
         const lang = await _retrieveData('SELECT_LANG');
         const cur = await _retrieveData('SELECT_CURRENCY');
-        const user = await _retrieveData('USER');
+        // const user = await _retrieveData('USER');
+        const user = await _retrieveData("CUSTOMER_ID");
         const sessionId = await _retrieveData('SESSION_ID');
 
         const headers = {
@@ -19,14 +20,14 @@ export const editProductQty = async (cartId, qty, cart_edit) => {
             code: lang?.code,
             currency: cur?.code,
             sessionid: sessionId,
-            customer_id: user ? user[0].customer_id : null,
+            // customer_id: user ? user[0].customer_id : null,
+            customer_id: user,
             cart_id: cartId,
             quantity: qty
         }
         const response = await axios.post(url, body, { headers: headers });
 
         if (response.status === HttpStatusCode.Ok) {
-            await _storeData("CART_PRODUCT_COUNT", response.data?.cartproductcount);
             return response.data;
         }
 
