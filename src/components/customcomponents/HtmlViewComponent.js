@@ -4,7 +4,7 @@ import HTMLView from 'react-native-htmlview';
 
 const TEXT_COLOR = '#FFFFFF';
 const FONT_SIZE = 17;
-const LINE_HEIGHT = 16;
+const LINE_HEIGHT = 30;
 
 
 const HtmlViewComponent = ({ descriptionData }) => {

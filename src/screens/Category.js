@@ -60,6 +60,10 @@ const CategoryItem = memo(({ item, onPress, fullWidth }) => (
 const Category = ({ navigation }) => {
   const { Colors, EndPoint, GlobalText, SetLogin } = useCustomContext();
   const [categories, setCategories] = useState([]);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(false);
+
   const handleCategoryPress = useCallback(
     (item) => {
       navigation.navigate("CategoryDetails", { category: item });
@@ -79,19 +83,48 @@ const Category = ({ navigation }) => {
   const screenWidth = Dimensions.get('window').width;
   const screenHeight = Dimensions.get('window').height;
 
-  const getCategories = async () => {
+
+  const getCategories = async (pageNumber = 1) => {
+    if (loading || pageNumber > totalPages) return;
+
+    setLoading(true);
     try {
-      const result = await gatCategoryList(1, EndPoint?.category);
-      console.log("result getCatgories", result);
-      setCategories(result?.category || []);
+      const result = await gatCategoryList(pageNumber, EndPoint?.category);
+
+      setCategories(prev => {
+        if (pageNumber === 1) return result?.category || [];
+
+        const existingIds = new Set(prev.map(item => item.category_id));
+
+        const newItems = (result?.category || []).filter(
+          item => !existingIds.has(item.category_id)
+        );
+
+        return [...prev, ...newItems];
+      });
+
+
+      setTotalPages(result?.pages || 1);
+      setPage(pageNumber);
     } catch (error) {
-      console.log("getcategires errror", error)
+      console.log("getCategories error", error);
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    getCategories();
-  }, [])
+    getCategories(1);
+  }, []);
+
+  const loadMoreCategories = () => {
+    console.log("loadMoreCategories")
+    if (page < totalPages && !loading) {
+      getCategories(page + 1);
+    }
+  };
+
+
 
   const chunkArray = (array, size) => {
     const result = [];
@@ -106,113 +139,100 @@ const Category = ({ navigation }) => {
 
   return (
     <BackgroundWrapper>
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.container}>
-        <View style={styles.headerContainer}>
-          <Header title="Categories" />
-        </View>
-        <TouchableOpacity style={{ marginLeft: 25, marginBottom:10 }} onPress={() => navigation.goBack()}>
-          <Image source={require("../assets/images/back.png")} style={{ width: 18, height: 18, tintColor: "#fff", }} />
-        </TouchableOpacity>
+      <FlatList
+        data={categories}
+        keyExtractor={(item) => item.category_id}
+        numColumns={2}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 80 }}
+        columnWrapperStyle={{
+          justifyContent: "space-evenly",
+          paddingHorizontal: 10,
+        }}
 
-        <TouchableOpacity
-          activeOpacity={0.8}
-          onPress={() => console.log('slkdnkn')}
-          style={{
-            width: "100%",
-            alignItems: 'center'
-          }}
-        >
-          <GlassContainer
-            style={{
-              width: 350,
-              height: 220,
-              justifyContent: "center",
-              alignItems: "center",
-              padding: 0,
-            }}
-            padding={0.1}
-          >
-            {/* IMAGE CENTERED */}
-            <View
-              style={{
-                width: "100%",
-                height: "65%",
-                alignItems: "center",
-                marginBottom: 16,
-              }}
-            >
-              <Image
-                source={require("../assets/images/specialoffer.png")}
-                style={{
-                  width: "100%",
-                  height: "100%",
-                }}
-                resizeMode="contain"
-              />
+        /* 🔹 HEADER */
+        ListHeaderComponent={
+          <>
+            <View style={styles.headerContainer}>
+              <Header paddingHorizontal={50} title="Categories" />
             </View>
 
-            {/* BUTTON */}
-            <GlassButton
-              title="Special Offers"
-              textStyle={{
-                fontSize: 10,
-                fontWeight: "600",
-              }}
-              style={{
-                paddingVertical: 8,
-                paddingHorizontal: 3,
-              }}
-              innerStyle={{
-                paddingHorizontal: 80,
-              }}
-            />
-          </GlassContainer>
-        </TouchableOpacity>
-
-
-        {groupedCategories.map((row, index) => (
-          <View
-            key={index}
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-evenly",
-              width: "100%",
-              paddingHorizontal: 10,
-            }}
-          >
-            {row.map((item) => (
-              <CategoryCard
-                key={item.category_id}
-                item={item}
-                onPress={(category) => {
-                  console.log("Pressed category:", category);
-                }}
+            <TouchableOpacity
+              style={{ marginLeft: 25, marginBottom: 10 }}
+              onPress={() => navigation.goBack()}
+            >
+              <Image
+                source={require("../assets/images/back.png")}
+                style={{ width: 18, height: 18, tintColor: "#fff" }}
               />
-            ))}
-          </View>
-        ))}
+            </TouchableOpacity>
 
+            {/* 🔹 SPECIAL OFFER CARD */}
+            <TouchableOpacity
+              activeOpacity={0.8}
+              style={{ width: "100%", alignItems: "center", marginBottom: 20 }}
+            >
+              <GlassContainer
+                style={{
+                  width: 350,
+                  height: 220,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+                padding={0.1}
+              >
+                <View
+                  style={{
+                    width: "100%",
+                    height: "65%",
+                    alignItems: "center",
+                    marginBottom: 16,
+                  }}
+                >
+                  <Image
+                    source={require("../assets/images/specialoffer.png")}
+                    style={{ width: "100%", height: "100%" }}
+                    resizeMode="contain"
+                  />
+                </View>
 
+                <GlassButton
+                  title="Special Offers"
+                  textStyle={{ fontSize: 10, fontWeight: "600" }}
+                  innerStyle={{ paddingHorizontal: 80 }}
+                />
+              </GlassContainer>
+            </TouchableOpacity>
+          </>
+        }
 
+        /* 🔹 ITEMS */
+        renderItem={({ item }) => (
+          <CategoryCard
+            item={item}
+            onPress={(category) =>
+              navigation.navigate("SubCategory", {
+                categoryId: category.category_id,
+              })
+            }
+          />
+        )}
 
-        {/* 🔹 Full Width Special Offers Card */}
-        {/* <CategoryItem
-          item={categories[0]}
-          onPress={handleCategoryPress}
-          fullWidth
-        /> */}
+        /* 🔹 PAGINATION */
+        onEndReached={loadMoreCategories}
+        onEndReachedThreshold={0.2}
 
-        {/* 🔹 Other Categories in 2 Columns */}
-        {/* <FlatList
-          data={categoryData}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id.toString()}
-          numColumns={2}
-          scrollEnabled={false}
-          columnWrapperStyle={styles.columnWrapper}
-        /> */}
-      </ScrollView>
+        /* 🔹 FOOTER */
+        ListFooterComponent={
+          loading ? (
+            <Text style={{ color: "#fff", textAlign: "center", padding: 10 }}>
+              Loading...
+            </Text>
+          ) : null
+        }
+      />
     </BackgroundWrapper>
+
   );
 };
 
@@ -223,6 +243,9 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     marginBottom: 10,
+    marginTop:60,
+    // width:'100%',
+    // alignItems:'center'
   },
   cardWrapper: {
     alignItems: "center",

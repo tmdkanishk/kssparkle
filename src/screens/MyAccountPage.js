@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { View, Text, Image, TouchableOpacity, ScrollView, StyleSheet, Platform, Dimensions, useWindowDimensions, Animated, Share, Alert, Modal, ImageBackground, KeyboardAvoidingView } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import GlassContainer from "../components/customcomponents/GlassContainer";
@@ -28,6 +28,8 @@ const MyAccountScreen = ({ navigation }) => {
 
   const screenWidth = Dimensions.get('window').width;
   const screenHeight = Dimensions.get('window').height;
+  const didUpdateRef = useRef(false);
+
 
   const { language, currency, changeLanguage, changeCurrency } = useLanguageCurrency();
   const { updateCartCount } = useCartCount();
@@ -121,6 +123,14 @@ const MyAccountScreen = ({ navigation }) => {
       setLoading(false);
     }
   }
+
+useEffect(() => {
+  if (!modalVisible && didUpdateRef.current) {
+    fetchUserInfo();
+    didUpdateRef.current = false;
+  }
+}, [modalVisible]);
+
 
   const fetchUserInfo = async () => {
     try {
@@ -224,16 +234,14 @@ const onClickUpdateProfile = async () => {
       formData,
       EndPoint?.accountdashboard_userdetailseditValidation
     );
+
+    didUpdateRef.current = true; // ✅ mark update success
+    setModalVisible(false);
     console.log("onClickUpdateProfile", result?.success?.message)
     // setSuccessModal(true);
     // setSuccessMgs(result?.success?.message);
 
     setErrors({});
-
-    setTimeout(() => {
-      setModalVisible(false)
-    }, 1000);
-
   } catch (error) {
     console.log("error onClickUpdateProfile", error?.response?.data?.error);
 
@@ -714,91 +722,7 @@ const onClickUpdateProfile = async () => {
 
         </KeyboardAvoidingView>
 
-        {/* <View style={{ flex: 1, width: '100%', backgroundColor: 'rgba(0, 0, 0, 0.5)', justifyContent: 'center', alignItems: 'center' }}>
-          <View style={{ width: '90%', height: isLandscape && 350, backgroundColor: 'white', paddingHorizontal: 12, paddingBottom: isLandscape ? 10 : 30, borderRadius: 10, paddingTop: isLandscape && 10 }}>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginVertical: 12, }}>
-              <Text style={commonStyles.heading}>{userInfoLabel?.userdetailpersnl_label}</Text>
-              <TouchableOpacity onPress={() => { setModalVisible(false); setEnableUpdate(false); }}>
-                <IconComponentClose />
-              </TouchableOpacity>
-            </View>
-            <ScrollView showsVerticalScrollIndicator={false}>
-              {
-                enableUpdate ? (
-                  <View style={{ gap: 10 }}>
-                    <View style={{ marginTop: 1, flexDirection: 'row' }}>
-                      <TouchableOpacity onPress={pickImage} style={{
-                        width: 80, height: 80, borderRadius: 40, borderWidth: 1, alignItems: 'center', justifyContent: 'center', borderColor: Colors?.border_color,
-                      }}>
-                        {
-                          formData?.image ? <Image source={{ uri: `${formData?.image}?t=${new Date().getTime()}` }} style={{ width: 80, height: 80, resizeMode: 'cover', borderRadius: 40 }} /> : <IconComponentImage />
-                        }
-                      </TouchableOpacity>
 
-                      <View style={{ marginTop: 40, marginLeft: -12 }}>
-                        <IconComponentEdit color={Colors?.primary} size={28} />
-                      </View>
-                    </View>
-
-                    <InputBox label={userInfoLabel?.userdetailfname_label}
-                      placeholder={userInfoLabel?.userdetailfname_label}
-                      inputStyle={{ w: '100%', h: 50, ph: 20 }}
-                      InputType="text"
-                      textVlaue={formData?.firstname}
-                      onChangeText={(value) => handleInputChange('firstname', value)}
-                      isRequired={true}
-                    />
-                    <InputBox label={userInfoLabel?.userdetaillname_label}
-                      placeholder={userInfoLabel?.userdetaillname_label}
-                      inputStyle={{ w: '100%', h: 50, ph: 20 }}
-                      InputType="text"
-                      textVlaue={formData?.lastname}
-                      onChangeText={(value) => handleInputChange('lastname', value)}
-                      isRequired={true}
-                    />
-                    <InputBox label={userInfoLabel?.userdetailphn_label}
-                      placeholder={userInfoLabel?.userdetailphn_label}
-                      inputStyle={{ w: '100%', h: 50, ph: 20 }}
-                      InputType="numeric"
-                      textVlaue={formData?.telephone}
-                      onChangeText={(value) => handleInputChange('telephone', value)}
-                    // isRequired={true}
-                    />
-
-                    <InputBox label={userInfoLabel?.userdetailemail_label}
-                      placeholder={userInfoLabel?.userdetailemail_label}
-                      inputStyle={{ w: '100%', h: 50, ph: 20 }}
-                      InputType="email"
-                      textVlaue={formData?.email}
-                      onChangeText={(value) => handleInputChange('email', value)}
-                      isRequired={true}
-                    />
-                    <TouchableOpacity
-                      onPress={() => onClickUpdateProfile()}
-                      style={{ backgroundColor: Colors.primary, gap: 10, padding: 10, borderRadius: 10, justifyContent: 'center', alignItems: 'center', height: isLandscape && 50 }}>
-                      <Text style={commonStyles.textWhite_lg}>{isLabel?.acntdbupdatebtn_label}</Text>
-                    </TouchableOpacity>
-                  </View>
-                ) : <View style={{ gap: 10 }}>
-                  <ImageContainer img={{ uri: `${userInfo?.image}?t=${new Date().getTime()}` }} imgStatus={userInfo?.image ? true : false} />
-
-                  <View>
-                    <Text style={commonStyles.text_lg}>{userInfo?.firstname} {userInfo?.lastname}</Text>
-                    {userInfo?.telephone && <Text style={commonStyles.text_lg}>{userInfo?.telephone}</Text>}
-                    <Text style={commonStyles.text_lg}>{userInfo?.email}</Text>
-                  </View>
-                  <TouchableOpacity
-                    onPress={() => setEnableUpdate(true)}
-                    style={{ backgroundColor: Colors.primary, gap: 10, padding: 10, borderRadius: 10, justifyContent: 'center', alignItems: 'center', flexDirection: 'row' }}>
-                    <Text style={commonStyles.textWhite_lg}>{isLabel?.acntdbeditbtn_label}</Text>
-                    <IconComponentEdit size={20} color={Colors.white} />
-                  </TouchableOpacity>
-
-                </View>
-              }
-            </ScrollView>
-          </View>
-        </View> */}
       </Modal>
 
     </BackgroundWrapper>

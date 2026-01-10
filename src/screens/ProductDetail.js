@@ -1203,13 +1203,13 @@ const ProductDetail = ({ navigation, route }) => {
               <View style={{ marginTop: 20 }} />
 
               { }
-
+{/* 
               {customerId && (
                 <GlassButton
                   title="Write a Review"
                   onPress={() => setReviewModal(true)}
                 />
-              )}
+              )} */}
 
 
 

@@ -58,6 +58,7 @@ import OrderDetailsScreen from '../screens/OrderDetailScreen';
 import TrackingDetails from '../screens/TrackingDetails';
 import SparkleScreen from '../screens/SparkleScreen';
 import OrderSuccessScreen from '../screens/OrderSuccessScreen';
+import SubCategory from '../screens/SubCategory';
 
 
 
@@ -102,6 +103,7 @@ const AppNavigator = () => {
           <Stack.Screen name="OrderHistory" component={OrderHistory} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition, ...TransitionPresets.ModalFadeTransition }} />
           <Stack.Screen name="OrderView" component={OrderView} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
           <Stack.Screen name="Category" component={Category} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+          <Stack.Screen name="SubCategory" component={SubCategory} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
           <Stack.Screen name="Contact" component={Contact} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
           <Stack.Screen name="Search" component={Search} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
           <Stack.Screen name="AllCategoryView" component={AllCategoryView} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
