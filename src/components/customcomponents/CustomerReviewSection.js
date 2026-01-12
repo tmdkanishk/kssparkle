@@ -119,7 +119,8 @@ const CustomerReviewSection = ({ scrollY,
 
             {/* 🗣️ Customer Say */}
             <View style={{ marginTop: 20 }}>
-                <Text style={styles.sectionHeader}>Customer Say</Text>
+                {reviews.length > 0 ? <Text style={styles.sectionHeader}>Customer Say</Text> : null}
+                
 
                 {reviews.map((item, index) => (
                     <View key={index} style={styles.reviewCard}>
@@ -208,9 +209,12 @@ const CustomerReviewSection = ({ scrollY,
             </View>
 
 
+
+
             {/* 🛍️ Related Products */}
             <View style={{ marginTop: 25, marginBottom: 20 }}>
-                <View
+
+                {relatedProducts.length > 0 ? <View
                     onLayout={(e) => {
                         setButtonY(e.nativeEvent.layout.y);
                     }}
@@ -219,7 +223,8 @@ const CustomerReviewSection = ({ scrollY,
                         title="Related Products"
                         onPress={() => setShowRelatedProducts(!showRelatedProducts)}
                     />
-                </View>
+                </View> : null}
+                
 
 
                 {showRelatedProducts && (
