@@ -5,10 +5,11 @@ import { removeWishlistProduct } from '../services/removeWishlistProduct';
 import { _retrieveData } from '../utils/storage';
 import { getAllWishlistProducts } from '../services/getAllWishlistProducts';
 import { addAllWishlistProduct } from '../services/addAllWishlistProduct';
+import { useLoading } from './LoadingProvider';
 const WishlistContext = createContext();
 
 export const WishlistProvider = ({ children }) => {
-
+    const { setGlobalLoading } = useLoading();
     const { IsLogin, GlobalText, EndPoint } = useCustomContext();
     const [wishlist, setWishlist] = useState([]);
     const [wishlistloading, setWishlistLoading] = useState(null);
@@ -60,8 +61,7 @@ export const WishlistProvider = ({ children }) => {
 
     const handleAllWishlistToggle = async (productIds) => {
         try {
-            // setWishlistLoading(productId);
-            // const isWishlisted = wishlist.includes(productId);
+            setGlobalLoading(true);
             if (productIds?.length > 0) {
                 const response = await addAllWishlistProduct(productIds, EndPoint?.accountdashboard_wishlistadd);
                 console.log("addAllWishlistProduct response", response);
@@ -74,7 +74,7 @@ export const WishlistProvider = ({ children }) => {
             setFailedModalText(GlobalText?.extrafield_somethingwrong);
             setFailedModal(true);
         } finally {
-            // setWishlistLoading(null);
+            setGlobalLoading(false);
         }
     };
 

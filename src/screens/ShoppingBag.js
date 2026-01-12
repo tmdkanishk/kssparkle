@@ -25,9 +25,11 @@ import SuccessModal from "../components/SuccessModal";
 import CustomCouponSection from "../components/customcomponents/CustomCouponSection";
 import CustomVoucherSection from "../components/customcomponents/CustomVoucherSection";
 import { shareAllUrlProdcuts } from "../services/shareAllUrlProdcuts";
+import { useLoading } from "../hooks/LoadingProvider";
 
 
 const ShoppingBag = ({ navigation }) => {
+    const { setGlobalLoading } = useLoading();
     const { language, currency, changeLanguage, changeCurrency } = useLanguageCurrency();
     const { Colors, EndPoint, GlobalText } = useCustomContext();
     const { success, setSuccess, handleAllWishlistToggle } = useWishlist();
@@ -57,6 +59,7 @@ const ShoppingBag = ({ navigation }) => {
     const [showGiftOption, setShowGiftOption] = useState(false);
 
     const [isCouponSuccess, setCouponSuccess] = useState(null);
+    const [isVoucherSuccess, setVoucherSuccess] = useState(null);
 
     // const scrollY = useRef(new Animated.Value(0)).current;
 
@@ -138,7 +141,7 @@ const ShoppingBag = ({ navigation }) => {
 
     const removeAllProduct = async () => {
         try {
-            // setScreenLoader(true);
+            setGlobalLoading(true);
             const cartIds = cartItem.map(item => item.cart_id);
             const response = await removeAllProductFromCart(cartIds, EndPoint?.cart_remove);
             console.log("removeAllProductFromCart response ", response)
@@ -148,34 +151,37 @@ const ShoppingBag = ({ navigation }) => {
         } catch (error) {
 
         } finally {
-            // setScreenLoader(false);
+            setGlobalLoading(false);
         }
     }
 
 
     const applyVoucherCode = async (voucher) => {
         try {
-            // setScreenLoader(true);
-            const result = await applyVoucher(voucher, EndPoint?.cart_voucher);
-
-            console.log("result", result);
-            // setSuccessMgs(result?.success);
-            // setSuccessModal(true);
+            setGlobalLoading(true);
+            const response = await applyVoucher(voucher, EndPoint?.cart_voucher);
+            console.log("response", response);
+            console.log("applyCouponCode response : ", response);
+            if (response?.success) {
+                setVoucherSuccess(response?.success);
+                setGiftError(null);
+                fetchCartData();
+            }
         } catch (error) {
-            // if (error.response.data?.error) {
-            //     setGiftError(error.response.data?.error);
-            // } else {
-            //     setErrorMgs(GlobalText?.extrafield_somethingwrong);
-            //     setErrorModal(true);
-            // }
+            if (error.response.data?.error) {
+                setGiftError(error.response.data?.error);
+            } else {
+                setErrorMgs(GlobalText?.extrafield_somethingwrong);
+                setErrorModal(true);
+            }
         } finally {
-            setScreenLoader(false);
+            setGlobalLoading(false);
         }
     }
 
     const applyCouponCode = async (coupon) => {
         try {
-            // setScreenLoader(true);
+            setGlobalLoading(true);
             const response = await appyCoupon(coupon, EndPoint?.cart_coupon);
             console.log("applyCouponCode response : ", response);
             if (response?.success) {
@@ -183,8 +189,6 @@ const ShoppingBag = ({ navigation }) => {
                 setCouponError(null);
                 fetchCartData();
             }
-
-            // setSuccessModal(true);
         } catch (error) {
             console.log("applyCouponCode error : ", error.response.data);
             if (error.response.data?.error) {
@@ -195,7 +199,7 @@ const ShoppingBag = ({ navigation }) => {
             }
         } finally {
             setCouponSuccess(null);
-            // setScreenLoader(false);
+            setGlobalLoading(false);
         }
     }
 
@@ -246,9 +250,14 @@ const ShoppingBag = ({ navigation }) => {
 
     const shareAllProduct = async () => {
         try {
+            setGlobalLoading(true);
             const productIds = [...new Set(
                 cartItem.map(item => item?.product_id)
             )]; // find  unique productIds
+
+            if (productIds?.length == 0) {
+                return;
+            }
             const response = await shareAllUrlProdcuts(productIds, EndPoint?.share)
 
             console.log("response", response?.responses);
@@ -274,15 +283,14 @@ const ShoppingBag = ({ navigation }) => {
             console.log("response shareAllProduct", response);
         } catch (error) {
             console.log("error share product", error.response.data);
+        } finally {
+            setGlobalLoading(false);
         }
     }
 
-
-
-
     return (
         <BackgroundWrapper>
-            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 20, gap: 16, marginTop: Platform.OS === "ios" ? 40 : 0 }}>
+            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 20, gap: 16, marginTop: Platform.OS === "ios" ? 40 : 0, opacity: screenLoader ? 0.5 : 1 }}>
                 {/* Header */}
                 <Header onLogoPress={() => { navigation.navigate("Home") }} />
 
@@ -350,14 +358,14 @@ const ShoppingBag = ({ navigation }) => {
                             gap: 14,
                         }}>
 
-                            <TouchableOpacity hitSlop={24} onPress={shareAllProduct}>
-                                <IconComponentShare color={'#fff'} size={20} />
+                            <TouchableOpacity onPress={shareAllProduct}>
+                                <IconComponentShare color={'#fff'} size={24} />
                             </TouchableOpacity>
-                            <TouchableOpacity hitSlop={24} onPress={removeAllProduct}>
-                                <IconComponentTrash color={'#fff'} size={20} />
+                            <TouchableOpacity onPress={removeAllProduct}>
+                                <IconComponentTrash color={'#fff'} size={24} />
                             </TouchableOpacity>
-                            <TouchableOpacity hitSlop={24} onPress={addAllWishList}>
-                                <IconComponentHeart color={'#fff'} size={20} />
+                            <TouchableOpacity onPress={addAllWishList}>
+                                <IconComponentHeart color={'#fff'} size={24} />
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -400,7 +408,12 @@ const ShoppingBag = ({ navigation }) => {
                 />
 
                 {/* voucher section */}
-                <CustomVoucherSection />
+                <CustomVoucherSection
+                    onVoucherApply={(voucher) => applyVoucherCode(voucher)}
+                    error={isGiftError}
+                    success={isVoucherSuccess}
+
+                />
 
 
 
