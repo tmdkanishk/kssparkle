@@ -5,6 +5,7 @@ import { Alert, Image, Text, View, NativeModules } from 'react-native';
 import { LanguageCurrencyProvider } from './src/hooks/LanguageCurrencyContext';
 import { CartProvider } from './src/hooks/CartContext';
 import { WishlistProvider } from './src/hooks/WishlistContext';
+import { LoadingProvider } from './src/hooks/LoadingProvider';
 
 
 
@@ -71,15 +72,19 @@ export default function App() {
   }
 
   return (
-    <CustomProvider>
-      <LanguageCurrencyProvider>
-        <CartProvider>
-          <WishlistProvider>
-            <AppNavigator />
-          </WishlistProvider>
-        </CartProvider>
-      </LanguageCurrencyProvider>
-    </CustomProvider>
+    <LoadingProvider>
+      <CustomProvider>
+        <LanguageCurrencyProvider>
+          <CartProvider>
+            <WishlistProvider>
+              <AppNavigator />
+            </WishlistProvider>
+          </CartProvider>
+        </LanguageCurrencyProvider>
+      </CustomProvider>
+    </LoadingProvider>
+
+
 
   );
 

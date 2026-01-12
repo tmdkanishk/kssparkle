@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, TextInput, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { useLoading } from '../../hooks/LoadingProvider';
 
 const CustomQuantityInput = ({
     initialValue = 1,
@@ -12,9 +13,8 @@ const CustomQuantityInput = ({
     inputWidth = 60,
     inputHeight = 40,
     fontSize = 18,
-    loading
+    stockOut = false
 }) => {
-
     const [value, setValue] = useState(String(initialValue));
 
     const updateValue = (num) => {
@@ -39,7 +39,7 @@ const CustomQuantityInput = ({
 
     return (
         <View style={styles.container}>
-            <TouchableOpacity disabled={loading}
+            <TouchableOpacity
                 style={[styles.button, { width: buttonSize, height: buttonSize }]}
                 onPress={handleDecrease}
             >
@@ -57,8 +57,7 @@ const CustomQuantityInput = ({
                 editable={false}
             />
 
-            <TouchableOpacity
-                disabled={loading}
+            <TouchableOpacity disabled={stockOut}
                 style={[styles.button, { width: buttonSize, height: buttonSize }]}
                 onPress={handleIncrease}
             >

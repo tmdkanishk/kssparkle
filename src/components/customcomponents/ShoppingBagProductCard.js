@@ -9,17 +9,18 @@ import { useCustomContext } from '../../hooks/CustomeContext'
 import { useCartCount } from '../../hooks/CartContext'
 import CustomQuantityInput from './CustomQuantityInput'
 import { editProductQty } from '../../services/editProductQty'
+import { useLoading } from '../../hooks/LoadingProvider'
 
 const ShoppingBagProductCard = ({ item, toggleCart, cartItems }) => {
-    // console.log("cart item:", item);
+    console.log("cart item:", item);
     const screenWidth = Dimensions.get('window').width;
+    const { setGlobalLoading } = useLoading();
     const { Colors, EndPoint, GlobalText } = useCustomContext();
     const { updateCartCount } = useCartCount();
-    const [loading, setLoading] = useState(false);
 
     const removeProduct = async () => {
         try {
-            // setScreenLoader(true);
+            setGlobalLoading(true);
             const response = await removeProductFromCart(item?.cart_id, EndPoint?.cart_remove);
             console.log("response", response);
             updateCartCount(response?.cartproductcount);
@@ -29,14 +30,15 @@ const ShoppingBagProductCard = ({ item, toggleCart, cartItems }) => {
         } catch (error) {
             console.log("error", error.message);
         } finally {
-            // setScreenLoader(false);
+            setGlobalLoading(false);
         }
     }
 
 
     const onChangeQty = async (selectedQty) => {
         try {
-            setLoading(true);
+            setGlobalLoading(true);
+
             console.log("selectedQty", selectedQty);
             const response = await editProductQty(item?.cart_id, selectedQty, EndPoint?.cart_edit);
             console.log("onChangeQty responce: ", response);
@@ -44,7 +46,7 @@ const ShoppingBagProductCard = ({ item, toggleCart, cartItems }) => {
         } catch (error) {
             console.log("error", error.response.data);
         } finally {
-            setLoading(false);
+            setGlobalLoading(false);
         }
 
     }
@@ -107,25 +109,15 @@ const ShoppingBagProductCard = ({ item, toggleCart, cartItems }) => {
                         initialValue={item?.quantity}
                         min={1}
                         onChangeValue={(qty) => onChangeQty(qty)}
-                        loading={loading}
+                        stockOut={!item?.stock}
                     />
                 </View>
 
 
                 <View style={styles.row}>
-                    {/* <TouchableOpacity style={styles.optionBox}>
-                        <Text style={styles.optionText}>Size: 4</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={styles.optionBox}>
-                        <Text style={styles.optionText}>
-                            Qty: {item.quantity}
-                        </Text>
-                    </TouchableOpacity> */}
-
                     <Text style={styles.stockText}>9 left</Text>
 
-                    {!item.stock && (
+                    {!item?.stock && (
                         <Text style={{ color: "#ff4d4d" }}>Out of stock</Text>
                     )}
                 </View>
