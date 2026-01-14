@@ -102,7 +102,7 @@ const CustomerReviewSection = ({ scrollY,
     );
 
     return (
-        <View style={{ marginTop: 20 }}>
+        <View style={{  }}>
             {/* ⭐ Customer Reviews */}
             <GlassContainer title="Customer Reviews">
                 <View style={styles.ratingRow}>
@@ -118,7 +118,7 @@ const CustomerReviewSection = ({ scrollY,
 
 
             {/* 🗣️ Customer Say */}
-            <View style={{ marginTop: 20 }}>
+            <View style={{  }}>
                 {reviews.length > 0 ? <Text style={styles.sectionHeader}>Customer Say</Text> : null}
                 
 
@@ -169,6 +169,7 @@ const CustomerReviewSection = ({ scrollY,
 
                         {item.videos?.length > 0 && (
                             <View style={styles.mediaContainer}>
+                                 <View style={styles.imageRow}>
                                 {item.videos.map((video, videoIndex) => (
                                     <TouchableOpacity
                                         key={videoIndex}
@@ -183,6 +184,7 @@ const CustomerReviewSection = ({ scrollY,
                                         </View>
                                     </TouchableOpacity>
                                 ))}
+ </View>
                             </View>
                         )}
 
@@ -212,12 +214,13 @@ const CustomerReviewSection = ({ scrollY,
 
 
             {/* 🛍️ Related Products */}
-            <View style={{ marginTop: 25, marginBottom: 20 }}>
+            <View style={{  }}>
 
                 {relatedProducts.length > 0 ? <View
                     onLayout={(e) => {
                         setButtonY(e.nativeEvent.layout.y);
                     }}
+                    style={{marginTop:10}}
                 >
                     <GlassButton
                         title="Related Products"

@@ -37,6 +37,7 @@ import { addToCartProduct } from '../services/addToCartProduct';
 import AddToCartOptionUiModal from '../components/AddToCartOptionUiModal';
 import CustomSearchBar from './CustomSearchBar';
 import CustomProductList from '../components/customcomponents/CustomProductList';
+import GlassTestContainer from '../components/customcomponents/GlassTestComponent';
 
 const Home = ({ navigation }) => {
     const { language, currency, changeLanguage, changeCurrency } = useLanguageCurrency();
@@ -215,6 +216,8 @@ const Home = ({ navigation }) => {
                 <PromoCard onSearchPress={toggleSearch} />
             </Pressable>
 
+            {/* <GlassTestContainer /> */}
+
             {
                 isModuleData?.length > 0 ? (
                     isModuleData?.map((item, index) => {
@@ -258,8 +261,7 @@ const Home = ({ navigation }) => {
         <>
 
             <BackgroundWrapper>
-
-
+                
 
                 {loading ? (
                     <CustomActivity />

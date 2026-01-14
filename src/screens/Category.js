@@ -176,16 +176,22 @@ const Category = ({ navigation }) => {
               <Header onSearchPress={toggleSearch} paddingHorizontal={50} title="Categories" />
             </View>
 
+
             <TouchableOpacity
               onPress={() => navigation.goBack()}
               hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
-              style={{ marginLeft: 25, marginBottom: 10 }}
+              style={{ marginLeft: 30, marginBottom: 10 }}
             >
               <Image
                 source={require("../assets/images/back.png")}
                 style={{ width: 18, height: 18, tintColor: "#fff" }}
               />
+              <View style={styles.headerRow}>
+                <Text style={styles.headerTitle}>Categories</Text>
+              </View>
             </TouchableOpacity>
+
+
 
 
             {/* 🔹 SPECIAL OFFER CARD */}
@@ -261,6 +267,17 @@ const styles = StyleSheet.create({
   container: {
     paddingVertical: 60,
     paddingHorizontal: 16,
+  },
+  headerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    marginTop:8
+  },
+  headerTitle: {
+    color: "#fff",
+    fontSize: 20,
+    fontWeight: "700",
   },
   headerContainer: {
     marginBottom: 10,

@@ -22,6 +22,7 @@ import ImageContainer from "../components/ImageContainer";
 import commonStyles from "../constants/CommonStyles";
 import { BlurView } from "@react-native-community/blur";
 import SuccessModal from "../components/SuccessModal";
+import { useUser } from "../hooks/UserContext";
 
 const MyAccountScreen = ({ navigation }) => {
 
@@ -51,6 +52,7 @@ const MyAccountScreen = ({ navigation }) => {
   const [totalCoins, setTotalCoins] = useState(null);
   const scrollY = useRef(new Animated.Value(0)).current;
   const [errors, setErrors] = useState({});
+  const { refreshUser, profileImg } = useUser();
 
 
   const [formData, setFormData] = useState({
@@ -124,12 +126,12 @@ const MyAccountScreen = ({ navigation }) => {
     }
   }
 
-useEffect(() => {
-  if (!modalVisible && didUpdateRef.current) {
-    fetchUserInfo();
-    didUpdateRef.current = false;
-  }
-}, [modalVisible]);
+  useEffect(() => {
+    if (!modalVisible && didUpdateRef.current) {
+      fetchUserInfo();
+      didUpdateRef.current = false;
+    }
+  }, [modalVisible]);
 
 
   const fetchUserInfo = async () => {
@@ -145,6 +147,7 @@ useEffect(() => {
         image: result?.customer_info[0]?.image,
       })
       setUserInfoLabel(result?.text);
+      await refreshUser()
     } catch (error) {
       console.log('error', error.message);
     }
@@ -225,38 +228,38 @@ useEffect(() => {
     )
   }
 
-const onClickUpdateProfile = async () => {
-  try {
-    console.log("onClickUpdateProfile function got hit");
-    setLoading(true);
+  const onClickUpdateProfile = async () => {
+    try {
+      console.log("onClickUpdateProfile function got hit");
+      setLoading(true);
 
-    const result = await updateUserInfomation(
-      formData,
-      EndPoint?.accountdashboard_userdetailseditValidation
-    );
+      const result = await updateUserInfomation(
+        formData,
+        EndPoint?.accountdashboard_userdetailseditValidation
+      );
 
-    didUpdateRef.current = true; // ✅ mark update success
-    setModalVisible(false);
-    console.log("onClickUpdateProfile", result?.success?.message)
-    // setSuccessModal(true);
-    // setSuccessMgs(result?.success?.message);
+      didUpdateRef.current = true; // ✅ mark update success
+      setModalVisible(false);
+      console.log("onClickUpdateProfile", result?.success?.message)
+      // setSuccessModal(true);
+      // setSuccessMgs(result?.success?.message);
 
-    setErrors({});
-  } catch (error) {
-    console.log("error onClickUpdateProfile", error?.response?.data?.error);
+      setErrors({});
+    } catch (error) {
+      console.log("error onClickUpdateProfile", error?.response?.data?.error);
 
-    if (error?.response?.data?.error) {
-      setErrors(error.response.data.error);
-      return; // ✅ modal stays open
+      if (error?.response?.data?.error) {
+        setErrors(error.response.data.error);
+        return; // ✅ modal stays open
+      }
+
+      setErrorMgs(GlobalText?.extrafield_somethingwrong);
+      setErrorModal(true);
+
+    } finally {
+      setLoading(false); // ✅ safe to keep
     }
-
-    setErrorMgs(GlobalText?.extrafield_somethingwrong);
-    setErrorModal(true);
-
-  } finally {
-    setLoading(false); // ✅ safe to keep
-  }
-};
+  };
 
 
   const onClickModalClose = () => {
@@ -282,57 +285,57 @@ const onClickUpdateProfile = async () => {
   }
   return (
     <>
-    
-    
-
-    <BackgroundWrapper>
-
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginTop: Platform.OS === 'ios' ? 60 : 40,
-          paddingHorizontal: 20,
-        }}
-      >
 
 
-        <TouchableOpacity
-          onPress={() => navigation.replace("Home")}
+
+      <BackgroundWrapper>
+
+        <View
           style={{
-            padding: 10,
-            width: '45%',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
             alignItems: 'center',
-            borderRadius: 12,
-            backgroundColor: 'rgba(255,255,255,0.15)',
-            borderWidth: 0.6,
-            borderColor: 'rgba(255,255,255,0.35)',
+            marginTop: Platform.OS === 'ios' ? 60 : 40,
+            paddingHorizontal: 20,
           }}
         >
-          <Text style={{ color: 'white' }}>Go To Home Page</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          onPress={() => setModalVisible(true)}
-          style={{
-            padding: 10,
-            width: '45%',
-            alignItems: 'center',
-            borderRadius: 12,
-            backgroundColor: 'rgba(255,255,255,0.15)',
-            borderWidth: 0.6,
-            borderColor: 'rgba(255,255,255,0.35)',
-          }}
-        >
-          <Text style={{ color: 'white' }}>Edit Account</Text>
-        </TouchableOpacity>
 
 
+          <TouchableOpacity
+            onPress={() => navigation.replace("Home")}
+            style={{
+              padding: 10,
+              width: '45%',
+              alignItems: 'center',
+              borderRadius: 12,
+              backgroundColor: 'rgba(255,255,255,0.15)',
+              borderWidth: 0.6,
+              borderColor: 'rgba(255,255,255,0.35)',
+            }}
+          >
+            <Text style={{ color: 'white' }}>Go To Home Page</Text>
+          </TouchableOpacity>
 
-      </View>
+          <TouchableOpacity
+            onPress={() => setModalVisible(true)}
+            style={{
+              padding: 10,
+              width: '45%',
+              alignItems: 'center',
+              borderRadius: 12,
+              backgroundColor: 'rgba(255,255,255,0.15)',
+              borderWidth: 0.6,
+              borderColor: 'rgba(255,255,255,0.35)',
+            }}
+          >
+            <Text style={{ color: 'white' }}>Edit Account</Text>
+          </TouchableOpacity>
 
-      {/* <TouchableOpacity
+
+
+        </View>
+
+        {/* <TouchableOpacity
         onPress={() => navigation.replace("Home")}
         style={{
           borderWidth: 1,
@@ -372,102 +375,106 @@ const onClickUpdateProfile = async () => {
         <Text style={{ color: "white" }}>Edit Account</Text>
       </TouchableOpacity> */}
 
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 80 }}>
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 80 }}>
 
 
-        {/* Header */}
-        <View style={styles.header}>
+          {/* Header */}
+          <View style={styles.header}>
 
 
-          <View>
-            {/* <TouchableOpacity onPress={() => { navigation.goBack() }} style={{ marginBottom: 20 }}>
+            <View>
+              {/* <TouchableOpacity onPress={() => { navigation.goBack() }} style={{ marginBottom: 20 }}>
               <Image source={require("../assets/images/back.png")} style={styles.iconSmall} />
             </TouchableOpacity> */}
 
-            <Text style={styles.headerTitle}>{isLabel?.acntdbpagename_label}</Text>
-          </View>
-
-
-          <Image
-            source={require("../assets/images/profile.png")}
-            style={styles.profileImage}
-          />
-        </View>
-
-        {/* Row 1 */}
-        <GlassContainer padding={0.1} style={{ marginHorizontal: 20, marginTop: 20 }}>
-          <View style={{ flexDirection: "row", justifyContent: "space-evenly", marginBottom: 20 }}>
-            <AccountItem image={require("../assets/images/track.png")} label="Track" />
-            <AccountItem image={require("../assets/images/ready.png")} label="Ready to go" />
-            <AccountItem image={require("../assets/images/preparing.png")} label="Preparing" />
-          </View>
-        </GlassContainer>
-
-        {/* Row 2 */}
-        <GlassContainer style={styles.section}>
-          <View style={{ flexDirection: "row", justifyContent: "space-between", marginVertical: 10, }}>
-
-            <View style={{ alignItems: "center" }}>
-              <GlassContainer style={{ width: 90, height: 100, justifyContent: "center", alignItems: "center" }}>
-                <Image
-                  source={require("../assets/images/return.png")}
-                  style={{ width: "100%", height: "100%" }}
-                  resizeMode="contain"
-                />
-                <Text style={{ color: "#fff", fontSize: 18, fontWeight: "500", textAlign: "center" }} >
-                  Return
-                </Text>
-              </GlassContainer>
-
-
+              <Text style={styles.headerTitle}>{isLabel?.acntdbpagename_label}</Text>
             </View>
 
-            {/* ORDER */}
-            <View style={{ alignItems: "center" }}>
-              <GlassContainer style={{ width: 90, height: 100, justifyContent: "center", alignItems: "center" }}>
-                <Image
-                  source={require("../assets/images/order.png")}
-                  style={{ width: "80%", height: "80%" }}
-                  resizeMode="contain"
-                />
 
-                <Text style={{ color: "#fff", fontSize: 18, fontWeight: "500", textAlign: "center" }} >
-                  {isLabel?.acntdbmyorders_heading}
-                </Text>
-              </GlassContainer>
-            </View>
-
+            <Image
+              source={
+                profileImg
+                  ? { uri: `${profileImg}?t=${Date.now()}` }
+                  : require('../assets/images/profile.png')
+              }
+              style={styles.profileImage}
+            />
           </View>
-          {/* <View style={styles.row}>
+
+          {/* Row 1 */}
+          <GlassContainer padding={0.1} style={{ marginHorizontal: 20, marginTop: 20 }}>
+            <View style={{ flexDirection: "row", justifyContent: "space-evenly", marginBottom: 20 }}>
+              <AccountItem image={require("../assets/images/track.png")} label="Track" />
+              <AccountItem image={require("../assets/images/ready.png")} label="Ready to go" />
+              <AccountItem image={require("../assets/images/preparing.png")} label="Preparing" />
+            </View>
+          </GlassContainer>
+
+          {/* Row 2 */}
+          <GlassContainer style={styles.section}>
+            <View style={{ flexDirection: "row", justifyContent: "space-between", marginVertical: 10, }}>
+
+              <View style={{ alignItems: "center" }}>
+                <GlassContainer style={{ width: 90, height: 100, justifyContent: "center", alignItems: "center" }}>
+                  <Image
+                    source={require("../assets/images/return.png")}
+                    style={{ width: "100%", height: "100%" }}
+                    resizeMode="contain"
+                  />
+                  <Text style={{ color: "#fff", fontSize: 18, fontWeight: "500", textAlign: "center" }} >
+                    Return
+                  </Text>
+                </GlassContainer>
+
+
+              </View>
+
+              {/* ORDER */}
+              <View style={{ alignItems: "center" }}>
+                <GlassContainer style={{ width: 90, height: 100, justifyContent: "center", alignItems: "center" }}>
+                  <Image
+                    source={require("../assets/images/order.png")}
+                    style={{ width: "80%", height: "80%" }}
+                    resizeMode="contain"
+                  />
+
+                  <Text style={{ color: "#fff", fontSize: 18, fontWeight: "500", textAlign: "center" }} >
+                    {isLabel?.acntdbmyorders_heading}
+                  </Text>
+                </GlassContainer>
+              </View>
+
+            </View>
+            {/* <View style={styles.row}>
             <AccountItem image={require("../assets/images/wishlist.png")} label="Wishlist" />
             <AccountItem image={require("../assets/images/more.png")} label="More" />
           </View> */}
 
-          <View style={{ flexDirection: "row", justifyContent: "space-between", marginVertical: 10, }}>
+            <View style={{ flexDirection: "row", justifyContent: "space-between", marginVertical: 10, }}>
 
-            <View style={{ alignItems: "center" }}>
-              <GlassContainer style={{ width: 90, height: 90, justifyContent: "center", alignItems: "center" }}>
-                <Image
-                  source={require("../assets/images/wishlist.png")}
-                  style={{ width: "90%", height: "90%" }}
-                  resizeMode="contain"
-                />
-                <Text
-                  style={{
-                    color: "#fff",
-                    fontSize: 18,
-                    fontWeight: "500",
-                    textAlign: "center",
-                  }}
-                >
-                  Wishlist
-                </Text>
-              </GlassContainer>
+              <View style={{ alignItems: "center" }}>
+                <GlassContainer style={{ width: 90, height: 90, justifyContent: "center", alignItems: "center" }}>
+                  <Image
+                    source={require("../assets/images/wishlist.png")}
+                    style={{ width: "90%", height: "90%" }}
+                    resizeMode="contain"
+                  />
+                  <Text
+                    style={{
+                      color: "#fff",
+                      fontSize: 18,
+                      fontWeight: "500",
+                      textAlign: "center",
+                    }}
+                  >
+                    Wishlist
+                  </Text>
+                </GlassContainer>
 
-            </View>
+              </View>
 
-            {/* ORDER */}
-            {/* <View style={{ alignItems: "center" }}>
+              {/* ORDER */}
+              {/* <View style={{ alignItems: "center" }}>
               <GlassContainer style={{ width: 90, height: 100, justifyContent: "center", alignItems: "center" }}>
                 <Image
                   source={require("../assets/images/order.png")}
@@ -481,46 +488,32 @@ const onClickUpdateProfile = async () => {
               </GlassContainer>
             </View> */}
 
-            <View style={{ alignItems: "center" }}>
-              <GlassContainer style={{ width: 90, height: 90, justifyContent: "center", alignItems: "center" }}>
-                <Image
-                  source={require("../assets/images/more.png")}
-                  style={{ width: "70%", height: "70%" }}
-                  resizeMode="contain"
-                />
+              <View style={{ alignItems: "center" }}>
+                <GlassContainer style={{ width: 90, height: 90, justifyContent: "center", alignItems: "center" }}>
+                  <Image
+                    source={require("../assets/images/more.png")}
+                    style={{ width: "70%", height: "70%" }}
+                    resizeMode="contain"
+                  />
 
-                <Text style={{ color: "#fff", fontSize: 18, fontWeight: "500", textAlign: "center" }} >
-                  More
-                </Text>
-              </GlassContainer>
+                  <Text style={{ color: "#fff", fontSize: 18, fontWeight: "500", textAlign: "center" }} >
+                    More
+                  </Text>
+                </GlassContainer>
+              </View>
+
             </View>
 
+          </GlassContainer>
+
+          {/* Row 3 */}
+
+          <View style={styles.row}>
+            <AccountItem image={require("../assets/images/notification.png")} label="Notification" />
+            <AccountItem image={require("../assets/images/address.png")} label={isLabel?.acntdbmyaddrs_label} />
+            <AccountItem image={require("../assets/images/wallet.png")} label="Wallet" />
           </View>
 
-        </GlassContainer>
-
-        {/* Row 3 */}
-
-        <View style={styles.row}>
-          <AccountItem image={require("../assets/images/notification.png")} label="Notification" />
-          <AccountItem image={require("../assets/images/address.png")} label={isLabel?.acntdbmyaddrs_label} />
-          <AccountItem image={require("../assets/images/wallet.png")} label="Wallet" />
-        </View>
-
-        <GlassContainer style={{
-          borderRadius: 5,
-          marginBottom: 12,
-          // padding: 10,
-          flexDirection: 'row',
-          minWidth: '80%',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }} padding={1}>
-          <Text style={styles.supportText}>{isLabel?.acntdbhelp_label}</Text>
-          <Image source={require("../assets/images/support.png")} style={styles.supportIcon} />
-        </GlassContainer>
-
-        <TouchableOpacity onPress={() => onClickOkButton()}>
           <GlassContainer style={{
             borderRadius: 5,
             marginBottom: 12,
@@ -529,209 +522,223 @@ const onClickUpdateProfile = async () => {
             minWidth: '80%',
             alignItems: 'center',
             justifyContent: 'center'
-          }} padding={8}>
-            <Text style={styles.signOutText}>{isLabel?.acntdblogout_label}</Text>
-            <Image source={require("../assets/images/logout.png")} style={{ width: 28, height: 28, tintColor: "#fff", marginTop: 10 }} />
+          }} padding={1}>
+            <Text style={styles.supportText}>{isLabel?.acntdbhelp_label}</Text>
+            <Image source={require("../assets/images/support.png")} style={styles.supportIcon} />
           </GlassContainer>
-        </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => onClickOkButton()}>
+            <GlassContainer style={{
+              borderRadius: 5,
+              marginBottom: 12,
+              // padding: 10,
+              flexDirection: 'row',
+              minWidth: '80%',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }} padding={8}>
+              <Text style={styles.signOutText}>{isLabel?.acntdblogout_label}</Text>
+              <Image source={require("../assets/images/logout.png")} style={{ width: 28, height: 28, tintColor: "#fff", marginTop: 10 }} />
+            </GlassContainer>
+          </TouchableOpacity>
 
 
 
 
-        {/* Sign Out */}
-        {/* <GlassContainer style={styles.signOut} padding={10}>
+          {/* Sign Out */}
+          {/* <GlassContainer style={styles.signOut} padding={10}>
           <Text style={styles.signOutText}>Sign Out</Text>
           <Image source={require("../assets/images/logout.png")} style={{ width: 28, height: 28, tintColor: "#fff", }} />
         </GlassContainer> */}
 
-        {/* Footer */}
-        <GlassContainer style={styles.footer}>
-          <Text style={styles.footerTitle}>Sell with us</Text>
-          <View style={styles.socialRow}>
-            <Image source={require("../assets/images/linkedin.png")} style={styles.socialIcon} />
-            <Image source={require("../assets/images/instagram.png")} style={styles.socialIcon} />
-            <Image source={require("../assets/images/x.png")} style={styles.socialIcon} />
-            <Image source={require("../assets/images/facebook.png")} style={styles.socialIcon} />
+          {/* Footer */}
+          <GlassContainer style={styles.footer}>
+            <Text style={styles.footerTitle}>Sell with us</Text>
+            <View style={styles.socialRow}>
+              <Image source={require("../assets/images/linkedin.png")} style={styles.socialIcon} />
+              <Image source={require("../assets/images/instagram.png")} style={styles.socialIcon} />
+              <Image source={require("../assets/images/x.png")} style={styles.socialIcon} />
+              <Image source={require("../assets/images/facebook.png")} style={styles.socialIcon} />
+            </View>
+
+            <Text style={styles.footerLinks}>
+              Privacy Policy   ·   Terms Of Sale   ·   Terms Of Use
+            </Text>
+            <Text style={styles.footerLinks}>
+              Customer Happiness Center  ·  Return Policy  ·  Warranty Policy
+            </Text>
+          </GlassContainer>
+
+          <View>
+            <Text style={styles.footerSub}>Noon E Commerce Solutions One Person LLC</Text>
+            <Text style={styles.footerSub}>
+              VAT No. 3020046552 10003 | CR No. 10 10703009
+            </Text>
+            <Text style={styles.footerSub}>Version v4.76 (10325)</Text>
+            <Text style={styles.footerSub}>© 2025 noon.com. All rights reserved.</Text>
           </View>
 
-          <Text style={styles.footerLinks}>
-            Privacy Policy   ·   Terms Of Sale   ·   Terms Of Use
-          </Text>
-          <Text style={styles.footerLinks}>
-            Customer Happiness Center  ·  Return Policy  ·  Warranty Policy
-          </Text>
-        </GlassContainer>
-
-        <View>
-          <Text style={styles.footerSub}>Noon E Commerce Solutions One Person LLC</Text>
-          <Text style={styles.footerSub}>
-            VAT No. 3020046552 10003 | CR No. 10 10703009
-          </Text>
-          <Text style={styles.footerSub}>Version v4.76 (10325)</Text>
-          <Text style={styles.footerSub}>© 2025 noon.com. All rights reserved.</Text>
-        </View>
-
-      </ScrollView>
+        </ScrollView>
 
 
 
-      <Modal
-        animationType="fade"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
-
-        <KeyboardAvoidingView
-          style={{ flex: 1 }}
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => setModalVisible(false)}
         >
 
-          <View style={{ flex: 1 }}>
-            <TouchableOpacity
-              activeOpacity={1}
-              onPress={() => { setModalVisible(false); setEnableUpdate(false); }}
-              style={{
-                flex: 1,
-                backgroundColor: 'rgba(0,0,0,0.6)',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-            >
+          <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          >
 
-              <BlurView
+            <View style={{ flex: 1 }}>
+              <TouchableOpacity
+                activeOpacity={1}
+                onPress={() => { setModalVisible(false); setEnableUpdate(false); }}
                 style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
+                  flex: 1,
+                  backgroundColor: 'rgba(0,0,0,0.6)',
+                  justifyContent: 'center',
+                  alignItems: 'center',
                 }}
-                blurType="dark"     // light | dark | extraDark
-                blurAmount={15}     // intensity
-                reducedTransparencyFallbackColor="rgba(0,0,0,0.6)"
-              />
+              >
 
-              <TouchableOpacity activeOpacity={1}>
-                <ImageBackground
-                  source={require('../assets/images/backgroundimage.png')}
-                  resizeMode="cover"
+                <BlurView
                   style={{
-                    width: width * 0.80,   // 👈 THIS FIXES IT
-                    borderRadius: 16,
-                    overflow: 'hidden',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
                   }}
-                >
+                  blurType="dark"     // light | dark | extraDark
+                  blurAmount={15}     // intensity
+                  reducedTransparencyFallbackColor="rgba(0,0,0,0.6)"
+                />
 
-                  <View style={{ width: '100%', height: isLandscape && 350, paddingHorizontal: 12, paddingBottom: isLandscape ? 10 : 30, borderRadius: 10, paddingTop: isLandscape && 10, backgroundColor: "rgba(0,0,0,0.5)" }}>
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginVertical: 12, }}>
-                      <Text style={commonStyles.heading}>{userInfoLabel?.userdetailpersnl_label}</Text>
-                      <TouchableOpacity onPress={() => { setModalVisible(false); setEnableUpdate(false); }}>
-                        <IconComponentClose />
-                      </TouchableOpacity>
-                    </View>
-                    <ScrollView showsVerticalScrollIndicator={false}>
-                      {
-                        enableUpdate ? (
-                          <View style={{ gap: 10 }}>
-                            <View style={{ marginTop: 1, flexDirection: 'row' }}>
-                              <TouchableOpacity onPress={pickImage} style={{
-                                width: 80, height: 80, borderRadius: 40, borderWidth: 1, alignItems: 'center', justifyContent: 'center', borderColor: Colors?.border_color,
-                              }}>
-                                {
-                                  formData?.image ? <Image source={{ uri: `${formData?.image}?t=${new Date().getTime()}` }} style={{ width: 80, height: 80, resizeMode: 'cover', borderRadius: 40 }} /> : <IconComponentImage />
-                                }
-                              </TouchableOpacity>
+                <TouchableOpacity activeOpacity={1}>
+                  <ImageBackground
+                    source={require('../assets/images/backgroundimage.png')}
+                    resizeMode="cover"
+                    style={{
+                      width: width * 0.80,   // 👈 THIS FIXES IT
+                      borderRadius: 16,
+                      overflow: 'hidden',
+                    }}
+                  >
 
-                              <View style={{ marginTop: 40, marginLeft: -12 }}>
-                                <IconComponentEdit color={Colors?.primary} size={28} />
+                    <View style={{ width: '100%', height: isLandscape && 350, paddingHorizontal: 12, paddingBottom: isLandscape ? 10 : 30, borderRadius: 10, paddingTop: isLandscape && 10, backgroundColor: "rgba(0,0,0,0.5)" }}>
+                      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginVertical: 12, }}>
+                        <Text style={commonStyles.heading}>{userInfoLabel?.userdetailpersnl_label}</Text>
+                        <TouchableOpacity onPress={() => { setModalVisible(false); setEnableUpdate(false); }}>
+                          <IconComponentClose />
+                        </TouchableOpacity>
+                      </View>
+                      <ScrollView showsVerticalScrollIndicator={false}>
+                        {
+                          enableUpdate ? (
+                            <View style={{ gap: 10 }}>
+                              <View style={{ marginTop: 1, flexDirection: 'row' }}>
+                                <TouchableOpacity onPress={pickImage} style={{
+                                  width: 80, height: 80, borderRadius: 40, borderWidth: 1, alignItems: 'center', justifyContent: 'center', borderColor: Colors?.border_color,
+                                }}>
+                                  {
+                                    formData?.image ? <Image source={{ uri: `${formData?.image}?t=${new Date().getTime()}` }} style={{ width: 80, height: 80, resizeMode: 'cover', borderRadius: 40 }} /> : <IconComponentImage />
+                                  }
+                                </TouchableOpacity>
+
+                                <View style={{ marginTop: 40, marginLeft: -12 }}>
+                                  <IconComponentEdit color={Colors?.primary} size={28} />
+                                </View>
                               </View>
-                            </View>
 
-                            <InputBox label={userInfoLabel?.userdetailfname_label}
-                              placeholder={userInfoLabel?.userdetailfname_label}
-                              inputStyle={{ w: '100%', h: 50, ph: 20, }}
-                              InputType="text"
-                              textVlaue={formData?.firstname}
-                              onChangeText={(value) => handleInputChange('firstname', value)}
-                              isRequired={true}
-                               ErrorMessage={errors?.firstname}
-                            />
-                            <InputBox label={userInfoLabel?.userdetaillname_label}
-                              placeholder={userInfoLabel?.userdetaillname_label}
-                              inputStyle={{ w: '100%', h: 50, ph: 20, }}
-                              InputType="text"
-                              textVlaue={formData?.lastname}
-                              onChangeText={(value) => handleInputChange('lastname', value)}
-                              isRequired={true}
+                              <InputBox label={userInfoLabel?.userdetailfname_label}
+                                placeholder={userInfoLabel?.userdetailfname_label}
+                                inputStyle={{ w: '100%', h: 50, ph: 20, }}
+                                InputType="text"
+                                textVlaue={formData?.firstname}
+                                onChangeText={(value) => handleInputChange('firstname', value)}
+                                isRequired={true}
+                                ErrorMessage={errors?.firstname}
+                              />
+                              <InputBox label={userInfoLabel?.userdetaillname_label}
+                                placeholder={userInfoLabel?.userdetaillname_label}
+                                inputStyle={{ w: '100%', h: 50, ph: 20, }}
+                                InputType="text"
+                                textVlaue={formData?.lastname}
+                                onChangeText={(value) => handleInputChange('lastname', value)}
+                                isRequired={true}
                                 ErrorMessage={errors?.lastname}
-                            />
-                            <InputBox label={userInfoLabel?.userdetailphn_label}
-                              placeholder={userInfoLabel?.userdetailphn_label}
-                              inputStyle={{ w: '100%', h: 50, ph: 20, }}
-                              InputType="numeric"
-                              textVlaue={formData?.telephone}
-                              onChangeText={(value) => handleInputChange('telephone', value)}
-                              //  ErrorMessage={errors?.telephone}
-                               editable={false}
+                              />
+                              <InputBox label={userInfoLabel?.userdetailphn_label}
+                                placeholder={userInfoLabel?.userdetailphn_label}
+                                inputStyle={{ w: '100%', h: 50, ph: 20, }}
+                                InputType="numeric"
+                                textVlaue={formData?.telephone}
+                                onChangeText={(value) => handleInputChange('telephone', value)}
+                                //  ErrorMessage={errors?.telephone}
+                                editable={false}
 
-                            // isRequired={true}
-                            />
+                              // isRequired={true}
+                              />
 
-                            <InputBox label={userInfoLabel?.userdetailemail_label}
-                              placeholder={userInfoLabel?.userdetailemail_label}
-                              inputStyle={{ w: '100%', h: 50, ph: 20, }}
-                              InputType="email"
-                              textVlaue={formData?.email}
-                              onChangeText={(value) => handleInputChange('email', value)}
-                              isRequired={true}
-                                 ErrorMessage={errors?.email}
-                        
+                              <InputBox label={userInfoLabel?.userdetailemail_label}
+                                placeholder={userInfoLabel?.userdetailemail_label}
+                                inputStyle={{ w: '100%', h: 50, ph: 20, }}
+                                InputType="email"
+                                textVlaue={formData?.email}
+                                onChangeText={(value) => handleInputChange('email', value)}
+                                isRequired={true}
+                                ErrorMessage={errors?.email}
 
-                            />
+
+                              />
+                              <TouchableOpacity
+                                onPress={() => onClickUpdateProfile()}
+                                style={{ backgroundColor: Colors.primary, gap: 10, padding: 10, borderRadius: 10, justifyContent: 'center', alignItems: 'center', height: isLandscape && 50 }}>
+                                <Text style={commonStyles.textWhite_lg}>{isLabel?.acntdbupdatebtn_label}</Text>
+                              </TouchableOpacity>
+                            </View>
+                          ) : <View style={{ gap: 10, }}>
+                            <ImageContainer img={{ uri: `${userInfo?.image}?t=${new Date().getTime()}` }} imgStatus={userInfo?.image ? true : false} />
+
+                            <View>
+                              <Text style={commonStyles.text_lg}>{userInfo?.firstname} {userInfo?.lastname}</Text>
+                              {userInfo?.telephone && <Text style={commonStyles.text_lg}>{userInfo?.telephone}</Text>}
+                              <Text style={commonStyles.text_lg}>{userInfo?.email}</Text>
+                            </View>
                             <TouchableOpacity
-                              onPress={() => onClickUpdateProfile()}
-                              style={{ backgroundColor: Colors.primary, gap: 10, padding: 10, borderRadius: 10, justifyContent: 'center', alignItems: 'center', height: isLandscape && 50 }}>
-                              <Text style={commonStyles.textWhite_lg}>{isLabel?.acntdbupdatebtn_label}</Text>
+                              onPress={() => setEnableUpdate(true)}
+                              style={{ backgroundColor: Colors.primary, gap: 10, padding: 10, borderRadius: 10, justifyContent: 'center', alignItems: 'center', flexDirection: 'row' }}>
+                              <Text style={commonStyles.textWhite_lg}>{isLabel?.acntdbeditbtn_label}</Text>
+                              <IconComponentEdit size={20} color={Colors.white} />
                             </TouchableOpacity>
-                          </View>
-                        ) : <View style={{ gap: 10, }}>
-                          <ImageContainer img={{ uri: `${userInfo?.image}?t=${new Date().getTime()}` }} imgStatus={userInfo?.image ? true : false} />
 
-                          <View>
-                            <Text style={commonStyles.text_lg}>{userInfo?.firstname} {userInfo?.lastname}</Text>
-                            {userInfo?.telephone && <Text style={commonStyles.text_lg}>{userInfo?.telephone}</Text>}
-                            <Text style={commonStyles.text_lg}>{userInfo?.email}</Text>
                           </View>
-                          <TouchableOpacity
-                            onPress={() => setEnableUpdate(true)}
-                            style={{ backgroundColor: Colors.primary, gap: 10, padding: 10, borderRadius: 10, justifyContent: 'center', alignItems: 'center', flexDirection: 'row' }}>
-                            <Text style={commonStyles.textWhite_lg}>{isLabel?.acntdbeditbtn_label}</Text>
-                            <IconComponentEdit size={20} color={Colors.white} />
-                          </TouchableOpacity>
+                        }
+                      </ScrollView>
+                    </View>
+                  </ImageBackground>
+                </TouchableOpacity>
 
-                        </View>
-                      }
-                    </ScrollView>
-                  </View>
-                </ImageBackground>
               </TouchableOpacity>
+            </View>
 
-            </TouchableOpacity>
-          </View>
-
-        </KeyboardAvoidingView>
+          </KeyboardAvoidingView>
 
 
-      </Modal>
+        </Modal>
 
-    </BackgroundWrapper>
-        <SuccessModal
-                isSuccessMessage={isSuccessMgs}
-                isModal={isSuccessModal}
-                onClickClose={() => onClickOkButton()}
-                handleCloseModal={() => onClickOkButton()}
-            />
+      </BackgroundWrapper>
+      <SuccessModal
+        isSuccessMessage={isSuccessMgs}
+        isModal={isSuccessModal}
+        onClickClose={() => onClickOkButton()}
+        handleCloseModal={() => onClickOkButton()}
+      />
     </>
   );
 };

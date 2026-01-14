@@ -9,6 +9,8 @@ import { _retrieveData } from "../../utils/storage";
 import { IconComponentLogin } from "../../constants/IconComponents";
 import SearchBarSection from "../SearchBarSection";
 import CustomSearchBar from "../../screens/CustomSearchBar";
+import { useUser } from "../../hooks/UserContext";
+
 // import Ionicons from "react-native-vector-icons/Ionicons";
 
 const { width } = Dimensions.get("window");
@@ -19,6 +21,7 @@ const Header = ({ onSearchPress, onProfilePress, onLogoPress, paddingHorizontal 
   const [isErrorModal, setErrorModal] = useState(false);
   const [isErrorModalMgs, setErrorModalMgs] = useState();
   const [customerId, setCustomerId] = useState(null);
+  const { profileImg } = useUser();
   // const [activeSeachingScreen, setActiveSeachingScreen] = useState(false);
 
   useEffect(() => {
@@ -80,7 +83,7 @@ const Header = ({ onSearchPress, onProfilePress, onLogoPress, paddingHorizontal 
           <Text style={{ color: "white", fontSize: 10, marginLeft: 3 }}>Search Product</Text>
 
           <View style={{ flexDirection: "row", alignItems: "center" }}>
-   
+
           </View>
         </TouchableOpacity>
 
@@ -109,8 +112,17 @@ const Header = ({ onSearchPress, onProfilePress, onLogoPress, paddingHorizontal 
         {customerId ? (
           <TouchableOpacity onPress={goToProfilePage}>
             <Image
-              source={require('./../../assets/images/profile.png')}
-              style={{width: width * 0.1,  height: width * 0.1, borderRadius: (width * 0.1) / 2, marginLeft:Platform.OS === "android" ? 20 : 0}}
+              source={
+                profileImg
+                  ? { uri: `${profileImg}?t=${Date.now()}` }
+                  : require('./../../assets/images/profile.png')
+              }
+              style={{
+                width: width * 0.1,
+                height: width * 0.1,
+                borderRadius: (width * 0.1) / 2,
+                marginLeft: Platform.OS === "android" ? 20 : 0,
+              }}
             />
           </TouchableOpacity>
         ) : (
@@ -121,7 +133,6 @@ const Header = ({ onSearchPress, onProfilePress, onLogoPress, paddingHorizontal 
             <IconComponentLogin />
           </TouchableOpacity>
         )}
-
 
 
       </View>

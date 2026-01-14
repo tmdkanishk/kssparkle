@@ -246,6 +246,30 @@ const ShippingMethod = ({ navigation }) => {
                     ))}
                 </View>
 
+                 <View style={[styles.header]}>
+                                    <Text style={styles.title}>Choose Payment Method</Text>
+                                    <View style={{ width: 24 }} />
+                                </View>
+                
+                                <Text style={styles.sectionTitle}>Online Payment Methods</Text>
+                                {isPaymentMethodList?.map((item) => (
+                                    <GlassContainer key={item.id} style={styles.paymentOption}>
+                                        <TouchableOpacity
+                                            style={styles.paymentRow}
+                                            onPress={() => setSelected(item.id)}
+                                            activeOpacity={0.8}
+                                        >
+                                            <View style={styles.iconRow}>
+                                                <Image source={item.icon} style={styles.paymentIcon} />
+                                                <Text style={styles.paymentText}>{item.name}</Text>
+                                            </View>
+                                            <View style={styles.radioCircle}>
+                                                {selected === item.id && <View style={styles.radioInner} />}
+                                            </View>
+                                        </TouchableOpacity>
+                                    </GlassContainer>
+                                ))}
+
                 {/* 🔹 Gift Section */}
                 <View style={styles.giftSection}>
                     <View style={styles.giftHeader}>
@@ -483,6 +507,62 @@ const styles = StyleSheet.create({
     itemText: {
         color: "#fff",
         marginRight: 5
+    },
+    title: {
+        color: "#fff",
+        fontSize: 20,
+        fontWeight: "700",
+    },
+    sectionTitle: {
+        color: "#fff",
+        fontSize: 16,
+        fontWeight: "600",
+        // marginVertical: 8,
+        marginLeft: 20,
+        marginBottom: Platform.OS === "ios" ? 10 : 0
+    },
+    paymentOption: {
+        marginVertical: 4,
+        paddingVertical: 2,
+        paddingHorizontal: 10,
+        borderRadius: 20,
+        marginTop: 5
+    },
+    paymentRow: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+    },
+    iconRow: {
+        flexDirection: "row",
+        // justifyContent:'space-between',
+        alignItems: "center",
+        gap: 15,
+    },
+    paymentIcon: {
+        width: 38,
+        height: 38,
+        resizeMode: "contain",
+        marginLeft: -20
+    },
+    paymentText: {
+        color: "#fff",
+        fontSize: 15,
+    },
+    radioCircle: {
+        height: 18,
+        width: 18,
+        borderRadius: 9,
+        borderWidth: 1.5,
+        borderColor: "#fff",
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    radioInner: {
+        height: 8,
+        width: 8,
+        borderRadius: 4,
+        backgroundColor: "#fff",
     },
 });
 

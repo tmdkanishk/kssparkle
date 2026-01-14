@@ -6,6 +6,7 @@ import { LanguageCurrencyProvider } from './src/hooks/LanguageCurrencyContext';
 import { CartProvider } from './src/hooks/CartContext';
 import { WishlistProvider } from './src/hooks/WishlistContext';
 import { LoadingProvider } from './src/hooks/LoadingProvider';
+import { UserProvider } from './src/hooks/UserContext';
 
 
 
@@ -75,11 +76,13 @@ export default function App() {
     <LoadingProvider>
       <CustomProvider>
         <LanguageCurrencyProvider>
+          <UserProvider>
           <CartProvider>
             <WishlistProvider>
               <AppNavigator />
             </WishlistProvider>
           </CartProvider>
+          </UserProvider>
         </LanguageCurrencyProvider>
       </CustomProvider>
     </LoadingProvider>

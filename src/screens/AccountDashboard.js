@@ -49,6 +49,7 @@ import NotificationAlert from '../components/NotificationAlert'
 import { useLanguageCurrency } from '../hooks/LanguageCurrencyContext'
 import { getCartItem } from '../services/getCartItem'
 import { useCartCount } from '../hooks/CartContext'
+import { useUser } from '../hooks/UserContext'
 
 const AccountDashboard = ({ navigation }) => {
     const { language, currency, changeLanguage, changeCurrency } = useLanguageCurrency();
@@ -70,6 +71,7 @@ const AccountDashboard = ({ navigation }) => {
     const [isErrorMgs, setErrorMgs] = useState();
     const [totalCoins, setTotalCoins] = useState(null);
     const scrollY = useRef(new Animated.Value(0)).current;
+    const { refreshUser } = useUser();
 
     const [formData, setFormData] = useState({
         firstname: '',
@@ -240,6 +242,9 @@ const AccountDashboard = ({ navigation }) => {
             setTimeout(() => {
                 onClickModalClose();
             }, 2000);
+            setTimeout(() => {
+                refreshUser();
+            }, 500);
         } catch (error) {
             setErrorMgs(GlobalText?.extrafield_somethingwrong);
             setErrorModal(true);

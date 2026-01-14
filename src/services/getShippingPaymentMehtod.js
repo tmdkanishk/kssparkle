@@ -17,7 +17,7 @@ export const getShippingPaymentMehtod = async (checkout_Shippingandpaymentmethod
 
         const body = {
             code: lang?.code || "",
-            currency: cur?.code || "",
+            currency: cur || "",
             sessionid: sessionId,
             customer_id: user ? user : null
         }

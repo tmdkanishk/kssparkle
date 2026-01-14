@@ -279,13 +279,12 @@ const SubCategory = ({ navigation, route }) => {
                                 source={require("../assets/images/back.png")}
                                 style={{ width: 18, height: 18, tintColor: "#fff" }}
                             />
-                        </TouchableOpacity>
 
                         {subCategories.length > 0 && (
                             <Text
                                 style={{
                                     color: "#fff",
-                                    margin: 16,
+                                    marginTop:15,
                                     fontSize: 16,
                                     fontWeight: "600",
                                 }}
@@ -293,6 +292,8 @@ const SubCategory = ({ navigation, route }) => {
                                 Sub Categories
                             </Text>
                         )}
+                        </TouchableOpacity>
+
 
                         {/* 🔹 SUBCATEGORIES GRID */}
                         {subCategories.length > 0 && (
