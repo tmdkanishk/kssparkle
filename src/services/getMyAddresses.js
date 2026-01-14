@@ -7,18 +7,18 @@ export const getMyAddresses = async (address) => {
         const url = `${BASE_URL}${address}`;
         const lang = await _retrieveData('SELECT_LANG');
         const cur = await _retrieveData('SELECT_CURRENCY');
-        const user = await _retrieveData("USER");
+        const user = await _retrieveData("CUSTOMER_ID");
         const sessionId = await _retrieveData("SESSION_ID");
-
+        
         const headers = {
             'Content-Type': 'application/x-www-form-urlencoded',
             Key: API_KEY,
         };
 
         const body = {
-            code: lang?.code,
+            code: 'en-gb',
             currency: cur?.code,
-            customer_id: user ? user[0]?.customer_id : null,
+            customer_id: user,
             sessionid: sessionId
         }
 

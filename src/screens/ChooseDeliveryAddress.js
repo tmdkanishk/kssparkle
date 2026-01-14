@@ -18,8 +18,6 @@ import { getMyAddresses } from "../services/getMyAddresses";
 
 const ChooseDeliveryAddress = () => {
 
-
-
     const defaultAddress = {
         id: 1,
         name: "Customer Name",
@@ -46,145 +44,142 @@ const ChooseDeliveryAddress = () => {
     ];
 
 
-  const { language, currency, changeLanguage, changeCurrency } = useLanguageCurrency();
-  const { Colors, EndPoint, GlobalText } = useCustomContext();
-  const { width, height } = useWindowDimensions();
-  const isLandscape = width > height;
-  const [loading, setLoading] = useState(false);
-  const [isLabel, setLabel] = useState();
-  const [differentShipping, setDifferentShipping] = useState(false);
-  const [showModal, setShowModal] = useState(false);
-  const [selectShippingAddress, setSelectShippingAddress] = useState();
-  const [selectBillingAddress, setSelectBillingAddress] = useState();
-  const [addressType, setAddressType] = useState();
-  const [isAddressList, setAddressList] = useState();
-  const [isDefaultAddress, setDefaultAddress] = useState(null);
-  const scrollY = useRef(new Animated.Value(0)).current;
-  const navigation = useNavigation();
-  const [selectedAddress, setSelectedAddress] = useState(1);
-  const [screenLoading, setScreenLoading] = useState(false);
+    const { language, currency, changeLanguage, changeCurrency } = useLanguageCurrency();
+    const { Colors, EndPoint, GlobalText } = useCustomContext();
+    const [loading, setLoading] = useState(false);
+    const [isLabel, setLabel] = useState();
+    const [differentShipping, setDifferentShipping] = useState(false);
+    const [showModal, setShowModal] = useState(false);
+    const [selectShippingAddress, setSelectShippingAddress] = useState();
+    const [selectBillingAddress, setSelectBillingAddress] = useState();
+    const [addressType, setAddressType] = useState();
+    const [isAddressList, setAddressList] = useState();
+    const [isDefaultAddress, setDefaultAddress] = useState(null);
+    const scrollY = useRef(new Animated.Value(0)).current;
+    const navigation = useNavigation();
+    const [selectedAddress, setSelectedAddress] = useState(1);
+    const [screenLoading, setScreenLoading] = useState(false);
 
-  useFocusEffect(
-    useCallback(() => {
-      checkAutoLogin();
-      checkUserLogin();
-      fetchAllMyAddress();
-      fetchCheckOutText();
-    }, [language, currency, navigation])
-  )
+    useFocusEffect(
+        useCallback(() => {
+            checkAutoLogin();
+            checkUserLogin();
+            fetchAllMyAddress();
+            fetchCheckOutText();
+        }, [language, currency, navigation])
+    )
 
-  const checkUserLogin = async () => {
-    const data = await _retrieveData("CUSTOMER_ID");
-    if (data == null) {
-      navigation.replace('Login');
-      return;
+    const checkUserLogin = async () => {
+        const data = await _retrieveData("CUSTOMER_ID");
+        if (data == null) {
+            navigation.replace('Login');
+            return;
+        }
     }
-  }
 
-  const handleOnChangeLang = (value) => {
-    changeLanguage(value)
-  }
-
-  const handleOnChangeCurrency = (value) => {
-    changeCurrency(value);
-  }
-
-  const onChangeBilliingAddress = () => {
-    setAddressType(1);
-    setShowModal(true)
-  }
-
-  const onChangeShippinigAddress = () => {
-    setAddressType(2)
-    setShowModal(true)
-  }
-
-  const onSelectAddress = (selectedAddress) => {
-    if (addressType === 1) {
-      setSelectBillingAddress(selectedAddress);
-      setShowModal(false);
-    } else {
-      setSelectShippingAddress(selectedAddress);
-      setShowModal(false);
+    const handleOnChangeLang = (value) => {
+        changeLanguage(value)
     }
-  }
 
-  const onClickCheckoutContinueBtn = async () => {
-    try {
-      // setLoading(true);
-      const shippingAddressId = selectShippingAddress?.address_id
-      const paymentAddressId = selectBillingAddress?.address_id
-      const result = await addBillingAndShippingAddress(shippingAddressId, paymentAddressId, EndPoint?.checkout_Shippingandpaymentaddress);
-      console.log("save shipping and billing address :", result);
-      navigation.navigate('Payment');
-    } catch (error) {
-      console.log("error", error.response.data);
-      alert(GlobalText?.extrafield_somethingwrong);
-    } finally {
-      setLoading(false);
+    const handleOnChangeCurrency = (value) => {
+        changeCurrency(value);
     }
-  }
 
-  const fetchAllMyAddress = async () => {
-    try {
-      setLoading(true);
-      const result = await getMyAddresses(EndPoint?.address);
-      setAddressList(result?.response);
-      const addresses = result?.response;
-      const defaultAddress = addresses.find(addr => addr.defaultaddrstatus === true);
-      setDefaultAddress(defaultAddress);
-      setSelectShippingAddress(defaultAddress);
-      setSelectBillingAddress(defaultAddress);
-    } catch (error) {
-      alert(GlobalText?.extrafield_somethingwrong);
-    } finally {
-      setLoading(false);
+    const onChangeBilliingAddress = () => {
+        setAddressType(1);
+        setShowModal(true)
     }
-  }
 
-  const fetchCheckOutText = async () => {
-    try {
-      setLoading(true);
-      const url = `${BASE_URL}${EndPoint?.checkout}`;
-      const lang = await _retrieveData('SELECT_LANG');
-      const cur = await _retrieveData('SELECT_CURRENCY');
-      const user = await _retrieveData('USER');
-      const sessionId = await _retrieveData('SESSION_ID');
-
-      const headers = {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        Key: API_KEY,
-      };
-
-      const body = {
-        code: lang?.code,
-        currency: cur?.code,
-        customer_id: user ? user[0]?.customer_id : null,
-        sessionid: sessionId
-      }
-
-      const response = await axios.post(url, body, { headers: headers });
-
-      console.log("respomnse of checkout :", response?.data);
-
-      if (response.status === HttpStatusCode.Ok) {
-        setLabel(response.data?.text);
-      }
-
-    } catch (error) {
-      // console.log("errorxsacds", error.response.data);
-      alert(GlobalText?.extrafield_somethingwrong);
-    } finally {
-      setLoading(false);
+    const onChangeShippinigAddress = () => {
+        setAddressType(2)
+        setShowModal(true)
     }
-  }
+
+    const onSelectAddress = (selectedAddress) => {
+        if (addressType === 1) {
+            setSelectBillingAddress(selectedAddress);
+            setShowModal(false);
+        } else {
+            setSelectShippingAddress(selectedAddress);
+            setShowModal(false);
+        }
+    }
+
+    const onClickCheckoutContinueBtn = async () => {
+        try {
+            // setLoading(true);
+            const shippingAddressId = selectShippingAddress?.address_id
+            const paymentAddressId = selectBillingAddress?.address_id
+            const result = await addBillingAndShippingAddress(shippingAddressId, paymentAddressId, EndPoint?.checkout_Shippingandpaymentaddress);
+            console.log("save shipping and billing address :", result);
+            navigation.navigate('Payment');
+        } catch (error) {
+            console.log("error", error.response.data);
+            alert(GlobalText?.extrafield_somethingwrong);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const fetchAllMyAddress = async () => {
+        try {
+
+            const result = await getMyAddresses(EndPoint?.address);
+            console.log("result getMyAddresses:", result);
+            setAddressList(result?.response);
+            const addresses = result?.response;
+            const defaultAddress = addresses.find(addr => addr.defaultaddrstatus === true);
+            setDefaultAddress(defaultAddress);
+            setSelectShippingAddress(defaultAddress);
+            setSelectBillingAddress(defaultAddress);
+        } catch (error) {
+            console.log("error:", error.response.data);
+        }
+    }
+
+    const fetchCheckOutText = async () => {
+        try {
+            setLoading(true);
+            const url = `${BASE_URL}${EndPoint?.checkout}`;
+            const lang = await _retrieveData('SELECT_LANG');
+            const cur = await _retrieveData('SELECT_CURRENCY');
+            const user = await _retrieveData('USER');
+            const sessionId = await _retrieveData('SESSION_ID');
+
+            const headers = {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                Key: API_KEY,
+            };
+
+            const body = {
+                code: 'en-gb',
+                currency: cur?.code,
+                customer_id: user ? user[0]?.customer_id : null,
+                sessionid: sessionId
+            }
+
+            const response = await axios.post(url, body, { headers: headers });
+
+            console.log("fetchCheckOutText response :", response?.data);
+
+            if (response.status === HttpStatusCode.Ok) {
+                setLabel(response.data?.text);
+            }
+
+        } catch (error) {
+            // console.log("errorxsacds", error.response.data);
+            alert(GlobalText?.extrafield_somethingwrong);
+        } finally {
+            setLoading(false);
+        }
+    }
 
 
     return (
         <BackgroundWrapper>
 
             <ScrollView
-                contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 20, marginTop:Platform.OS === "ios" ? 60 : 10 }}
+                contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 20, marginTop: Platform.OS === "ios" ? 60 : 10 }}
                 showsVerticalScrollIndicator={false}
             >
                 <TouchableOpacity style={{ marginTop: 20, marginLeft: 10 }} onPress={() => navigation.goBack()}>
@@ -196,7 +191,7 @@ const ChooseDeliveryAddress = () => {
                         <Ionicons name="arrow-back" size={24} color="#fff" />
                     </TouchableOpacity> */}
                     <Text style={styles.title}>Choose Delivery Address</Text>
-                    <TouchableOpacity onPress={()=>{navigation.navigate('AddNewAddress')}} style={styles.addNewBtn}>
+                    <TouchableOpacity onPress={() => { navigation.navigate('AddNewAddress') }} style={styles.addNewBtn}>
                         <Text style={styles.addNewText}>Add New</Text>
                     </TouchableOpacity>
                 </View>
@@ -211,13 +206,13 @@ const ChooseDeliveryAddress = () => {
                         >
                             {selectedAddress === defaultAddress.id && <View style={styles.radioInner} />}
                         </TouchableOpacity>
-                        <Text style={styles.name}>{defaultAddress.name}</Text>
+                        <Text style={styles.name}>{isDefaultAddress?.firstname}</Text>
                         <View style={styles.tagBox}>
                             <Text style={styles.tagText}>{defaultAddress.tag}</Text>
                         </View>
                     </View>
 
-                    <Text style={styles.addressText}>{defaultAddress.address}</Text>
+                    <Text style={styles.addressText}>{isDefaultAddress?.address_1} {isDefaultAddress?.address_2}</Text>
                     <Text style={styles.mobileText}>Mobile: {defaultAddress.mobile}</Text>
 
                     <View style={styles.btnRow}>
@@ -295,7 +290,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         paddingTop: 10,
         marginBottom: 10,
-        marginTop: Platform.OS === "ios" ? 15 :0
+        marginTop: Platform.OS === "ios" ? 15 : 0
     },
     title: {
         color: "#fff",
@@ -426,19 +421,19 @@ const styles = StyleSheet.create({
     },
     horizontalLine: {
         height: 1,
-        width: 50,                  
+        width: 50,
         backgroundColor: "#fff",
-        marginLeft: 8,   
-        marginBottom:-10,
-        marginRight:10           
+        marginLeft: 8,
+        marginBottom: -10,
+        marginRight: 10
     },
     totalText: {
         color: "#fff",
         fontWeight: "600",
-        marginLeft:10
+        marginLeft: 10
     },
     itemText: {
         color: "#fff",
-        marginRight:5
+        marginRight: 5
     },
 });
