@@ -67,8 +67,6 @@ const ShoppingBag = ({ navigation }) => {
     // multi selection
     const [cartItem, setCartItem] = useState([]);
 
-
-
     useFocusEffect(
         useCallback(() => {
             checkAutoLogin();
@@ -80,7 +78,7 @@ const ShoppingBag = ({ navigation }) => {
     const checkUserLogin = async () => {
         const data = await _retrieveData("CUSTOMER_ID");
         if (data != null) {
-            navigation.navigate("ShippingMethod")
+            navigation.navigate("ChooseDeliveryAddress");
         } else {
             navigation.navigate("Login")
         }
