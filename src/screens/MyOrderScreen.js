@@ -1,11 +1,19 @@
-import React from "react";
-import { View, Text, Image, TouchableOpacity, ScrollView, StyleSheet, TextInput } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import { View, Text, Image, TouchableOpacity, ScrollView, StyleSheet, TextInput, FlatList, useWindowDimensions, Animated, ActivityIndicator } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import BackgroundWrapper from "../components/customcomponents/BackgroundWrapper";
 import GlassContainer from "../components/customcomponents/GlassContainer";
 import { Dimensions } from 'react-native';
+import { checkAutoLogin } from "../utils/helpers";
+import { useLanguageCurrency } from "../hooks/LanguageCurrencyContext";
+import { useCustomContext } from "../hooks/CustomeContext";
+import { getOrderHistoryAndText } from "../services/getOrderHistoryAndText";
+import { _retrieveData } from "../utils/storage";
+import PriceView from "../components/customcomponents/PriceView";
+import CustomHeader from "../components/customcomponents/CustomHeader";
 
 const MyOrderScreen = ({ navigation }) => {
+
     const orders = [
         {
             id: "NSAHA0097433507",
@@ -33,104 +41,252 @@ const MyOrderScreen = ({ navigation }) => {
     const screenWidth = Dimensions.get('window').width;
     const screenHeight = Dimensions.get('window').height;
 
+    const { language, currency, changeLanguage, changeCurrency } = useLanguageCurrency();
+    const { width, height } = useWindowDimensions();
+    const isLandscape = width > height;
+
+    const { Colors, EndPoint, GlobalText } = useCustomContext();
+    const [isLogin, setLogin] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [isLabel, setLabel] = useState();
+    const [orderHistoryData, setOrderHistoryData] = useState([]);
+    const [loadingMore, setLoadingMore] = useState(false);
+    const [hasMoreData, setHasMoreData] = useState(true);
+    const [page, setPage] = useState(1);
+    const scrollY = useRef(new Animated.Value(0)).current;
+    const [activeSeachingScreen, setActiveSeachingScreen] = useState(false);
+
+    useEffect(() => {
+        checkAutoLogin();
+        checkUserLogin();
+        fetchOrderHistoryTextAndHistory();
+    }, [language, currency, page]);
+
+
+
+    const fetchOrderHistoryTextAndHistory = async () => {
+        console.log("im calling");
+        try {
+            if (page == 1) {
+                setLoading(true);
+            }
+            setLoadingMore(true)
+            const result = await getOrderHistoryAndText(page, EndPoint?.order_orderhistory);
+            setLabel(result?.text);
+            setOrderHistoryData((prevData) => {
+                const existingIds = new Set(prevData.map(item => item.order_id));
+                const newOrders = result?.orders?.filter(order => !existingIds.has(order.order_id));
+                console.log("newOrders", newOrders);
+
+                return [...prevData, ...newOrders];
+            });
+
+            if (page >= result?.pages) {
+                setHasMoreData(false);
+            }
+
+        } catch (error) {
+            console.log("error", error.response.data);
+        } finally {
+            setLoading(false);
+            setLoadingMore(false)
+        }
+
+    }
+
+    const handleLoadMore = () => {
+        if (!loadingMore && hasMoreData) {
+            setPage((prevPage) => prevPage + 1);
+        }
+    };
+
+
+    const renderFooter = () => {
+        if (!loadingMore) return null;
+        return <ActivityIndicator size="large" color={Colors?.primary} />;
+    };
+
+    const checkUserLogin = async () => {
+        const data = await _retrieveData("CUSTOMER_ID");
+        if (data != null) {
+            setLogin(true);
+        } else {
+            setLogin(false);
+            navigation.replace('Login');
+        }
+    }
+
+    const handleOnChangeLang = (value) => {
+        changeLanguage(value);
+    }
+
+    const handleOnChangeCurrency = (value) => {
+        changeCurrency(value);
+
+    }
+
+
+    const handleSearch = async (query) => {
+        try {
+            setLoading(true);
+            navigation.navigate('Search', { query: query })
+        } catch (error) {
+            console.log('Search results:', error.response.data);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+
+    const renderOrderItem = ({ item }) => (
+        <GlassContainer style={styles.orderCard}>
+
+            {/* ORDER ID */}
+            <Text style={styles.orderId}>
+                Order ID {item.order_id}
+            </Text>
+
+            <View style={styles.productRow}>
+
+                {/* STATIC IMAGE (API doesn't give image) */}
+                <LinearGradient
+                    colors={["#505050", "#808080"]}
+                    start={{ x: 0.5, y: 0 }}
+                    end={{ x: 0.5, y: 1 }}
+                    style={styles.productImage}
+                >
+                    <Image
+                        source={require("../assets/images/headphones.png")}
+                        style={styles.productImage}
+                    />
+                </LinearGradient>
+
+                <View style={styles.productDetails}>
+
+                    {/* CUSTOMER NAME */}
+                    <Text style={styles.productTitle} numberOfLines={2}>
+                        {item.name}
+                    </Text>
+
+                    {/* STATUS (Arabic from API) */}
+                    <Text style={styles.status}>
+                        {item.status}
+                    </Text>
+
+                    {/* DATE */}
+                    <Text style={styles.deliveryDate}>
+                        {item.date_added}
+                    </Text>
+
+                    {/* PRODUCTS COUNT */}
+                    <Text style={styles.shareText}>
+                        {item.products} product(s)
+                    </Text>
+
+                    <Text style={[styles.shareText]}>
+                        {
+                            item?.total ? <PriceView priceHtml={item?.total} textStyle={{}} /> : ""
+                        }
+                    </Text>
+
+                </View>
+
+                <TouchableOpacity>
+                    <Image
+                        source={require("../assets/images/back.png")}
+                        style={styles.arrowIcon}
+                    />
+                </TouchableOpacity>
+            </View>
+
+            {/* ACTIONS */}
+            <View style={styles.actionRow}>
+                {/* <TouchableOpacity  style={styles.actionButton}>
+                    <Text style={styles.actionText}>Return</Text>
+                </TouchableOpacity> */}
+                {/* <TouchableOpacity style={styles.actionButton}>
+                    <Text style={styles.actionText}>Replace</Text>
+                </TouchableOpacity> */}
+
+                <TouchableOpacity onPress={() => { navigation.navigate("OrderView", { orderId: item?.order_id }) }} style={styles.actionButton}>
+                    <Text style={styles.actionText}>Details</Text>
+                </TouchableOpacity>
+
+                <View style={styles.actionButton}>
+                    <Text style={styles.actionText}>{item?.status}</Text>
+                </View>
+            </View>
+        </GlassContainer>
+    );
+
 
     return (
-        // <LinearGradient colors={["#2b2b2b", "#0e0e0e"]} style={styles.container}>
         <BackgroundWrapper>
-            <ScrollView
+            <FlatList
+                data={orderHistoryData}
+                keyExtractor={(item) => item.order_id.toString()}
+                renderItem={renderOrderItem}
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={{ paddingBottom: 80 }}
-            >
+                onEndReached={handleLoadMore}
+                onEndReachedThreshold={0.6}
+                ListFooterComponent={renderFooter}
 
-                <View style={styles.header}>
-                    <TouchableOpacity onPress={() => { navigation.goBack() }}>
-                        <Image source={require("../assets/images/back.png")} style={styles.backIcon} />
-                    </TouchableOpacity>
-                    <Text style={styles.headerTitle}>My Order</Text>
-                    <View style={{ width: 24 }} />
-                </View>
-
-
-                <View style={styles.filters}>
-
-                    <GlassContainer
-                        style={{ flexDirection: "row" }}
-                        borderRadius={12}
-                    >
-                        <Image source={require("../assets/images/dropdown.png")} style={styles.dropdownIcon} />
-                        <Text style={styles.filterText}>Last 3 months</Text>
-                    </GlassContainer>
-
-                    <GlassContainer
-                        style={{
-                            flexDirection: "row",
-                            width: screenWidth * 0.45,
-                         
-                            justifyContent: "flex-end",
-                            alignItems: "center",
-                        }}
-                        borderRadius={12}
-                    >
-                        <Text style={styles.filterText}>Find Items</Text>
-                        <Image source={require("../assets/images/search.png")} style={styles.dropdownIcon} />
-                    </GlassContainer>
-
-                </View>
-
-
-
-                <Text style={styles.sectionTitle}>Completed</Text>
-
-
-                {orders.map((order, index) => (
-                    <GlassContainer key={index} style={styles.orderCard}>
-                        <Text style={styles.orderId}>Order ID {order.id}</Text>
-
-                        <View style={styles.productRow}>
-                            {/* <Image source={order.image} style={styles.productImage} /> */}
-                            {/* LEFT IMAGE */}
-                            <LinearGradient
-                                colors={["#505050", "#808080"]}
-                                start={{ x: 0.5, y: 0 }}
-                                end={{ x: 0.5, y: 1 }}
-                                style={styles.productImage}
-                            >
-                                <Image source={order.image} style={styles.productImage} />
-                            </LinearGradient>
-                            <View style={styles.productDetails}>
-                                <Text style={styles.productTitle} numberOfLines={2}>{order.title}</Text>
-
-                                <Text style={styles.status}>{order.status}</Text>
-                                <Text style={styles.deliveryDate}>on {order.date}</Text>
-                                <Text style={styles.shareText}>Share your experience</Text>
-                            </View>
-
-                            <TouchableOpacity>
+                ListHeaderComponent={
+                    <>
+                        {/* HEADER */}
+                        <View style={styles.header}>
+                            <TouchableOpacity onPress={() => navigation.goBack()}>
                                 <Image
                                     source={require("../assets/images/back.png")}
-                                    style={styles.arrowIcon}
+                                    style={styles.backIcon}
                                 />
                             </TouchableOpacity>
+                            <Text style={styles.headerTitle}>My Order</Text>
+                            <View style={{ width: 24 }} />
                         </View>
 
-                        <View style={styles.actionRow}>
-                            <TouchableOpacity style={styles.actionButton}>
-                                <Text style={styles.actionText}>Return</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={styles.actionButton}>
-                                <Text style={styles.actionText}>Replace</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={styles.actionButton}>
-                                <Text style={styles.actionText}>Delivered</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </GlassContainer>
-                ))}
-            </ScrollView>
+                        {/* <View style={{ marginTop: 50, marginLeft:5 }}>
+                            <CustomHeader pageName={"My Order"} />
+                        </View> */}
+
+
+                        {/* FILTERS */}
+                        {/* <View style={styles.filters}>
+
+                            <GlassContainer
+                                style={{ flexDirection: "row" }}
+                                borderRadius={12}
+                            >
+                                <Image source={require("../assets/images/dropdown.png")} style={styles.dropdownIcon} />
+                                <Text style={styles.filterText}>Last 3 months</Text>
+                            </GlassContainer>
+
+                            <GlassContainer
+                                style={{
+                                    flexDirection: "row",
+                                    width: screenWidth * 0.45,
+
+                                    justifyContent: "flex-end",
+                                    alignItems: "center",
+                                }}
+                                borderRadius={12}
+                            >
+                                <Text style={styles.filterText}>Find Items</Text>
+                                <Image source={require("../assets/images/search.png")} style={styles.dropdownIcon} />
+                            </GlassContainer>
+
+                        </View> */}
+
+                        {/* SECTION TITLE */}
+                        {/* <Text style={styles.sectionTitle}>Completed</Text> */}
+                    </>
+                }
+            />
         </BackgroundWrapper>
-        // </LinearGradient>
     );
 };
+
 
 const styles = StyleSheet.create({
     container: {
@@ -159,10 +315,10 @@ const styles = StyleSheet.create({
         // flexDirection: "row",
         // marginLeft: 20,
         flexDirection: "row",
-        gap:40,
+        gap: 40,
         alignItems: "center",
         width: "100%",
-        marginLeft:20
+        marginLeft: 20
 
 
         // justifyContent: "space-between",
@@ -229,6 +385,7 @@ const styles = StyleSheet.create({
     productDetails: {
         flex: 1,
         marginLeft: 12,
+        gap: 5
     },
     productTitle: {
         color: "#fff",
@@ -242,12 +399,12 @@ const styles = StyleSheet.create({
         fontSize: 13,
     },
     deliveryDate: {
-        color: "#ccc",
+        color: "#fff",
         fontSize: 12,
         marginVertical: 2,
     },
     shareText: {
-        color: "#bbb",
+        color: "#fff",
         fontSize: 11,
     },
     arrowIcon: {

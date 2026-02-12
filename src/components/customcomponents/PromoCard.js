@@ -1,13 +1,13 @@
 import React from "react";
-import { View, Text, Image, StyleSheet, Platform, Dimensions } from "react-native";
+import { View, Text, Image, StyleSheet, Platform, Dimensions, Linking, TouchableOpacity } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import Header from "./Header";
 import Video from "react-native-video";
 import LottieView from "lottie-react-native";
 import { useNavigation } from "@react-navigation/native";
 
-const width = Dimensions.get('window') 
-const PromoCard = ({onSearchPress}) => {
+const width = Dimensions.get('window')
+const PromoCard = ({ onSearchPress }) => {
   const navigation = useNavigation();
   return (
     <LinearGradient
@@ -33,32 +33,40 @@ const PromoCard = ({onSearchPress}) => {
       {/* ✅ Header inside card */}
       <Header
         noBackground={true}
-      paddingHorizontal={width * 0.05}
-      onSearchPress={onSearchPress}
+        paddingHorizontal={width * 0.05}
+        onSearchPress={onSearchPress}
       // onProfilePress={()=>{navigation.navigate("MyAccountScreen")}}
       />
+
 
       {/* ✅ Sale Text Row */}
       <View style={styles.textRow}>
         <View>
-          <Text style={styles.mainTitle}>Super Sale</Text>
-          <Text style={[styles.mainTitle, { fontSize: 24 }]}>Discount</Text>
+          <Text style={styles.mainTitle}>Our special</Text>
+          <Text style={[styles.mainTitle, { fontSize: 24 }]}>and strongest</Text>
+          <Text style={[styles.mainTitle, { fontSize: 24 }]}>Offers</Text>
         </View>
 
-        <View style={{ alignItems: "flex-end", flexDirection: 'row', marginRight:Platform.OS === "ios" ? 15 : 0}}>
+        <View style={{ alignItems: "flex-end", flexDirection: 'row', marginRight: Platform.OS === "ios" ? 15 : 0 }}>
           <Text style={styles.subTitle}>Up to</Text>
-          <Text style={styles.percent}>50%</Text>
+          <Text style={styles.percent}>70%</Text>
         </View>
       </View>
 
 
       {/* ✅ Floating Bubble */}
-      <View style={styles.infoBubble}>
-        <Text style={styles.infoText}>
-          Accounting a new product or free shipping{"\n"}
-          for a certain quantity. Subject to change
-        </Text>
-      </View>
+      {/* <TouchableOpacity
+        activeOpacity={0.8}
+        onPress={() => Linking.openURL('https://sparkleksa.com/عروضنا-المميزه')}
+      > */}
+        <TouchableOpacity  onPress={() => navigation.navigate("Category")} style={styles.infoBubble}>
+          <Text style={styles.infoText}>
+            We carefully select the best and offer it at a lower price. Not everything
+            is discounted, but every offer is worthwhile. Enter with confidence, and
+            leave satisfied.
+          </Text>
+        </TouchableOpacity>
+      {/* </TouchableOpacity> */}
 
     </LinearGradient>
   );
@@ -67,9 +75,9 @@ const PromoCard = ({onSearchPress}) => {
 const styles = StyleSheet.create({
   card: {
     width: "100%",
-    height: 440,
+    height: 480,
     borderRadius: 35,
-    padding: 15,
+    padding: 13,
     overflow: "hidden",
     marginTop: 10,
   },
@@ -121,8 +129,8 @@ const styles = StyleSheet.create({
 
   infoBubble: {
     position: "absolute",
-    right: Platform.OS === "ios" ? 47: 7,
-    bottom: 50,
+    right: Platform.OS === "ios" ? 47 : 7,
+    bottom: 40,
     paddingVertical: 5,
     paddingHorizontal: 12,
     maxWidth: 150,
@@ -131,7 +139,7 @@ const styles = StyleSheet.create({
     borderWidth: 0.4,
     borderColor: "rgba(255,255,255,0.4)",
     backdropFilter: "blur(6px)", // iOS only, optional
-    zIndex:2
+    zIndex: 2
   },
 
   infoText: {

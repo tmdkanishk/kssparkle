@@ -19,7 +19,7 @@ const commonStyles = StyleSheet.create(
         text: {
             fontSize: 13,
             fontWeight: '400',
-            color: Colors.black
+            color: Colors.white
         },
         textwhite: {
             fontSize: 11,
@@ -75,6 +75,7 @@ const commonStyles = StyleSheet.create(
         smallHeading: {
             fontSize: 16,
             fontWeight: '500',
+            color:'white'
 
         },
         heading: {

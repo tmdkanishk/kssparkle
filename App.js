@@ -7,6 +7,7 @@ import { CartProvider } from './src/hooks/CartContext';
 import { WishlistProvider } from './src/hooks/WishlistContext';
 import { LoadingProvider } from './src/hooks/LoadingProvider';
 import { UserProvider } from './src/hooks/UserContext';
+// import { Tabby } from 'tabby-react-native-sdk';
 
 
 
@@ -67,10 +68,16 @@ export default function App() {
     preload();
   }, []);
 
+// useEffect(() => {
+//   Tabby.setApiKey('pk_test_xxxxxxxxx');
+// }, []);
+
+
   if (!ready) {
     // Show loader or splash screen
     return null;
   }
+  
 
   return (
     <LoadingProvider>

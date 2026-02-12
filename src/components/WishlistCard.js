@@ -4,12 +4,15 @@ import { useCustomContext } from '../hooks/CustomeContext';
 import Entypo from '@expo/vector-icons/Entypo';
 import { IconComponentCarts, IconComponentHeartFill, IconComponentImage, IconComponentTrash } from '../constants/IconComponents';
 import commonStyles from '../constants/CommonStyles';
+import PriceView from './customcomponents/PriceView';
+import GlassContainer from './customcomponents/GlassContainer';
 
 const WishlistCard = ({ image, productName, price, discountPrice, onClickWishList, onclickAddTocart, addToCartText, onClickProduct, isLoading }) => {
     const { Colors } = useCustomContext();
     return (
-        <View style={{ marginTop: 20, flexDirection: 'row', paddingVertical: 10, borderWidth: 1, borderColor: Colors.gray, borderRadius: 10, justifyContent: 'space-between', alignItems: 'center', opacity: isLoading ? 0.5 : 1 }}>
-            <TouchableOpacity onPress={() => onClickProduct()} style={{ width: '30%', height: 120, padding: 10, alignItems: 'center', justifyContent: 'center' }}>
+        <GlassContainer padding={0.1}>
+        <View style={{ marginTop: 20, flexDirection: 'row', paddingVertical: 10, borderColor: Colors.gray, borderRadius: 10, justifyContent: 'space-between', alignItems: 'center', opacity: isLoading ? 0.5 : 1 }}>
+            <TouchableOpacity onPress={() => onClickProduct()} style={{ width: '40%', height: 130, padding: 10, alignItems: 'center', justifyContent: 'center' }}>
                 {
                     image ? (
                         <Image source={{ uri: image }} style={{ width: '100%', height: '100%', resizeMode: 'contain' }} />
@@ -27,21 +30,31 @@ const WishlistCard = ({ image, productName, price, discountPrice, onClickWishLis
                         </Text>
                     </TouchableOpacity>
 
-                    <Text style={commonStyles.textDescription}>{1}<Entypo name="star" size={16} color={Colors.iconColor1} /> /5 {'(0)'}</Text>
+                    <Text style={{color:"#fff", fontWeight:'400'}}>{1}<Entypo name="star" size={16} color={Colors.white} /> /5 {'(0)'}</Text>
                     <View style={styles.priceContainer}>
                         <Text style={commonStyles.text_lg}>
                             {/* product price */}
-                            {discountPrice ? discountPrice : price}
+                            {discountPrice ? <PriceView
+                            priceHtml={discountPrice}
+                            textStyle={{}}
+                        /> : <PriceView
+                            priceHtml={price}
+                            textStyle={{}}
+                        /> }
                         </Text>
 
                         {/* old price  */}
                         {
                             discountPrice ? <View>
-                                <Text style={{ color: Colors.grayLight }}>
-                                    {price}
-                                </Text>
+                            <PriceView
+                            priceHtml={discountPrice}
+                            textStyle={{}}
+                        /> :
                                 {
-                                    price ? <View style={[styles.hrLine, { borderColor: Colors.grayLight, }]} /> : null
+                                    price ?   <PriceView
+                            priceHtml={price}
+                            textStyle={{}}
+                        />  : null
                                 }
 
                             </View> : null
@@ -68,13 +81,14 @@ const WishlistCard = ({ image, productName, price, discountPrice, onClickWishLis
 
             </View>
         </View>
+        </GlassContainer>
     )
 }
 
 const styles = StyleSheet.create({
     priceContainer: {
         flexDirection: 'row',
-        gap: 10,
+        gap: 20,
         alignItems: 'baseline',
     },
     hrLine: {

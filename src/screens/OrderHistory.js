@@ -1,4 +1,4 @@
-import { View, ScrollView, Alert, Platform, ActivityIndicator, FlatList, Image, useWindowDimensions, Animated, } from 'react-native'
+import { View, ScrollView, Alert, Platform, ActivityIndicator, FlatList, Image, useWindowDimensions, Animated, Dimensions, TouchableOpacity, } from 'react-native'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import BottomBar from '../components/BottomBar'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -20,6 +20,10 @@ import { logout } from '../services/logout'
 import NotificationAlert from '../components/NotificationAlert'
 import { getOrderHistoryAndText } from '../services/getOrderHistoryAndText'
 import { useLanguageCurrency } from '../hooks/LanguageCurrencyContext'
+import BackgroundWrapper from '../components/customcomponents/BackgroundWrapper'
+import CustomHeader from '../components/customcomponents/CustomHeader'
+import GlassContainer from '../components/customcomponents/GlassContainer'
+import CustomSearchBar from './CustomSearchBar'
 
 
 const OrderHistory = ({ navigation }) => {
@@ -36,6 +40,7 @@ const OrderHistory = ({ navigation }) => {
     const [hasMoreData, setHasMoreData] = useState(true);
     const [page, setPage] = useState(1);
     const scrollY = useRef(new Animated.Value(0)).current;
+    const [activeSeachingScreen, setActiveSeachingScreen] = useState(false);
 
     useEffect(() => {
         checkAutoLogin();
@@ -100,7 +105,7 @@ const OrderHistory = ({ navigation }) => {
     };
 
     const checkUserLogin = async () => {
-        const data = await _retrieveData("USER");
+        const data = await _retrieveData("CUSTOMER_ID");
         if (data != null) {
             setLogin(true);
         } else {
@@ -136,52 +141,86 @@ const OrderHistory = ({ navigation }) => {
         )
     }
 
+    if (activeSeachingScreen) {
+        return (
+            <CustomSearchBar
+                setActiveSeachingScreen={setActiveSeachingScreen}
+            />
+        );
+    }
+
+    const toggleSearch = () => {
+        setActiveSeachingScreen(prev => !prev);
+    };
+
+    const screenWidth = Dimensions.get('window').width;
+
     return (
         <>
-            {loading ? (
+            {/* {loading ? (
                 <View style={{ width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center' }}>
                     <CustomActivity />
                 </View>
 
-            ) : (
-                <>
-                    <View style={[commonStyles.bodyConatiner]}>
-                        <View style={{ paddingHorizontal: 12, backgroundColor: '#F5F5F5' }}>
+            ) : ( */}
+            <BackgroundWrapper>
+
+                {/* <View style={[commonStyles.bodyConatiner]}> */}
+
+                <View style={{ marginTop: 30, marginLeft: 10 }}>
+                    <CustomHeader pageName={isLabel?.orderhstrypagename_label} />
+                </View>
+                {/* <View style={{ paddingHorizontal: 12, backgroundColor: '#F5F5F5' }}>
                             <TopStatusBar onChangeCurren={handleOnChangeCurrency} onChangeLang={handleOnChangeLang} scrollY={scrollY} />
-                        </View>
-                        <TitleBarSearchComponent titleName={isLabel?.orderhstrypagename_label} Component1={Cart} onClickBackIcon={() => navigation.goBack()} Component2={SearchbarComponent} />
-                        <View style={{ paddingHorizontal: 12 }}>
-                            <Animated.FlatList
-                                onScroll={Animated.event(
-                                    [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-                                    { useNativeDriver: false }
-                                )}
-                                key={isLandscape}
-                                data={orderHistoryData}
-                                renderItem={renderItem}
-                                keyExtractor={(item, index) => index.toString()}
-                                onEndReached={handleLoadMore}
-                                onEndReachedThreshold={0.5}
-                                ListFooterComponent={renderFooter}
-                                showsVerticalScrollIndicator={false}
-                                contentContainerStyle={{ paddingBottom: 260, gap: 12 }}
-                                ListEmptyComponent={
-                                    <View style={{ width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center' }}>
-                                        <View style={{ width: 200, height: 400, alignSelf: 'center' }}>
-                                            <Image source={require('../assets/images/notfound.png')} style={{ width: '100%', height: '100%', resizeMode: 'contain', }} />
-                                        </View>
-                                    </View>
-                                }
-                            />
-                        </View>
+                        </View> */}
+                {/* <TitleBarSearchComponent titleName={isLabel?.orderhstrypagename_label} Component1={Cart} onClickBackIcon={() => navigation.goBack()} Component2={SearchbarComponent} /> */}
+                <TouchableOpacity onPress={toggleSearch} style={{ marginLeft: 40 }}>
+                    <GlassContainer
+                        style={{
+                            flexDirection: "row",
+                            width: screenWidth * 0.8,
 
-                    </View>
-                    <BottomBar tab={2} />
-                </>
+                            justifyContent: "flex-end",
+                            alignItems: "center",
+                        }}
+                        borderRadius={12}
 
-            )
-            }
+                    >
+                        {/* <Text style={{ color: "#fff", fontSize: 13, marginLeft: 3, }}>Find Items</Text> */}
+                        <Image source={require("../assets/images/search.png")} style={{ width: 15, height: 15, tintColor: "#fff", marginTop: 3 }} />
+                    </GlassContainer>
+                </TouchableOpacity>
 
+                <View style={{ paddingHorizontal: 12 }}>
+                    <Animated.FlatList
+                        onScroll={Animated.event(
+                            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+                            { useNativeDriver: false }
+                        )}
+                        key={isLandscape}
+                        data={orderHistoryData}
+                        renderItem={renderItem}
+                        keyExtractor={(item, index) => index.toString()}
+                        onEndReached={handleLoadMore}
+                        onEndReachedThreshold={0.5}
+                        ListFooterComponent={renderFooter}
+                        showsVerticalScrollIndicator={false}
+                        contentContainerStyle={{ paddingBottom: 260, gap: 12 }}
+                        ListEmptyComponent={
+                            <View style={{ width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center' }}>
+                                <View style={{ width: 200, height: 400, alignSelf: 'center' }}>
+                                    <Image source={require('../assets/images/notfound.png')} style={{ width: '100%', height: '100%', resizeMode: 'contain', }} />
+                                </View>
+                            </View>
+                        }
+                    />
+                </View>
+
+                {/* </View> */}
+                {/* <BottomBar tab={2} /> */}
+
+
+            </BackgroundWrapper>
 
 
             <NotificationAlert />

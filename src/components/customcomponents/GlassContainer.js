@@ -25,22 +25,14 @@ const GlassContainer = ({ title, children, style, padding, borderRadius }) => {
 };
 
 const styles = StyleSheet.create({
-glowWrapper: {
-  borderRadius: 20,
-
-  // iOS shadow (soft & spread)
-  shadowColor: '#000',
-  shadowOffset: { width: 0, height: 12 },
-  shadowOpacity: 0.35,
-  shadowRadius: 24,
-
-  // Android elevation
-  elevation: 14,
-
-  marginVertical: 12,
-  backgroundColor: 'transparent',
-},
-
+  glowWrapper: {
+    borderRadius: 18,
+    shadowColor: '#fff',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    marginVertical: 8,
+  },
   wrapper: {
     borderWidth: 0.6,
     borderColor: 'rgba(255,255,255,0.8)',

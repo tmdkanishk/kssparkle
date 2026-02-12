@@ -1,4 +1,4 @@
-import { View,  FlatList, Image, useWindowDimensions, } from 'react-native'
+import { View, FlatList, Image, useWindowDimensions, } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useCustomContext } from '../hooks/CustomeContext';
 import TitleBarName from '../components/TitleBarName';
@@ -17,6 +17,8 @@ import { getWishlistProduct } from '../services/getWishlistProduct';
 import BottomBar from '../components/BottomBar';
 import { useCartCount } from '../hooks/CartContext';
 import { useWishlist } from '../hooks/WishlistContext';
+import BackgroundWrapper from '../components/customcomponents/BackgroundWrapper';
+import CustomHeader from '../components/customcomponents/CustomHeader';
 
 
 const Wishlist = ({ navigation }) => {
@@ -185,10 +187,18 @@ const Wishlist = ({ navigation }) => {
           (<View style={{ width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center' }}>
             <CustomActivity />
           </View>) :
-          (<View style={{ width: '100%', height: '100%', backgroundColor: Colors.white, }}>
-            <View style={commonStyles.bodyConatiner}>
-              <TitleBarName onClickBackIcon={() => navigation.goBack()} titleName={isLabel?.wishlistpagename_label} />
-              <View style={{ paddingHorizontal: 12 }}>
+          (
+            <BackgroundWrapper>
+
+              <View style={{ marginTop: 50, marginBottom: 20, marginLeft: 10 }}>
+                <CustomHeader pageName={isLabel?.wishlistpagename_label} />
+              </View>
+
+
+
+              {/* <TitleBarName onClickBackIcon={() => navigation.goBack()} titleName={isLabel?.wishlistpagename_label} /> */}
+              <View style={{ paddingHorizontal: 20 }}>
+
 
                 <FlatList
                   key={isLandscape}
@@ -203,32 +213,34 @@ const Wishlist = ({ navigation }) => {
                   contentContainerStyle={{ paddingBottom: 200 }}
                 />
               </View>
-            </View >
-            <BottomBar />
 
-            <SuccessModal
-              isModal={isShowModal}
-              isSuccessMessage={isModalMessage}
-              onClickClose={closeModal}
-              handleCloseModal={closeModal}
-            />
 
-            <AddToCartOptionUiModal
-              items={isAddTOCartOptionResult}
-              closeModal={() => setAddTOCartOptionModalShow(false)}
-              isModalVisibal={isAddTOCartOptionModalShow}
-              productId={productIdOption}
-            />
 
-            <FailedModal
-              isModal={isErrorModal}
-              isSuccessMessage={isErrorMgs}
-              onClickClose={() => { setErrorModal(false); setErrorMgs() }}
-              handleCloseModal={() => { setErrorModal(false); setErrorMgs() }}
-            />
+              <SuccessModal
+                isModal={isShowModal}
+                isSuccessMessage={isModalMessage}
+                onClickClose={closeModal}
+                handleCloseModal={closeModal}
+              />
 
-            <NotificationAlert />
-          </View>)
+              <AddToCartOptionUiModal
+                items={isAddTOCartOptionResult}
+                closeModal={() => setAddTOCartOptionModalShow(false)}
+                isModalVisibal={isAddTOCartOptionModalShow}
+                productId={productIdOption}
+              />
+
+              <FailedModal
+                isModal={isErrorModal}
+                isSuccessMessage={isErrorMgs}
+                onClickClose={() => { setErrorModal(false); setErrorMgs() }}
+                handleCloseModal={() => { setErrorModal(false); setErrorMgs() }}
+              />
+
+              <NotificationAlert />
+
+            </BackgroundWrapper>
+          )
       }
 
     </ >

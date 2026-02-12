@@ -9,7 +9,7 @@ export const getModuleData = async (route, position, endpointUrl) => {
         const url = `${BASE_URL}${endpointUrl}`;
         const lang = await _retrieveData('SELECT_LANG');
         const cur = await _retrieveData('SELECT_CURRENCY');
-        const user = await _retrieveData("USER");
+        const user = await _retrieveData("CUSTOMER_ID");
         const sessionId = await _retrieveData('SESSION_ID');
 
         const headers = {
@@ -18,9 +18,9 @@ export const getModuleData = async (route, position, endpointUrl) => {
         };
 
         const body = {
-            // code: lang?.code,
-            // currency: cur?.code,
-            // customer_id: user ? user[0]?.customer_id : null,
+            code: lang?.code,
+            currency: cur,
+            customer_id: user ? user : null,
             sessionid: sessionId,
             route: route,
             position: position

@@ -8,7 +8,7 @@ export const saveShippingPaymentMethod = async (shippingMethod, paymentMethod, c
         const lang = await _retrieveData('SELECT_LANG');
         const cur = await _retrieveData('SELECT_CURRENCY');
         const sessionId = await _retrieveData('SESSION_ID');
-        const user = await _retrieveData('USER');
+        const user = await _retrieveData('CUSTOMER_ID');
 
         const headers = {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -17,16 +17,16 @@ export const saveShippingPaymentMethod = async (shippingMethod, paymentMethod, c
 
         const body = {
             code: lang?.code,
-            currency: cur?.code,
+            currency: cur,
             sessionid: sessionId,
-            customer_id: user ? user[0].customer_id : null,
+            customer_id: user ? user : null,
             shipping_method: shippingMethod,
             payment_method: paymentMethod,
             comment: comment,
             agree: agree
         }
 
-        console.log("body payment contunue", body);
+        console.log("body payment contunue", body, url);
         const response = await axios.post(url, body, { headers: headers });
 
         if (response.status === HttpStatusCode.Ok) {

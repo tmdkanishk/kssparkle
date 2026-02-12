@@ -3,6 +3,8 @@ import React from 'react'
 import CustomButton from './CustomButton'
 import commonStyles from '../constants/CommonStyles'
 import { useCustomContext } from '../hooks/CustomeContext'
+import GlassContainer from './customcomponents/GlassContainer'
+import PriceView from './customcomponents/PriceView'
 
 
 const OrderHistoryCard = ({ orderId, customerName, orderStatus, orderDate, qty, total, onclickOrderDetail, label }) => {
@@ -10,10 +12,10 @@ const OrderHistoryCard = ({ orderId, customerName, orderStatus, orderDate, qty, 
     const { width, height } = useWindowDimensions();
     const isLandscape = width > height;
     return (
-        <View style={{ borderWidth: 1, borderColor: Colors.lightGray, height: 'auto', borderRadius: 6 }}>
-            <View style={{ padding: 10, flexDirection: 'row', borderColor: Colors.lightGray, borderBottomWidth: 1, alignItems: 'center', justifyContent: 'space-between' }}>
+        <GlassContainer style={{ borderWidth: 0, borderColor: Colors.lightGray, height: 'auto', borderRadius: 6 }}>
+            <View style={{ padding: 10, flexDirection: 'row', borderColor: Colors.white, borderBottomWidth: 0, alignItems: 'center', justifyContent: 'space-between' }}>
                 <View>
-                    <Text style={[commonStyles.text, { color: Colors.iconColor }]}>{label?.orderhstryorderid_label}:</Text>
+                    <Text style={[commonStyles.text]}>{label?.orderhstryorderid_label}:</Text>
                     <Text style={[commonStyles.text]}>{orderId ? orderId : '456FGHJK456'}</Text>
                 </View>
                 <CustomButton
@@ -37,14 +39,14 @@ const OrderHistoryCard = ({ orderId, customerName, orderStatus, orderDate, qty, 
                         {orderDate ? orderDate : '19-Oct-2024'} | {label?.extrafield_quantity}.: {qty ? qty : '45'}
                     </Text>
                     <Text style={commonStyles.smallTextBlackBold}>
-                        {label?.extrafield_total}:{total ? total : '4500'}
+                        {total ? <PriceView
+                            priceHtml={total}
+                            textStyle={{}}
+                        /> : '4500'}
                     </Text>
                 </View>
             </View>
-
-
-
-        </View>
+        </GlassContainer>
     )
 }
 

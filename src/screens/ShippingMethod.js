@@ -9,6 +9,7 @@ import {
     Image,
     Platform,
     Alert,
+    KeyboardAvoidingView,
 } from "react-native";
 import BackgroundWrapper from "../components/customcomponents/BackgroundWrapper";
 import GlassContainer from "../components/customcomponents/GlassContainer";
@@ -25,10 +26,13 @@ import { getShippingPoint } from "../services/getShippingPoint";
 import { useFocusEffect } from "@react-navigation/native";
 import { useLanguageCurrency } from "../hooks/LanguageCurrencyContext";
 import { _retrieveData } from "../utils/storage";
+import { useLoading } from "../hooks/LoadingProvider";
+import FailedModal from "../components/FailedModal";
 // import { ArrowLeft, ArrowRight, Gift } from "lucide-react-native";
 
 const ShippingMethod = ({ navigation }) => {
     const [selectedMethod, setSelectedMethod] = useState("Free Shipping");
+    const [selected, setSelected] = useState(null)
     const { Colors, EndPoint, GlobalText } = useCustomContext();
     const [isLabel, setLabel] = useState();
     const [loading, setLoading] = useState(false);
@@ -36,14 +40,19 @@ const ShippingMethod = ({ navigation }) => {
     const [isShippingMethodList, setShippingMethodList] = useState();
     const [isShippingMethodCode, setShippingMethodCode] = useState();
     const [isPaymentMethodCode, setPaymentMethodCode] = useState();
-    const [isComment, setComment] = useState();
-    const [isTC, setTC] = useState(false);
+    const [isComment, setComment] = useState("Test Comment");
+    const [isTC, setTC] = useState(true);
     const [isShippingPointModal, setShippingPointModal] = useState(false);
     const [isShippingPointUrl, setShippingPointUrl] = useState(null);
     const [loadingWebView, setLoadingWebView] = useState(false);
     const [screenLoading, setScreenLoading] = useState(false);
     const { language, currency, changeLanguage, changeCurrency } = useLanguageCurrency();
     const [scrollEnabled, setScrollEnabled] = useState(true);
+    const { setGlobalLoading } = useLoading()
+    const [isGiftWrap, setIsGiftWrap] = useState(false);
+    const [isErrorModal, setErrorModal] = useState(false);
+    const [isErrorMgs, setErrorMgs] = useState();
+
 
     const shippingMethods = [
         { id: 1, title: "Free Shipping", price: "₹0.00" },
@@ -76,7 +85,7 @@ const ShippingMethod = ({ navigation }) => {
 
     const fetchShippingPaymentMenthod = async () => {
         try {
-            setLoading(true);
+            setGlobalLoading(true);
             const result = await getShippingPaymentMehtod(
                 EndPoint?.checkout_Shippingandpaymentmethod
             );
@@ -92,38 +101,42 @@ const ShippingMethod = ({ navigation }) => {
             const shippingmethod = result?.shippingmethod;
             const shippingMethodsArray = Object.entries(shippingmethod).map(
                 ([key, value]) => ({
+                    id: key,              // stable key for React
+                    code: value.code,     // ✅ IMPORTANT
                     error: value.error,
-                    key,
-                    quote: value.quote[key], // Extract the nested object directly
+                    quote: value.quote,
                     sort_order: value.sort_order,
                     title: value.title,
                 })
             );
 
-            console.log("shippingMethodsArray", shippingMethodsArray[0]?.key);
             setShippingMethodList(shippingMethodsArray);
+
         } catch (error) {
             console.log("error", error.response.data);
         } finally {
-            setLoading(false);
+            setGlobalLoading(false);
         }
     };
 
     const onClickContinueOrder = async () => {
-        setScreenLoading(true);
+        setGlobalLoading(true);
         if (isShippingMethodCode) {
             const response = await checkShippingAddress(isShippingMethodCode, EndPoint?.shippingerror);
 
             console.log("response shipping method ", response);
 
             if (response?.error) {
-                Alert.alert(
-                    '',
-                    response?.error,
-                    [
-                        { text: GlobalText?.extrafield_okbtn, onPress: () => console.log('ok pressed!') }
-                    ]
-                );
+                // Alert.alert(
+                //     '',
+                //     response?.error,
+                //     [
+                //         { text: GlobalText?.extrafield_okbtn, onPress: () => console.log('ok pressed!') }
+                //     ]
+                // );
+
+                setErrorMgs(GlobalText?.extrafield_okbtn);
+                setErrorModal(true);
                 return;
             }
 
@@ -136,33 +149,40 @@ const ShippingMethod = ({ navigation }) => {
                         isTC,
                         EndPoint?.checkout_Shippingandpaymentmethodsave
                     );
-                    navigation.navigate("OrderPlace");
+                    navigation.navigate("OrderPlace")
                 } catch (error) {
                     console.log("error", error.response.data);
-                    Alert.alert("", GlobalText?.extrafield_somethingwrong, [{ text: GlobalText?.extrafield_okbtn }]);
+                     setErrorMgs(GlobalText?.extrafield_okbtn);
+                     setErrorModal(true);
+                    // Alert.alert("", GlobalText?.extrafield_somethingwrong, [{ text: GlobalText?.extrafield_okbtn }]);
                 }
             } else {
-                Alert.alert(
-                    '',
-                    isLabel?.selctpaymethod_label,
-                    [
-                        { text: GlobalText?.extrafield_okbtn, onPress: () => console.log('ok pressed!') }
-                    ]
-                );
+                // Alert.alert(
+                //     '',
+                //     isLabel?.selctpaymethod_label,
+                //     [
+                //         { text: GlobalText?.extrafield_okbtn, onPress: () => console.log('ok pressed!') }
+                //     ]
+                // );
+                setErrorMgs(GlobalText?.extrafield_okbtn);
+                setErrorModal(true);
 
             }
 
         } else {
-            Alert.alert(
-                '',
-                isLabel?.selctshipmethod_label,
-                [
-                    { text: GlobalText?.extrafield_okbtn, onPress: () => console.log('ok pressed!') }
-                ]
-            );
+            // Alert.alert(
+            //     '',
+            //     isLabel?.selctshipmethod_label,
+            //     [
+            //         { text: GlobalText?.extrafield_okbtn, onPress: () => console.log('ok pressed!') }
+            //     ]
+            // );
+                setErrorMgs(GlobalText?.extrafield_okbtn);
+                setErrorModal(true);
+
 
         }
-        setScreenLoading(false);
+        setGlobalLoading(false);
     };
 
     const onOpenShippingPoint = async () => {
@@ -216,134 +236,184 @@ const ShippingMethod = ({ navigation }) => {
                     <Image source={require("../assets/images/back.png")} style={{ width: 18, height: 18, tintColor: "#fff", }} />
                 </TouchableOpacity>
                 {/* 🔹 Header */}
-                <View style={styles.headerRow}>
-                    <Text style={styles.headerTitle}>Choose Shipping Method</Text>
-                </View>
-
-                {/* 🔹 Shipping Options */}
-                <View style={{ marginTop: 20 }}>
-                    {shippingMethods.map((method) => (
-                        <TouchableOpacity
-                            key={method.id}
-                            activeOpacity={0.8}
-                            onPress={() => setSelectedMethod(method.title)}
-                        >
-                            <GlassContainer style={styles.shippingCard}>
-                                <View>
-                                    <Text style={styles.shippingTitle}>{method.title}</Text>
-                                    <Text style={styles.shippingPrice}>{method.price}</Text>
-                                </View>
-                                <View
-                                    style={[
-                                        styles.radioOuter,
-                                        selectedMethod === method.title && styles.radioOuterActive,
-                                    ]}
-                                >
-                                    {selectedMethod === method.title && <View style={styles.radioInner} />}
-                                </View>
-                            </GlassContainer>
-                        </TouchableOpacity>
-                    ))}
-                </View>
-
-                 <View style={[styles.header]}>
-                                    <Text style={styles.title}>Choose Payment Method</Text>
-                                    <View style={{ width: 24 }} />
-                                </View>
-                
-                                <Text style={styles.sectionTitle}>Online Payment Methods</Text>
-                                {isPaymentMethodList?.map((item) => (
-                                    <GlassContainer key={item.id} style={styles.paymentOption}>
-                                        <TouchableOpacity
-                                            style={styles.paymentRow}
-                                            onPress={() => setSelected(item.id)}
-                                            activeOpacity={0.8}
-                                        >
-                                            <View style={styles.iconRow}>
-                                                <Image source={item.icon} style={styles.paymentIcon} />
-                                                <Text style={styles.paymentText}>{item.name}</Text>
-                                            </View>
-                                            <View style={styles.radioCircle}>
-                                                {selected === item.id && <View style={styles.radioInner} />}
-                                            </View>
-                                        </TouchableOpacity>
-                                    </GlassContainer>
-                                ))}
-
-                {/* 🔹 Gift Section */}
-                <View style={styles.giftSection}>
-                    <View style={styles.giftHeader}>
-                        <Text style={styles.giftTitle}>Gift</Text>
-                        <Image style={{ width: 30, height: 30 }} source={require('../assets/images/gift.png')} />
-                    </View>
-                    <Text style={styles.sectionSubtitle}>Recipient’s Details</Text>
-
-                    {/* 🔹 Form Fields */}
-                    <GlassContainer padding={4} borderRadius={10}>
-                        <TextInput
-                            placeholder="Full Name"
-                            placeholderTextColor="#fff"
-                            style={styles.input}
-                        />
-                    </GlassContainer>
-
-                    <GlassContainer padding={4} borderRadius={10}>
-                        <TextInput
-                            placeholder="Phone Number"
-                            placeholderTextColor="#fff"
-                            keyboardType="phone-pad"
-                            style={styles.input}
-                        />
-                    </GlassContainer>
-
-                    <GlassContainer padding={4} borderRadius={10} style={{ height: 70 }}>
-                        <TextInput
-                            placeholder="Address"
-                            placeholderTextColor="#fff"
-                            style={styles.input}
-                        />
-                    </GlassContainer>
-
-                    <View style={{ marginTop: 20 }}>
-                        <GlassContainer padding={4} borderRadius={10} style={{ height: 70, }}>
-                            <TextInput
-                                placeholder="Custom Message"
-                                placeholderTextColor="#fff"
-                                style={styles.input}
-                            />
-                        </GlassContainer>
-                    </View>
-
-
-                    {/* 🔹 Gift Wrap Option */}
-                    <TouchableOpacity style={styles.giftWrapRow}>
-                        <View style={styles.radioOuterSmall}>
-                            <View style={styles.radioInnerSmall} />
+                {isShippingMethodList?.length > 0 && (
+                    <>
+                        <View style={styles.headerRow}>
+                            <Text style={styles.headerTitle}>Choose Shipping Method</Text>
                         </View>
-                        <Text style={styles.giftWrapText}>Gift Wrap</Text>
-                    </TouchableOpacity>
-                </View>
 
-                {/* 🔹 Footer */}
-                <View style={styles.footer}>
+                        <View style={{ marginTop: 20 }}>
+                            {isShippingMethodList.map((method) => (
+                                <TouchableOpacity
+                                    key={method.id}
+                                    activeOpacity={0.8}
+                                    onPress={() => {
+                                        setSelectedMethod(method.code);
+                                        setShippingMethodCode(method.code);
+                                    }}
+                                >
+                                    <GlassContainer style={styles.shippingCard}>
+                                        <Text style={styles.shippingTitle}>{method.title}</Text>
 
-                    <MokaffaPoints />
+                                        <View
+                                            style={[
+                                                styles.radioOuter,
+                                                selectedMethod === method.code && styles.radioOuterActive,
+                                            ]}
+                                        >
+                                            {selectedMethod === method.code && <View style={styles.radioInner} />}
+                                        </View>
+                                    </GlassContainer>
+                                </TouchableOpacity>
+                            ))}
+                        </View>
+                    </>
+                )}
 
 
-                    {/* <GlassmorphismButton title="SLIDE TO ORDER" onPress={()=>navigation.navigate("ChooseDeliveryAddress")}/> */}
-                    <GlassSwipeButton
-                        title="SLIDE TO ORDER"
-                        onSwipeStart={() => setScrollEnabled(false)}
-                        onSwipeEnd={() => setScrollEnabled(true)}
-                        onSwipeSuccess={() => navigation.navigate("ChooseDeliveryAddress")}
-                    />
 
-                    <View style={styles.footerBottomRow}>
-                        <Text style={styles.totalText}>₹16669.25</Text>
-                        <Text style={styles.itemText}>1 Item</Text>
-                    </View>
-                </View>
+                {isPaymentMethodList?.length > 0 && (
+                    <>
+                        <View style={{ flexDirection: "row", alignItems: "center", gap: 10, marginTop: 30 }}>
+                            <Text style={[styles.title, {marginBottom:10}]}>Choose Payment Method</Text>
+                        </View>
+
+                        {isPaymentMethodList.map((item) => (
+                            <GlassContainer key={item?.code} style={styles.paymentOption}>
+                                <TouchableOpacity
+                                    style={styles.paymentRow}
+                                    activeOpacity={0.8}
+                                    onPress={() => {
+                                        setSelected(item?.code);
+                                        setPaymentMethodCode(item?.code);
+                                    }}
+                                >
+                                    <View style={styles.iconRow}>
+                                        <Image
+                                            source={require('../assets/images/creditcard.png')}
+                                            style={styles.paymentIcon}
+                                        />
+                                        <Text style={styles.paymentText}>{item?.title}</Text>
+                                    </View>
+
+                                    <View style={styles.radioCircle}>
+                                        {selected === item?.code && <View style={styles.radioInner} />}
+                                    </View>
+                                </TouchableOpacity>
+                            </GlassContainer>
+                        ))}
+                    </>
+                )}
+
+
+                <KeyboardAvoidingView
+                    style={{ flex: 1 }}
+                    behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+                >
+                    <ScrollView
+                        keyboardShouldPersistTaps="handled"
+                        contentContainerStyle={{ paddingBottom: 40 }}
+                    >
+                        {/* 🔹 Gift Section */}
+                        {/* <View style={styles.giftSection}>
+                            <TouchableOpacity
+                                style={styles.giftWrapRow}
+                                activeOpacity={0.8}
+                                onPress={() => setIsGiftWrap(prev => !prev)}
+                                hitSlop={20}
+                            >
+                                <View style={styles.radioOuterSmall}>
+                                    {isGiftWrap && <View style={styles.radioInnerSmall} />}
+                                </View>
+
+                                <Text style={styles.giftWrapText}>Gift Wrap</Text>
+                            </TouchableOpacity>
+
+                            {isGiftWrap && (
+                                <>
+                                    <View style={styles.giftHeader}>
+                                        <Text style={styles.giftTitle}>Gift</Text>
+                                        <Image
+                                            style={{ width: 30, height: 30 }}
+                                            source={require('../assets/images/gift.png')}
+                                        />
+                                    </View>
+
+                                    <Text style={styles.sectionSubtitle}>Recipient’s Details</Text>
+
+                                    <GlassContainer padding={4} borderRadius={10}>
+                                        <TextInput
+                                            placeholder="Full Name"
+                                            placeholderTextColor="#fff"
+                                            style={styles.input}
+                                        />
+                                    </GlassContainer>
+
+                                    <GlassContainer padding={4} borderRadius={10}>
+                                        <TextInput
+                                            placeholder="Phone Number"
+                                            placeholderTextColor="#fff"
+                                            keyboardType="phone-pad"
+                                            style={styles.input}
+                                        />
+                                    </GlassContainer>
+
+                                    <GlassContainer padding={4} borderRadius={10} style={{ height: 70 }}>
+                                        <TextInput
+                                            placeholder="Address"
+                                            placeholderTextColor="#fff"
+                                            style={styles.input}
+                                            multiline
+                                        />
+                                    </GlassContainer>
+
+                                    <View style={{ marginTop: 20 }}>
+                                        <GlassContainer padding={4} borderRadius={10} style={{ height: 70 }}>
+                                            <TextInput
+                                                placeholder="Custom Message"
+                                                placeholderTextColor="#fff"
+                                                style={styles.input}
+                                                multiline
+                                            />
+                                        </GlassContainer>
+                                    </View>
+                                </>
+                            )}
+                        </View> */}
+                    </ScrollView>
+                </KeyboardAvoidingView>
+
+
+
+
             </ScrollView>
+
+            {/* 🔹 Footer */}
+            <View style={styles.footer}>
+
+                <MokaffaPoints />
+
+
+                {/* <GlassmorphismButton title="SLIDE TO ORDER" onPress={()=>navigation.navigate("ChooseDeliveryAddress")}/> */}
+                <GlassSwipeButton
+                    title="SLIDE TO ORDER"
+                    onSwipeStart={() => setScrollEnabled(false)}
+                    onSwipeEnd={() => setScrollEnabled(true)}
+                    onSwipeSuccess={() => onClickContinueOrder()}
+                />
+
+                <View style={styles.footerBottomRow}>
+                    <Text style={styles.totalText}>₹16669.25</Text>
+                    <Text style={styles.itemText}>1 Item</Text>
+                </View>
+            </View>
+
+             <FailedModal
+                isSuccessMessage={isErrorMgs}
+                handleCloseModal={() => { setErrorModal(false); setErrorMgs() }}
+                isModal={isErrorModal}
+                onClickClose={() => { setErrorModal(false); setErrorMgs() }}
+            />
         </BackgroundWrapper>
     );
 };
@@ -430,8 +500,8 @@ const styles = StyleSheet.create({
     input: {
         // borderWidth:1,
         // borderColor:'white',
-        padding: 10
-        // color: "#fff",
+        padding: 10,
+        color: "#fff",
         // fontSize: 14,
         // paddingHorizontal: 8,
         // paddingVertical: Platform.OS === "android" ? 4 : 4,
@@ -439,7 +509,8 @@ const styles = StyleSheet.create({
     giftWrapRow: {
         flexDirection: "row",
         alignItems: "center",
-        marginTop: 18,
+        marginBottom: 30,
+        marginLeft: 10
     },
     radioOuterSmall: {
         width: 18,
@@ -462,7 +533,9 @@ const styles = StyleSheet.create({
         marginLeft: 8,
     },
     footer: {
-        marginTop: 40,
+        marginBottom: 10,
+        paddingBottom: 20,
+        padding: 15
     },
     footerTopRow: {
         flexDirection: "row",       // ← align text + line horizontally
@@ -512,6 +585,7 @@ const styles = StyleSheet.create({
         color: "#fff",
         fontSize: 20,
         fontWeight: "700",
+        marginBottom: 10
     },
     sectionTitle: {
         color: "#fff",
@@ -524,30 +598,36 @@ const styles = StyleSheet.create({
     paymentOption: {
         marginVertical: 4,
         paddingVertical: 2,
-        paddingHorizontal: 10,
+        // paddingHorizontal: 10,
         borderRadius: 20,
-        marginTop: 5
+        marginTop: 5,
+        width: '100%'
     },
     paymentRow: {
         flexDirection: "row",
-        justifyContent: "space-between",
+        // justifyContent: "space-between",
         alignItems: "center",
     },
     iconRow: {
         flexDirection: "row",
-        // justifyContent:'space-between',
         alignItems: "center",
         gap: 15,
+        flex: 1,
+        // backgroundColor:'red',
+        marginLeft: -10
     },
     paymentIcon: {
         width: 38,
         height: 38,
         resizeMode: "contain",
-        marginLeft: -20
+        // marginLeft: -20
     },
     paymentText: {
         color: "#fff",
         fontSize: 15,
+        width: '70%',
+        marginLeft: 10
+
     },
     radioCircle: {
         height: 18,
@@ -557,6 +637,7 @@ const styles = StyleSheet.create({
         borderColor: "#fff",
         alignItems: "center",
         justifyContent: "center",
+        // backgroundColor:'green'
     },
     radioInner: {
         height: 8,

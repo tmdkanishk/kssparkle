@@ -10,9 +10,10 @@ import { useCartCount } from '../../hooks/CartContext'
 import CustomQuantityInput from './CustomQuantityInput'
 import { editProductQty } from '../../services/editProductQty'
 import { useLoading } from '../../hooks/LoadingProvider'
+import PriceView from './PriceView'
 
 const ShoppingBagProductCard = ({ item, toggleCart, cartItems }) => {
-    console.log("cart item:", item);
+    // console.log("cart item:", item);
     const screenWidth = Dimensions.get('window').width;
     const { setGlobalLoading } = useLoading();
     const { Colors, EndPoint, GlobalText } = useCustomContext();
@@ -115,7 +116,7 @@ const ShoppingBagProductCard = ({ item, toggleCart, cartItems }) => {
 
 
                 <View style={styles.row}>
-                    <Text style={styles.stockText}>9 left</Text>
+                    <Text style={styles.stockText}>{item?.available_stock} left</Text>
 
                     {!item?.stock && (
                         <Text style={{ color: "#ff4d4d" }}>Out of stock</Text>
@@ -123,8 +124,20 @@ const ShoppingBagProductCard = ({ item, toggleCart, cartItems }) => {
                 </View>
 
                 <View style={styles.priceRow}>
-                    <Text style={styles.price}>{item.total}</Text>
-                    <Text style={styles.oldPrice}>{item.price}</Text>
+                    {/* <Text style={styles.price}>{item.total}</Text> */}
+                     {item?.total && (
+                        <PriceView
+                            priceHtml={item?.total}
+                            textStyle={styles.price}
+                        />
+                    )}
+                    {item?.price && (
+                        <PriceView
+                            priceHtml={item?.price}
+                            textStyle={styles.oldPrice}
+                        />
+                    )}
+                    {/* <Text style={styles.oldPrice}>{item.price}</Text> */}
                 </View>
 
                 <View style={{ flexDirection: "row", alignItems: "center", marginTop: 10 }}>

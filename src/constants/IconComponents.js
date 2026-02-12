@@ -168,7 +168,7 @@ export const IconComponentClose = ({ color, size }) => {
 
 export const IconComponentCart = ({ color, size }) => {
     return (
-        <AntDesign name="shoppingcart" size={size ? size : 24} color={color ? color : "black"} />
+        <AntDesign name="shopping-cart" size={size ? size : 24} color={color ? color : "black"} />
     )
 }
 

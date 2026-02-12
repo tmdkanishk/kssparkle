@@ -1,10 +1,13 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 import commonStyles from '../constants/CommonStyles'
+import Colors from '../constants/Colors'
+import GlassContainer from './customcomponents/GlassContainer'
 
 const PaymentInformation = ({label, data}) => {
     return (
-        <View style={{ padding: 12, borderWidth: 1, borderColor: Colors.lightGray, borderRadius: 8 }}>
+        <GlassContainer>
+        <View style={{ padding: 12, borderColor: Colors.lightGray, borderRadius: 8 }}>
             <View style={{ height: 40, borderBottomWidth: 1, borderColor: Colors.lightGray }}>
                 <Text style={commonStyles.smallHeading}>{label?.orderinfopayinfo_heading}</Text>
             </View>
@@ -13,6 +16,7 @@ const PaymentInformation = ({label, data}) => {
                 <Text style={commonStyles.smallHeading}>{data?.payment_method}</Text>
             </View>
         </View>
+        </GlassContainer>
     )
 }
 

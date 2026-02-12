@@ -74,7 +74,8 @@ export const THREE_X_ENDPOINT = {
   cart_remove: "restapi/cart/remove",
   cart_edit: "restapi/cart/edit",
   cart_voucher: "restapi/cart/voucher",
-  cart_coupon: "restapi/cart/coupon",
+  // cart_coupon: "restapi/cart/coupon",
+    cart_coupon: "restapi/coupon",
   cart_shipping: "restapi/cart/shipping",
   cart_estimateshipping: "restapi/cart/estimateshipping",
 

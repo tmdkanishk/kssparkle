@@ -8,7 +8,7 @@ export const addBillingAndShippingAddress = async (shippingAddressId, billingAdd
         const lang = await _retrieveData('SELECT_LANG');
         const cur = await _retrieveData('SELECT_CURRENCY');
         const sessionId = await _retrieveData('SESSION_ID');
-        const user = await _retrieveData('USER');
+        const user = await _retrieveData('CUSTOMER_ID');
 
         const headers = {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -17,14 +17,14 @@ export const addBillingAndShippingAddress = async (shippingAddressId, billingAdd
 
         const body = {
             code: lang?.code,
-            currency: cur?.code,
+            currency: cur,
             sessionid: sessionId,
-            customer_id: user ? user[0]?.customer_id : null,
+            customer_id: user ? user : null,
             shipping_address_id: shippingAddressId,
             payment_address_id: billingAddressId
         }
 
-        console.log("body of shipping and billing address api", body);
+        console.log("body of shipping and billing address api", body, url);
 
         const response = await axios.post(url, body, { headers: headers });
 

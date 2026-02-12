@@ -7,7 +7,7 @@ export const returnOrder = async (formData, order_returnorder) => {
         const url = `${BASE_URL}${order_returnorder}`;
         const lang = await _retrieveData('SELECT_LANG');
         const cur = await _retrieveData('SELECT_CURRENCY');
-        const user = await _retrieveData("USER");
+        const user = await _retrieveData("CUSTOMER_ID");
         const sessionId = await _retrieveData('SESSION_ID');
 
         const headers = {
@@ -17,14 +17,17 @@ export const returnOrder = async (formData, order_returnorder) => {
 
         const body = {
             code: lang?.code,
-            currency: cur?.code,
-            customer_id: user ? user[0]?.customer_id : null,
+            currency: cur,
+            customer_id: user ? user : null,
             sessionid: sessionId,
         }
 
         const mergedObj = { ...body, ...formData };
 
         const response = await axios.post(url, mergedObj, { headers: headers });
+
+
+        console.log("return order post data", mergedObj, url)
 
         if (response.status === HttpStatusCode.Ok) {
             return response.data;

@@ -210,6 +210,14 @@ const Home = ({ navigation }) => {
         );
     }
 
+
+const moduleProducts =
+  isModuleData
+    ?.filter(m => m.type === 'products')
+    ?.flatMap(m => m.data) || [];
+
+    
+
     const Header = () => (
         <View style={{ marginTop: Platform.OS === "ios" ? 20 : 0 }}>
             <Pressable style={{ width: Platform.OS === "ios" ? '100%' : "100%", paddingHorizontal: Platform.OS === "ios" ? 5 : 20 }}>
@@ -229,23 +237,23 @@ const Home = ({ navigation }) => {
 
                             )
                         }
-                        if (item?.type === "products") {
-                            return (
-                                <View key={index} style={{ width: '100%', padding:'auto', flexDirection:'row', flexWrap:'wrap', gap:12, marginHorizontal:12}}>
-                                    {
-                                        item?.data?.length && (
-                                            item?.data?.map((item, index) => (
-                                                <ProductGlassCard
-                                                    key={index}
-                                                    item={item}
-                                                />
-                                            ))
-                                        )
-                                    }
+                        // if (item?.type === "products") {
+                        //     return (
+                        //         <View key={index} style={{ width: '100%', padding:'auto', flexDirection:'row', flexWrap:'wrap', gap:12, marginHorizontal:12}}>
+                        //             {
+                        //                 item?.data?.length && (
+                        //                     item?.data?.map((item, index) => (
+                        //                         <ProductGlassCard
+                        //                             key={index}
+                        //                             item={item}
+                        //                         />
+                        //                     ))
+                        //                 )
+                        //             }
 
-                                </View>
-                            )
-                        }
+                        //         </View>
+                        //     )
+                        // }
                     }
                     )
                 ) : null
@@ -269,7 +277,7 @@ const Home = ({ navigation }) => {
                     <View style={{ paddingHorizontal: 12 }}>
                         <CustomProductList header={
                             <Header />
-                        } />
+                        }   moduleProducts={moduleProducts}/>
 
                     </View>)}
 

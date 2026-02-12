@@ -430,7 +430,7 @@ const MyAccountScreen = ({ navigation }) => {
               </View>
 
               {/* ORDER */}
-              <View style={{ alignItems: "center" }}>
+              <TouchableOpacity onPress={()=>{navigation.navigate("MyOrderScreen")}} style={{ alignItems: "center" }}>
                 <GlassContainer style={{ width: 90, height: 100, justifyContent: "center", alignItems: "center" }}>
                   <Image
                     source={require("../assets/images/order.png")}
@@ -442,7 +442,7 @@ const MyAccountScreen = ({ navigation }) => {
                     {isLabel?.acntdbmyorders_heading}
                   </Text>
                 </GlassContainer>
-              </View>
+              </TouchableOpacity>
 
             </View>
             {/* <View style={styles.row}>
@@ -452,7 +452,7 @@ const MyAccountScreen = ({ navigation }) => {
 
             <View style={{ flexDirection: "row", justifyContent: "space-between", marginVertical: 10, }}>
 
-              <View style={{ alignItems: "center" }}>
+              <TouchableOpacity onPress={()=>{navigation.navigate("Wishlist")}} style={{ alignItems: "center" }}>
                 <GlassContainer style={{ width: 90, height: 90, justifyContent: "center", alignItems: "center" }}>
                   <Image
                     source={require("../assets/images/wishlist.png")}
@@ -471,7 +471,7 @@ const MyAccountScreen = ({ navigation }) => {
                   </Text>
                 </GlassContainer>
 
-              </View>
+              </TouchableOpacity>
 
               {/* ORDER */}
               {/* <View style={{ alignItems: "center" }}>
@@ -509,8 +509,14 @@ const MyAccountScreen = ({ navigation }) => {
           {/* Row 3 */}
 
           <View style={styles.row}>
+            <TouchableOpacity onPress={()=>{navigation.navigate("Notification")}}>
             <AccountItem image={require("../assets/images/notification.png")} label="Notification" />
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={()=>{}}>
             <AccountItem image={require("../assets/images/address.png")} label={isLabel?.acntdbmyaddrs_label} />
+            </TouchableOpacity>
+
             <AccountItem image={require("../assets/images/wallet.png")} label="Wallet" />
           </View>
 

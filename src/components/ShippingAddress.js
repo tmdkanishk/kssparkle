@@ -3,10 +3,12 @@ import React from 'react'
 import commonStyles from '../constants/CommonStyles'
 import Colors from '../constants/Colors';
 import { IconComponentLocation } from '../constants/IconComponents';
+import GlassContainer from './customcomponents/GlassContainer';
 
 const ShippingAddress = ({label, data}) => {
   return (
-    <View style={{ padding: 12, borderWidth: 1, borderColor: Colors.lightGray, borderRadius: 8 }}>
+    <GlassContainer>
+    <View style={{ padding: 12, borderColor: Colors.lightGray, borderRadius: 8 }}>
             <View style={{ height: 40, borderBottomWidth: 1, borderColor: Colors.lightGray }}>
                 <Text style={commonStyles.smallHeading}>{label?.orderinfoshipaddr_heading}</Text>
             </View>
@@ -18,6 +20,7 @@ const ShippingAddress = ({label, data}) => {
                 <Text style={commonStyles.text}>{data?.shipping_address}</Text>
             </View>
         </View>
+        </GlassContainer>
   )
 }
 

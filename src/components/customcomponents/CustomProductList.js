@@ -5,7 +5,7 @@ import ProductGlassCard from './ProductGlassCard';
 import { useCustomContext } from '../../hooks/CustomeContext';
 import { useNavigation } from '@react-navigation/native';
 
-const CustomProductList = ({ header }) => {
+const CustomProductList = ({ header, moduleProducts = [] }) => {
     const { width, height } = useWindowDimensions();
     const isLandscape = width > height;
     const { Colors, EndPoint, GlobalText } = useCustomContext();
@@ -79,6 +79,14 @@ const renderFooter = () => {
     );
 };
 
+const combinedProducts = React.useMemo(() => {
+  const map = new Map();
+
+  moduleProducts.forEach(p => map.set(p.product_id, p));
+  data.forEach(p => map.set(p.product_id, p));
+
+  return Array.from(map.values());
+}, [moduleProducts, data]);
 
 
   
@@ -96,7 +104,7 @@ const renderFooter = () => {
 
     return (
         <FlatList
-            data={data}
+            data={combinedProducts}
             keyExtractor={(item, index) => index.toString()}
             renderItem={renderItem}
             ListHeaderComponent={header}

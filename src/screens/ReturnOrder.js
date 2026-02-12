@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, TouchableOpacity, TextInput, Platform, SafeAreaView } from 'react-native'
+import { View, Text, ScrollView, TouchableOpacity, TextInput, Platform, SafeAreaView, KeyboardAvoidingView } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import CustomActivity from '../components/CustomActivity'
 import { useCustomContext } from '../hooks/CustomeContext';
@@ -15,6 +15,8 @@ import SuccessModal from '../components/SuccessModal';
 import { CommonActions } from '@react-navigation/native';
 import { checkAutoLogin } from '../utils/helpers';
 import NotificationAlert from '../components/NotificationAlert';
+import BackgroundWrapper from '../components/customcomponents/BackgroundWrapper';
+import CustomHeader from '../components/customcomponents/CustomHeader';
 
 
 const ReturnOrder = ({ navigation, route }) => {
@@ -63,30 +65,21 @@ const ReturnOrder = ({ navigation, route }) => {
             const url = `${BASE_URL}${EndPoint?.order_returnorderinfo}`;
             const lang = await _retrieveData('SELECT_LANG');
             const cur = await _retrieveData('SELECT_CURRENCY');
-            const user = await _retrieveData("USER");
+            const user = await _retrieveData("CUSTOMER_ID");
             const sessionId = await _retrieveData('SESSION_ID');
 
-            if (user) {
-                setFormData({
-                    firstname: user[0]?.firstname,
-                    lastname: user[0]?.lastname,
-                    email: user[0]?.email,
-                    telephone: user[0]?.phoneno,
-                    order_id: orderId,
-                    product_id: productId,
-                    opened: 0,
-                    quantity: '1'
-                })
-            }
+
             const headers = {
                 'Content-Type': 'application/x-www-form-urlencoded',
                 Key: API_KEY,
             };
 
             const body = {
-                code: lang?.code,
-                currency: cur?.code,
-                customer_id: user ? user[0]?.customer_id : null,
+                // code: lang?.code,
+                code: "en-gb",
+                currency: cur,
+                customer_id: user ? user : null,
+                // customer_id: user ? user[0]?.customer_id : null,
                 sessionid: sessionId,
                 product_id: productId,
                 order_id: orderId,
@@ -94,7 +87,23 @@ const ReturnOrder = ({ navigation, route }) => {
 
             const response = await axios.post(url, body, { headers: headers });
 
+            console.log("fetchRetrunOrderText function runs", response.data, body, url)
+
+
+
+
+
             if (response.status === HttpStatusCode.Ok) {
+                setFormData({
+                    firstname: response?.data?.firstname,
+                    lastname: response?.data?.lastname,
+                    email: response?.data?.email,
+                    telephone: response?.data?.telephone,
+                    order_id: orderId,
+                    product_id: productId,
+                    opened: 0,
+                    quantity: '1'
+                })
                 setLabel(response.data?.text);
                 setResionsList(response.data?.return_reasons);
                 setProductDetail(response.data?.product);
@@ -187,206 +196,261 @@ const ReturnOrder = ({ navigation, route }) => {
     return (
 
         <>
-            {
-                loading ? (
-                    <CustomActivity />
-                ) : (
-                    <>
 
-                        <View style={commonStyles.bodyConatiner}>
-                            <TitleBarName onClickBackIcon={() => navigation.goBack()} titleName={isLabel?.returnorderpagename_label} />
-                            <ScrollView showsVerticalScrollIndicator={false} style={{ opacity: screenLoading ? 0.5 : 1 }}>
-                                <View style={{ paddingHorizontal: 12, marginBottom: 50 }}>
+            <BackgroundWrapper>
+                {/* <TitleBarName onClickBackIcon={() => navigation.goBack()} titleName={isLabel?.returnorderpagename_label} /> */}
+                {/* <CustomHeader pageName={isLabel?.returnorderpagename_label}/> */}
 
-                                    <View style={{ gap: 10, marginVertical: 10 }}>
-                                        <Text style={commonStyles.heading}>{isLabel?.returnorderprodreturn_heading}</Text>
+                <KeyboardAvoidingView
+                    style={{ flex: 1 }}
+                    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                >
+                    <ScrollView showsVerticalScrollIndicator={false} style={{ opacity: screenLoading ? 0.5 : 1 }}>
+                        <View style={{ marginTop: 50 }}>
+                            <CustomHeader pageName={isLabel?.returnorderpagename_label} />
+                        </View>
+
+
+                        <View style={{ paddingHorizontal: 12, marginBottom: 70 }}>
+
+                            <View style={{ gap: 10, marginVertical: 10, marginTop: 20 }}>
+
+                                {/* <Text style={commonStyles.heading}>{isLabel?.returnorderprodreturn_heading}</Text>
                                         <Text>{isLabel?.returnordercompleteform_label}</Text>
-                                        <Text style={commonStyles.heading}>{isLabel?.returnorderinfo_heading}</Text>
-                                        <View style={{ gap: 10 }}>
-                                            <InputBox
-                                                onChangeText={(value) => { handleInputChange('firstname', value); setNameError(null) }}
-                                                label={isLabel?.returnorderfname_label}
-                                                placeholder={isLabel?.returnorderfname_label}
-                                                inputStyle={{ w: '100%', h: 50, ph: 20 }}
-                                                textVlaue={formData?.firstname}
-                                                isRequired={true}
-                                                borderColor={isNameError ? 'red' : null}
-                                                ErrorMessage={isNameError}
-                                            />
+                                        <Text style={commonStyles.heading}>{isLabel?.returnorderinfo_heading}</Text> */}
+                                <View style={{ gap: 10 }}>
+                                    <InputBox
+                                        onChangeText={(value) => { handleInputChange('firstname', value); setNameError(null) }}
+                                        label={isLabel?.returnorderfname_label}
+                                        placeholder={isLabel?.returnorderfname_label}
+                                        inputStyle={{ w: '100%', h: 50, ph: 20 }}
+                                        textVlaue={formData?.firstname}
+                                        isRequired={true}
+                                        borderColor={isNameError ? 'red' : null}
+                                        ErrorMessage={isNameError}
+                                    />
 
 
-                                            <InputBox
-                                                onChangeText={(value) => { handleInputChange('lastname', value); setLastNameError(null) }}
-                                                label={isLabel?.returnorderlname_label}
-                                                placeholder={isLabel?.returnorderlname_label}
-                                                inputStyle={{ w: '100%', h: 50, ph: 20 }}
-                                                textVlaue={formData?.lastname}
-                                                isRequired={true}
-                                                borderColor={isLastNameError ? 'red' : null}
-                                                ErrorMessage={isLastNameError}
-                                            />
+                                    <InputBox
+                                        onChangeText={(value) => { handleInputChange('lastname', value); setLastNameError(null) }}
+                                        label={isLabel?.returnorderlname_label}
+                                        placeholder={isLabel?.returnorderlname_label}
+                                        inputStyle={{ w: '100%', h: 50, ph: 20 }}
+                                        textVlaue={formData?.lastname}
+                                        isRequired={true}
+                                        borderColor={isLastNameError ? 'red' : null}
+                                        ErrorMessage={isLastNameError}
+                                    />
 
-                                            <InputBox
-                                                onChangeText={(value) => { handleInputChange('email', value); setEmailError(null) }}
-                                                label={isLabel?.returnorderemail_label}
-                                                placeholder={isLabel?.returnorderemail_label}
-                                                inputStyle={{ w: '100%', h: 50, ph: 20 }}
-                                                InputType={'email-address'}
-                                                textVlaue={formData?.email}
-                                                isRequired={true}
-                                                borderColor={isEmailError ? 'red' : null}
-                                                ErrorMessage={isEmailError}
-                                            />
+                                    <InputBox
+                                        onChangeText={(value) => { handleInputChange('email', value); setEmailError(null) }}
+                                        label={isLabel?.returnorderemail_label}
+                                        placeholder={isLabel?.returnorderemail_label}
+                                        inputStyle={{ w: '100%', h: 50, ph: 20 }}
+                                        InputType={'email-address'}
+                                        textVlaue={formData?.email}
+                                        isRequired={true}
+                                        borderColor={isEmailError ? 'red' : null}
+                                        ErrorMessage={isEmailError}
+                                    />
 
-                                            <InputBox
-                                                onChangeText={(value) => { handleInputChange('telephone', value); setTelephoneError(null) }}
-                                                label={isLabel?.returnorderphone_label}
-                                                placeholder={isLabel?.returnorderphone_label}
-                                                inputStyle={{ w: '100%', h: 50, ph: 20 }}
-                                                textVlaue={formData?.telephone}
-                                                isRequired={true}
-                                                borderColor={isTelephoneError ? 'red' : null}
-                                                ErrorMessage={isTelephoneError}
-                                            />
+                                    <InputBox
+                                        onChangeText={(value) => { handleInputChange('telephone', value); setTelephoneError(null) }}
+                                        label={isLabel?.returnorderphone_label}
+                                        placeholder={isLabel?.returnorderphone_label}
+                                        inputStyle={{ w: '100%', h: 50, ph: 20 }}
+                                        textVlaue={formData?.telephone}
+                                        isRequired={true}
+                                        borderColor={isTelephoneError ? 'red' : null}
+                                        ErrorMessage={isTelephoneError}
+                                    />
 
-                                            <InputBox
-                                                label={isLabel?.returnorderorderid_label}
-                                                placeholder={isLabel?.returnorderorderid_label}
-                                                inputStyle={{ w: '100%', h: 50, ph: 20 }}
-                                                textVlaue={formData?.order_id}
-                                                isRequired={true}
-                                                editable={false}
-                                                ErrorMessage={isOrderIdError}
-                                            />
+                                    <InputBox
+                                        label={isLabel?.returnorderorderid_label}
+                                        placeholder={isLabel?.returnorderorderid_label}
+                                        inputStyle={{ w: '100%', h: 50, ph: 20 }}
+                                        textVlaue={formData?.order_id}
+                                        isRequired={true}
+                                        editable={false}
+                                        ErrorMessage={isOrderIdError}
+                                    />
 
-                                            <InputBox
-                                                label={isLabel?.returnorderorderdate_label}
-                                                placeholder={isLabel?.returnorderorderdate_label}
-                                                inputStyle={{ w: '100%', h: 50, ph: 20 }}
-                                                textVlaue={isOrderDetail?.date_ordered}
-                                                isRequired={true}
-                                            />
+                                    <InputBox
+                                        label={isLabel?.returnorderorderdate_label}
+                                        placeholder={isLabel?.returnorderorderdate_label}
+                                        inputStyle={{ w: '100%', h: 50, ph: 20 }}
+                                        textVlaue={isOrderDetail?.date_ordered}
+                                        isRequired={true}
+                                    />
 
-                                        </View>
-                                    </View>
-                                    <View style={{ gap: 10 }}>
-                                        <Text style={commonStyles.heading}>{isLabel?.returnorderprodinfo_heading}</Text>
-                                        <InputBox
-                                            onChangeText={(value) => handleInputChange('name', value)}
-                                            label={isLabel?.returnorderprodname_label}
-                                            placeholder={isLabel?.returnorderprodname_label}
-                                            inputStyle={{ w: '100%', h: 50, ph: 20 }}
-                                            textVlaue={isProductDetail?.name}
-                                            isRequired={true}
-                                        />
-                                        <InputBox
-                                            onChangeText={(value) => handleInputChange('model', value)}
-                                            label={isLabel?.returnorderprodcode_label}
-                                            placeholder={isLabel?.returnorderprodcode_label}
-                                            inputStyle={{ w: '100%', h: 50, ph: 20 }}
-                                            textVlaue={isProductDetail?.model}
-                                            isRequired={true}
-                                        />
-                                        <InputBox
-                                            onChangeText={(value) => handleInputChange('quantity', value)}
-                                            label={isLabel?.returnorderquantity_label}
-                                            placeholder={isLabel?.returnorderquantity_label}
-                                            inputStyle={{ w: '100%', h: 50, ph: 20 }}
-                                            textVlaue={formData?.quantity}
-                                        />
-                                        <Text style={commonStyles.heading}>{isLabel?.returnorderreason_label}</Text>
-                                        {
-                                            isResionsList?.length > 0 ? (
-                                                isResionsList?.map((item, index) => (
-                                                    <View key={index} style={{ flexDirection: 'row', gap: 12, alignItems: 'center' }}>
-                                                        <TouchableOpacity onPress={() => { handleInputChange('return_reason_id', item?.return_reason_id); setReasonError(null) }} style={{ height: 20, width: 20, borderRadius: 10, borderWidth: 1, borderColor: isReasonError ? 'red' : 'black', backgroundColor: formData?.return_reason_id == item?.return_reason_id ? Colors?.primary : null }} />
-                                                        <View>
-                                                            <Text>{item?.name}</Text>
-                                                        </View>
-                                                    </View>
-                                                ))
-
-                                            ) : null
-                                        }
-
-                                        {
-                                            isReasonError ? <Text style={{ color: 'red' }}>{isReasonError}</Text> : null
-                                        }
-
-                                        <View>
-                                            <Text style={commonStyles.heading}>{isLabel?.returnorderprodopen_label}</Text>
-                                            <View style={{ flexDirection: 'row', gap: 12 }}>
-                                                <View style={{ flexDirection: 'row', gap: 10 }}>
-                                                    <TouchableOpacity onPress={() => handleInputChange('opened', 1)} style={{ width: 20, height: 20, borderWidth: 1, borderRadius: 10, backgroundColor: formData?.opened === 1 ? Colors?.primary : null }} />
-                                                    <Text>{isLabel?.returnorderyes_label}</Text>
-                                                </View>
-                                                <View style={{ flexDirection: 'row', gap: 10 }}>
-                                                    <TouchableOpacity onPress={() => handleInputChange('opened', 0)} style={{ width: 20, height: 20, borderWidth: 1, borderRadius: 10, backgroundColor: formData?.opened === 0 ? Colors?.primary : null }} />
-                                                    <Text>{isLabel?.returnorderno_label}</Text>
+                                </View>
+                            </View>
+                            <View style={{ gap: 10 }}>
+                                <Text style={commonStyles.heading}>{isLabel?.returnorderprodinfo_heading}</Text>
+                                <InputBox
+                                    onChangeText={(value) => handleInputChange('name', value)}
+                                    label={isLabel?.returnorderprodname_label}
+                                    placeholder={isLabel?.returnorderprodname_label}
+                                    inputStyle={{ w: '100%', h: 50, ph: 20 }}
+                                    textVlaue={isProductDetail?.name}
+                                    isRequired={true}
+                                />
+                                <InputBox
+                                    onChangeText={(value) => handleInputChange('model', value)}
+                                    label={isLabel?.returnorderprodcode_label}
+                                    placeholder={isLabel?.returnorderprodcode_label}
+                                    inputStyle={{ w: '100%', h: 50, ph: 20 }}
+                                    textVlaue={isProductDetail?.model}
+                                    isRequired={true}
+                                />
+                                <InputBox
+                                    onChangeText={(value) => handleInputChange('quantity', value)}
+                                    label={isLabel?.returnorderquantity_label}
+                                    placeholder={isLabel?.returnorderquantity_label}
+                                    inputStyle={{ w: '100%', h: 50, ph: 20 }}
+                                    textVlaue={formData?.quantity}
+                                />
+                                <Text style={commonStyles.heading}>{isLabel?.returnorderreason_label}</Text>
+                                {/* {
+                                    isResionsList?.length > 0 ? (
+                                        isResionsList?.map((item, index) => (
+                                            <View key={index} style={{ flexDirection: 'row', gap: 12, alignItems: 'center' }}>
+                                                <TouchableOpacity onPress={() => { handleInputChange('return_reason_id', item?.return_reason_id); setReasonError(null) }} style={{ height: 20, width: 20, borderRadius: 10, borderWidth: 1, borderColor: isReasonError ? 'red' : 'white', backgroundColor: formData?.return_reason_id == item?.return_reason_id ? Colors?.primary : null }} />
+                                                <View>
+                                                    <Text style={{ color: "#fff" }}>{item?.name}</Text>
                                                 </View>
                                             </View>
-                                        </View>
-                                        <InputBox
-                                            inputStyle={{ w: '100%', h: 100, ph: 12 }}
-                                            label={isLabel?.returnorderotherdetail_label}
-                                            placeholder={isLabel?.returnorderotherdetail_label}
-                                            inputTextAlignVertical={'top'}
-                                            inputPaddingTop={12}
-                                            textVlaue={formData?.comment}
-                                            onChangeText={(value) => handleInputChange('comment', value)}
-                                        />
+                                        ))
 
-                                        <View style={{ flexDirection: 'row', gap: 12, alignItems: 'center' }}>
-                                            <TouchableOpacity onPress={() => { setAgreeCheckBox(!isAgreeCheckBox); setAgreePolicyError(null) }}>
-                                                {
-                                                    isAgreeCheckBox ? <IconComponentCheckSquare /> : <IconComponentSquare />
-                                                }
+                                    ) : null
+                                } */}
+
+                                {
+                                    isResionsList?.length > 0 &&
+                                    isResionsList.map((item, index) => {
+                                        const isSelected = formData?.return_reason_id === item?.return_reason_id;
+
+                                        return (
+                                            <TouchableOpacity
+                                                key={index}
+                                                activeOpacity={0.8}
+                                                onPress={() => {
+                                                    handleInputChange('return_reason_id', item?.return_reason_id);
+                                                    setReasonError(null);
+                                                }}
+                                                style={{
+                                                    flexDirection: 'row',
+                                                    alignItems: 'center',
+                                                    gap: 12,
+                                                    paddingVertical: 10,   // 👈 increases touch height
+                                                    paddingHorizontal: 8   // 👈 increases touch width
+                                                }}
+                                            >
+                                                {/* RADIO CIRCLE */}
+                                                <View
+                                                    style={{
+                                                        height: 20,
+                                                        width: 20,
+                                                        borderRadius: 10,
+                                                        borderWidth: 1,
+                                                        borderColor: isReasonError ? 'red' : 'white',
+                                                        backgroundColor: isSelected ? Colors?.primary : 'transparent'
+                                                    }}
+                                                />
+
+                                                {/* LABEL */}
+                                                <Text style={{ color: "#fff" }}>
+                                                    {item?.name}
+                                                </Text>
                                             </TouchableOpacity>
-                                            <Text>{isAllData?.text_agree}</Text>
+                                        );
+                                    })
+                                }
+
+
+                                {
+                                    isReasonError ? <Text style={{ color: 'red' }}>{isReasonError}</Text> : null
+                                }
+
+                                <View>
+                                    <Text style={commonStyles.heading}>{isLabel?.returnorderprodopen_label}</Text>
+                                    <View style={{ flexDirection: 'row', gap: 12, marginTop: 10 }}>
+                                        <View style={{ flexDirection: 'row', gap: 10 }}>
+                                            <TouchableOpacity onPress={() => handleInputChange('opened', 1)} style={{ width: 20, height: 20, borderWidth: 1, borderRadius: 10, backgroundColor: formData?.opened === 1 ? Colors?.primary : null, borderColor: "white" }} />
+                                            <Text style={{ color: "#fff" }}>{isLabel?.returnorderyes_label}</Text>
                                         </View>
-                                        {
-                                            isAgreePolicyError ? <Text style={{ color: 'red' }}>{isAgreePolicyError}</Text> : null
-                                        }
-                                        <CustomButton
-                                            btnDisabled={screenLoading}
-                                            buttonStyle={{
-                                                w: '100%', h: 50,
-                                                backgroundColor: Colors.primary
-                                            }}
-                                            buttonText={isLabel?.returnordersubmitbtn_label}
-                                            OnClickButton={() => onClickReturnOrderButton()}
-                                        />
+                                        <View style={{ flexDirection: 'row', gap: 10 }}>
+                                            <TouchableOpacity onPress={() => handleInputChange('opened', 0)} style={{ width: 20, height: 20, borderWidth: 1, borderRadius: 10, backgroundColor: formData?.opened === 0 ? Colors?.primary : null, borderColor: "white" }} />
+                                            <Text style={{ color: "#fff" }}>{isLabel?.returnorderno_label}</Text>
+                                        </View>
                                     </View>
                                 </View>
-                            </ScrollView>
+                                <InputBox
+                                    inputStyle={{ w: '100%', h: 100, ph: 12 }}
+                                    label={isLabel?.returnorderotherdetail_label}
+                                    placeholder={isLabel?.returnorderotherdetail_label}
+                                    inputTextAlignVertical={'top'}
+                                    inputPaddingTop={12}
+                                    textVlaue={formData?.comment}
+                                    onChangeText={(value) => handleInputChange('comment', value)}
+                                />
 
-                            <SuccessModal
-                                isModal={isSuccessModal}
-                                isSuccessMessage={isSuccessMgs}
-                                onClickClose={() => {
-                                    setSuccessModal(false); setSuccessMgs(null); navigation.dispatch(
-                                        CommonActions.reset({
-                                            index: 0,
-                                            routes: [{ name: 'Home' }],
-                                        })
-                                    );
-                                }}
-                                handleCloseModal={() => {
-                                    setSuccessModal(false); setSuccessMgs(null); navigation.dispatch(
-                                        CommonActions.reset({
-                                            index: 0,
-                                            routes: [{ name: 'Home' }],
-                                        })
-                                    );
-                                }}
-                            />
+                                <View style={{ flexDirection: 'row', gap: 12, alignItems: 'center' }}>
+                                    <TouchableOpacity onPress={() => { setAgreeCheckBox(!isAgreeCheckBox); setAgreePolicyError(null) }}>
+                                        {
+                                            isAgreeCheckBox ? <IconComponentCheckSquare color={"#fff"} /> : <IconComponentSquare color={"#fff"} />
+                                        }
+                                    </TouchableOpacity>
+                                    <Text style={{ color: "white" }}>{isAllData?.text_agree}</Text>
+                                </View>
+                                {
+                                    isAgreePolicyError ? <Text style={{ color: 'red' }}>{isAgreePolicyError}</Text> : null
+                                }
+                                <CustomButton
+                                    btnDisabled={screenLoading}
+                                    buttonStyle={{
+                                        w: '100%', h: 50,
+                                        backgroundColor: Colors.primary
+                                    }}
+                                    buttonText={isLabel?.returnordersubmitbtn_label}
+                                    OnClickButton={() => onClickReturnOrderButton()}
+                                />
+                            </View>
+
 
                         </View>
-                        <NotificationAlert />
-                    </>
-                )
-            }
+
+
+                    </ScrollView>
+
+                </KeyboardAvoidingView>
+
+
+                <SuccessModal
+                    isModal={isSuccessModal}
+                    isSuccessMessage={isSuccessMgs}
+                    onClickClose={() => {
+                        setSuccessModal(false); setSuccessMgs(null); navigation.dispatch(
+                            CommonActions.reset({
+                                index: 0,
+                                routes: [{ name: 'Home' }],
+                            })
+                        );
+                    }}
+                    handleCloseModal={() => {
+                        setSuccessModal(false); setSuccessMgs(null); navigation.dispatch(
+                            CommonActions.reset({
+                                index: 0,
+                                routes: [{ name: 'Home' }],
+                            })
+                        );
+                    }}
+                />
+
+            </BackgroundWrapper>
+            <NotificationAlert />
         </>
+
     )
 }
 export default ReturnOrder

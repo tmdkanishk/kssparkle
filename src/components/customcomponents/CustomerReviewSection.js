@@ -102,7 +102,7 @@ const CustomerReviewSection = ({ scrollY,
     );
 
     return (
-        <View style={{  }}>
+        <View style={{}}>
             {/* ⭐ Customer Reviews */}
             <GlassContainer title="Customer Reviews">
                 <View style={styles.ratingRow}>
@@ -118,9 +118,9 @@ const CustomerReviewSection = ({ scrollY,
 
 
             {/* 🗣️ Customer Say */}
-            <View style={{  }}>
+            <View style={{}}>
                 {reviews.length > 0 ? <Text style={styles.sectionHeader}>Customer Say</Text> : null}
-                
+
 
                 {reviews.map((item, index) => (
                     <View key={index} style={styles.reviewCard}>
@@ -169,22 +169,22 @@ const CustomerReviewSection = ({ scrollY,
 
                         {item.videos?.length > 0 && (
                             <View style={styles.mediaContainer}>
-                                 <View style={styles.imageRow}>
-                                {item.videos.map((video, videoIndex) => (
-                                    <TouchableOpacity
-                                        key={videoIndex}
-                                        style={styles.videoThumbWrapper}
-                                        onPress={() => {
-                                            setActiveVideoUrl(video.url);
-                                            setVideoModalVisible(true);
-                                        }}
-                                    >
-                                        <View style={styles.videoThumb}>
-                                            <Text style={styles.playIcon}>▶</Text>
-                                        </View>
-                                    </TouchableOpacity>
-                                ))}
- </View>
+                                <View style={styles.imageRow}>
+                                    {item.videos.map((video, videoIndex) => (
+                                        <TouchableOpacity
+                                            key={videoIndex}
+                                            style={styles.videoThumbWrapper}
+                                            onPress={() => {
+                                                setActiveVideoUrl(video.url);
+                                                setVideoModalVisible(true);
+                                            }}
+                                        >
+                                            <View style={styles.videoThumb}>
+                                                <Text style={styles.playIcon}>▶</Text>
+                                            </View>
+                                        </TouchableOpacity>
+                                    ))}
+                                </View>
                             </View>
                         )}
 
@@ -214,20 +214,20 @@ const CustomerReviewSection = ({ scrollY,
 
 
             {/* 🛍️ Related Products */}
-            <View style={{  }}>
+            <View style={{}}>
 
                 {relatedProducts.length > 0 ? <View
                     onLayout={(e) => {
                         setButtonY(e.nativeEvent.layout.y);
                     }}
-                    style={{marginTop:10}}
+                    style={{ marginTop: 10 }}
                 >
                     <GlassButton
                         title="Related Products"
                         onPress={() => setShowRelatedProducts(!showRelatedProducts)}
                     />
                 </View> : null}
-                
+
 
 
                 {showRelatedProducts && (
@@ -235,39 +235,48 @@ const CustomerReviewSection = ({ scrollY,
                         data={relatedProducts}
                         keyExtractor={(item) => item.product_id.toString()}
                         renderItem={({ item }) => (
-                            <GlassContainer padding={2} style={{ minHeight: 70 }}>
-                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <TouchableOpacity
+                                onPress={() =>
+                                    navigation.replace("ProductDetail", {
+                                        productId: item?.product_id,
+                                    })
+                                }
+                            >
 
-                                    {/* Image */}
-                                    <View style={{ width: Platform.OS === "ios" ? '20%' : "16%", marginLeft: Platform.OS === "android" ? 10 : null }}>
-                                        <Image
-                                            source={{ uri: item.thumb }}
-                                            style={{ width: "100%", height: 65, }}
-                                            resizeMode="contain"
-                                        />
-                                    </View>
+                                <GlassContainer padding={2} style={{ minHeight: 70 }}>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
 
-                                    {/* Text */}
-                                    <View style={{ flex: 1, justifyContent: 'center', marginLeft: Platform.OS === "android" ? 10 : 10 }}>
-                                        <Text style={styles.productTitle} numberOfLines={2}>
-                                            {item.name}
-                                        </Text>
-
-                                        {/* <PriceView priceHtml={item.price} /> */}
-
-                                        {item.special && (
-                                            <PriceView
-                                                priceHtml={item.special}
-                                                textStyle={{ fontWeight: '700' }}
+                                        {/* Image */}
+                                        <View style={{ width: Platform.OS === "ios" ? '20%' : "16%", marginLeft: Platform.OS === "android" ? 10 : null }}>
+                                            <Image
+                                                source={{ uri: item.thumb }}
+                                                style={{ width: "100%", height: 65, }}
+                                                resizeMode="contain"
                                             />
-                                        )}
-                                        {/* <Text style={styles.price}>
+                                        </View>
+
+                                        {/* Text */}
+                                        <View style={{ flex: 1, justifyContent: 'center', marginLeft: Platform.OS === "android" ? 10 : 10 }}>
+                                            <Text style={styles.productTitle} numberOfLines={2}>
+                                                {item.name}
+                                            </Text>
+
+                                            {/* <PriceView priceHtml={item.price} /> */}
+
+                                            {item.special && (
+                                                <PriceView
+                                                    priceHtml={item.special}
+                                                    textStyle={{ fontWeight: '700' }}
+                                                />
+                                            )}
+                                            {/* <Text style={styles.price}>
                                             {item.price}
                                         </Text> */}
-                                    </View>
+                                        </View>
 
-                                </View>
-                            </GlassContainer>
+                                    </View>
+                                </GlassContainer>
+                            </TouchableOpacity>
                         )}
                         contentContainerStyle={{ marginTop: 5 }}
                         showsVerticalScrollIndicator={false}
@@ -433,158 +442,158 @@ const CustomerReviewSection = ({ scrollY,
 };
 
 const styles = StyleSheet.create({
-  // ⭐ Ratings & Review
-  ratingRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 4,
-  },
-  ratingText: {
-    color: "#fff",
-    fontSize: 16,
-    marginLeft: 6,
-  },
-  subText: {
-    color: "#ccc",
-    fontSize: 13,
-  },
-  sectionHeader: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "700",
-    marginBottom: 8,
-  },
-  reviewParagraph: {
-    color: "#fff",
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  reviewCard: {
-    marginBottom: 14,
-  },
-  reviewHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 4,
-  },
-  reviewAuthor: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '800',
-  },
-  reviewDate: {
-    color: '#aaa',
-    fontSize: 11,
-    marginTop: 4,
-  },
+    // ⭐ Ratings & Review
+    ratingRow: {
+        flexDirection: "row",
+        alignItems: "center",
+        marginBottom: 4,
+    },
+    ratingText: {
+        color: "#fff",
+        fontSize: 16,
+        marginLeft: 6,
+    },
+    subText: {
+        color: "#ccc",
+        fontSize: 13,
+    },
+    sectionHeader: {
+        color: "#fff",
+        fontSize: 18,
+        fontWeight: "700",
+        marginBottom: 8,
+    },
+    reviewParagraph: {
+        color: "#fff",
+        fontSize: 14,
+        lineHeight: 20,
+    },
+    reviewCard: {
+        marginBottom: 14,
+    },
+    reviewHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 4,
+    },
+    reviewAuthor: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: '800',
+    },
+    reviewDate: {
+        color: '#aaa',
+        fontSize: 11,
+        marginTop: 4,
+    },
 
-  // ⭐ Product Info
-  productTitle: {
-    color: "#fff",
-    fontSize: 12,
-    fontWeight: "300",
-  },
-  price: {
-    color: "#fff",
-    fontSize: 13,
-    fontWeight: "700",
-    marginTop: 6,
-  },
+    // ⭐ Product Info
+    productTitle: {
+        color: "#fff",
+        fontSize: 12,
+        fontWeight: "300",
+    },
+    price: {
+        color: "#fff",
+        fontSize: 13,
+        fontWeight: "700",
+        marginTop: 6,
+    },
 
-  // ⭐ Media Containers
-  mediaContainer: {
-    marginTop: 8,
-  },
-  imageRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 6,
-    marginTop: 6,
-  },
-  reviewImage: {
-    width: 80,
-    height: 80,
-    borderRadius: 6,
-  },
+    // ⭐ Media Containers
+    mediaContainer: {
+        marginTop: 8,
+    },
+    imageRow: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: 6,
+        marginTop: 6,
+    },
+    reviewImage: {
+        width: 80,
+        height: 80,
+        borderRadius: 6,
+    },
 
-  // 🎥 Video Thumbnails in List
-  videoThumbWrapper: {
-    marginTop: 8,
-  },
-  videoThumb: {
-    width: 82,
-    height: 90,
-    borderRadius: 8,
-    backgroundColor: '#000',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  playIcon: {
-    color: '#fff',
-    fontSize: 28,
-    opacity: 0.9,
-  },
+    // 🎥 Video Thumbnails in List
+    videoThumbWrapper: {
+        marginTop: 8,
+    },
+    videoThumb: {
+        width: 82,
+        height: 90,
+        borderRadius: 8,
+        backgroundColor: '#000',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    playIcon: {
+        color: '#fff',
+        fontSize: 28,
+        opacity: 0.9,
+    },
 
-  // 🎥 Video Wrapper in List
-  videoWrapper: {
-    width: '100%',
-    maxWidth: 260,
-    height: 150,
-    borderRadius: 8,
-    overflow: 'hidden',
-    backgroundColor: '#000',
-    marginTop: 10,
-  },
-  reviewVideo: {
-    width: '100%',
-    height: '100%',
-  },
+    // 🎥 Video Wrapper in List
+    videoWrapper: {
+        width: '100%',
+        maxWidth: 260,
+        height: 150,
+        borderRadius: 8,
+        overflow: 'hidden',
+        backgroundColor: '#000',
+        marginTop: 10,
+    },
+    reviewVideo: {
+        width: '100%',
+        height: '100%',
+    },
 
-  // ⭐ Modal Overlay
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.85)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+    // ⭐ Modal Overlay
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.85)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
 
-  // 🖼️ Image Modal
-  modalContent: {
-    width: '90%',
-    height: 360, // adjustable image height
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalImage: {
-    width: '100%',
-    height: '100%',
-    resizeMode: 'contain',
-    borderRadius: 12,
-  },
+    // 🖼️ Image Modal
+    modalContent: {
+        width: '90%',
+        height: 360, // adjustable image height
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    modalImage: {
+        width: '100%',
+        height: '100%',
+        resizeMode: 'contain',
+        borderRadius: 12,
+    },
 
-  // 🎥 Video Modal
-  videoModalContainer: {
-    width: '90%',
-    height: 250, // adjustable video height
-    backgroundColor: '#000',
-    borderRadius: 12,
-    overflow: 'hidden',
-  },
-  modalVideo: {
-    width: '100%',
-    height: '100%',
-  },
-  closeButton: {
-    position: 'absolute',
-    top: 8,
-    right: 8,
-    zIndex: 10,
-  },
-  closeText: {
-    color: '#fff',
-    fontSize: 22,
-  },
+    // 🎥 Video Modal
+    videoModalContainer: {
+        width: '90%',
+        height: 250, // adjustable video height
+        backgroundColor: '#000',
+        borderRadius: 12,
+        overflow: 'hidden',
+    },
+    modalVideo: {
+        width: '100%',
+        height: '100%',
+    },
+    closeButton: {
+        position: 'absolute',
+        top: 8,
+        right: 8,
+        zIndex: 10,
+    },
+    closeText: {
+        color: '#fff',
+        fontSize: 22,
+    },
 });
 
 export default memo(CustomerReviewSection);

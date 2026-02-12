@@ -49,7 +49,7 @@ const OrderConfirmation = ({ navigation, route }) => {
             const url = `${BASE_URL}${EndPoint?.order}`;
             const lang = await _retrieveData('SELECT_LANG');
             const cur = await _retrieveData('SELECT_CURRENCY');
-            const user = await _retrieveData("USER");
+            const user = await _retrieveData("CUSTOMER_ID");
             const sessionId = await _retrieveData('SESSION_ID');
 
             const headers = {
@@ -60,7 +60,7 @@ const OrderConfirmation = ({ navigation, route }) => {
             const body = {
                 code: lang?.code,
                 currency: cur?.code,
-                customer_id: user ? user[0]?.customer_id : null,
+                customer_id: user ? user : null,
                 sessionid: sessionId,
             }
 

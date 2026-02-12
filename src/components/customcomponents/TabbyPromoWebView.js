@@ -2,14 +2,17 @@ import React from 'react';
 import { View, StyleSheet, Image } from 'react-native';
 import { WebView } from 'react-native-webview';
 
-const TabbyPromoWebView = ({ html }) => {
-  const wrappedHtml = wrapHtml(html); // wrap backend HTML dynamically
+const TabbyPromoWebView = ({ tabbyHtml, tamaraHtml }) => {
+    // const wrappedHtml = wrapHtml(tabbyHtml, tamaraHtml);
+      const html = tabbyHtml || tamaraHtml;
+
+  if (!html) return null;
+
 
   return (
     <>
-      <View style={styles.container}>
+      {/* <View style={styles.container}>
 
-        {/* Images positioned behind WebView */}
         <View style={styles.imagesContainer}>
           <Image
             source={require('../../assets/images/secure_payment.webp')}
@@ -31,22 +34,30 @@ const TabbyPromoWebView = ({ html }) => {
           />
         </View> 
 
-        {/* WebView */}
-        {html && (
-          <View style={styles.webviewWrapper}>
-            <WebView
-              originWhitelist={['*']}
-              source={{ html: wrappedHtml }}
-              javaScriptEnabled
-              domStorageEnabled
-              scrollEnabled={false}
-              showsVerticalScrollIndicator={false}
-              style={styles.webview}
-            />
-          </View>
-        )}
+      {(tabbyHtml || tamaraHtml) && (
+        <View style={styles.webviewWrapper}>
+          <WebView
+            originWhitelist={['*']}
+            source={{ html: wrappedHtml }}
+            javaScriptEnabled
+            domStorageEnabled
+            scrollEnabled={false}
+            showsVerticalScrollIndicator={false}
+            style={styles.webview}
+          />
+        </View>
+      )}
        
-      </View>
+      </View> */}
+
+      <View style={styles.container}>
+      <WebView
+        originWhitelist={['*']}
+        source={{ html: wrapHtml(html) }}
+        javaScriptEnabled
+        domStorageEnabled
+      />
+    </View>
 
     </>
   );
@@ -70,7 +81,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    bottom: 130, // adjust this to position vertically
+    bottom: 40, // adjust this to position vertically
     left: 0,
     right: 0,
     zIndex: 0, // ensure it's behind the WebView
@@ -91,16 +102,57 @@ const styles = StyleSheet.create({
 });
 
 // wrapHtml helper
-const wrapHtml = (htmlFragment) => `
+// const wrapHtml = (tabbyHtml = '', tamaraHtml = '') => `
+// <!DOCTYPE html>
+// <html lang="ar">
+// <head>
+//   <meta charset="UTF-8" />
+//   <meta name="viewport" content="width=device-width, initial-scale=1.05" />
+//   <title>Promo</title>
+
+//   <style>
+//     body {
+//       margin: 0;
+//       padding: 0;
+//       background: transparent;
+//     }
+//     .promo-container {
+//       display: flex;
+//       flex-direction: column;
+//       gap: 40px;
+//     }
+//   </style>
+// </head>
+
+// <body>
+//   <div class="promo-container">
+
+//     <!-- TABBY PROMO -->
+//     ${tabbyHtml || ''}
+
+//     <!-- TAMARA PROMO -->
+//     ${tamaraHtml || ''}
+
+//   </div>
+// </body>
+// </html>
+// `;
+
+
+const wrapHtml = (html = '') => `
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.05">
-  <title>Tabby Promo</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  body {
+    margin: 0;
+    background: transparent;
+  }
+</style>
 </head>
-<body style="margin:0;padding:0;background:transparent;">
-  ${htmlFragment}
+<body>
+  ${html}
 </body>
 </html>
 `;

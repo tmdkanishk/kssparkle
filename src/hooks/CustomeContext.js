@@ -65,10 +65,11 @@ export const CustomProvider = ({ children }) => {
             };
             const body = {
                 code: lang ? lang.code : null,
+                // code: "en-gb",
                 sessionid: sessionId
             }
 
-            console.log("body of initial api", body);
+            console.log("body of initial api", body, url);
 
 
             const response = await axios.post(url, body, { headers: headers });

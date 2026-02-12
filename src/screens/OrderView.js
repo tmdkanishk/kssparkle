@@ -24,6 +24,9 @@ import { logout } from '../services/logout'
 import NotificationAlert from '../components/NotificationAlert'
 import { useLanguageCurrency } from '../hooks/LanguageCurrencyContext'
 import { useCartCount } from '../hooks/CartContext'
+import BackgroundWrapper from '../components/customcomponents/BackgroundWrapper'
+import CustomHeader from '../components/customcomponents/CustomHeader'
+import { useLoading } from '../hooks/LoadingProvider'
 
 const OrderView = ({ navigation, route }) => {
     const { orderId } = route.params;
@@ -40,6 +43,8 @@ const OrderView = ({ navigation, route }) => {
     const [isCartAnimation, setCartAnimation] = useState(false);
     const [isAddCartLoading, setAddCartLoading] = useState(false);
     const scrollY = useRef(new Animated.Value(0)).current;
+      const { setGlobalLoading } = useLoading();
+
 
     useFocusEffect(
         useCallback(() => {
@@ -50,7 +55,7 @@ const OrderView = ({ navigation, route }) => {
 
     const fetchOrderInformationTextAndInformation = async () => {
         try {
-            setLoading(true);
+            setGlobalLoading(true);
             const result = await getOrderStatus(orderId, EndPoint?.order_orderinformation);
             console.log("response my ", result);
             setLabel(result?.text);
@@ -58,7 +63,7 @@ const OrderView = ({ navigation, route }) => {
         } catch (error) {
             console.log("error", error.response.data);
         } finally {
-            setLoading(false);
+            setGlobalLoading(false);
         }
     }
 
@@ -76,7 +81,7 @@ const OrderView = ({ navigation, route }) => {
             const url = `${BASE_URL}${EndPoint?.order_reorder}`;
             const lang = await _retrieveData('SELECT_LANG');
             const cur = await _retrieveData('SELECT_CURRENCY');
-            const user = await _retrieveData("USER");
+            const user = await _retrieveData("CUSTOMER_ID");
             const sessionId = await _retrieveData('SESSION_ID');
             const headers = {
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -85,8 +90,8 @@ const OrderView = ({ navigation, route }) => {
 
             const body = {
                 code: lang?.code,
-                currency: cur?.code,
-                customer_id: user ? user[0]?.customer_id : null,
+                currency: cur,
+                customer_id: user ? user : null,
                 sessionid: sessionId,
                 order_id: orderId,
                 order_product_id: orderProductId,
@@ -138,20 +143,17 @@ const OrderView = ({ navigation, route }) => {
 
     return (
         <>
-            {
-                loading ? (
-                    <CustomActivity />
-                ) :
+        
                     <>
-                        <View style={[commonStyles.bodyConatiner,]}>
-                            <View style={{ paddingHorizontal: 12, backgroundColor: '#F5F5F5' }}>
-                                <TopStatusBar
-                                    onChangeCurren={handleOnChangeCurrency}
-                                    onChangeLang={handleOnChangeLang}
-                                    scrollY={scrollY}
-                                />
+                        <BackgroundWrapper>
+                            {/* <View style={[commonStyles.bodyConatiner,]}> */}
+
+                            <View style={{marginTop:50}}>
+                            <CustomHeader pageName={"Order View"} />
                             </View>
-                            <TitleBarSearchComponent titleName={isLabel?.orderinfopagename_label} Component1={CartButton} onClickBackIcon={() => handleGoBack()} />
+
+
+
                             <Animated.ScrollView
                                 showsVerticalScrollIndicator={false}
                                 onScroll={Animated.event(
@@ -171,7 +173,7 @@ const OrderView = ({ navigation, route }) => {
                                             <ShippingAddress label={isLabel} data={isOrderInfo} />
                                             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                                                 <View>
-                                                    <Text style={commonStyles.smallTextBlackBold}>{isLabel?.orderinfoorderstatus_label}: {isOrderInfo?.status}</Text>
+                                                    <Text style={commonStyles.textWhiteBold}>{isLabel?.orderinfoorderstatus_label}: {isOrderInfo?.status}</Text>
                                                 </View>
                                             </View>
 
@@ -180,8 +182,8 @@ const OrderView = ({ navigation, route }) => {
                                 </ScrollView>
                             </Animated.ScrollView>
 
-                        </View>
-                        <BottomBar />
+                            {/* </View> */}
+                        </BackgroundWrapper>
 
                         <SuccessModal
                             handleCloseModal={closeSuccessModal}
@@ -191,7 +193,7 @@ const OrderView = ({ navigation, route }) => {
                         />
                         <NotificationAlert />
                     </>
-            }
+
 
         </>
     )

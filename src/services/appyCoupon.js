@@ -18,12 +18,15 @@ export const appyCoupon = async (coupon, cart_coupon) => {
 
         const body = {
             code: lang?.code,
-            currency: cur?.code,
+            currency: cur,
             sessionid: sessionId,
             // customer_id: user ? user[0]?.customer_id : null,
             customer_id: user,
             coupon: coupon
         }
+
+        console.log("apply coupon body and data", body, url)
+
 
         const response = await axios.post(url, body, { headers: headers });
 

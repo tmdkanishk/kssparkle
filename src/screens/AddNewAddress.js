@@ -22,6 +22,8 @@ import BackgroundWrapper from '../components/customcomponents/BackgroundWrapper'
 import GlassContainer from '../components/customcomponents/GlassContainer'
 import CustomHeader from '../components/customcomponents/CustomHeader'
 import { useLoading } from '../hooks/LoadingProvider'
+import { BlurView } from '@react-native-community/blur'
+import SelectModalField from '../components/customcomponents/SelectModalField'
 
 const AddNewAddress = ({ navigation }) => {
     const { setGlobalLoading } = useLoading();
@@ -309,8 +311,10 @@ const AddNewAddress = ({ navigation }) => {
                     style={{ flex: 1 }}
                     behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                 >
-                    <View style={commonStyles.bodyConatiner}>
+                    <View style={[commonStyles.bodyConatiner, { marginTop: Platform.OS === "ios" ? 50 : null, marginLeft: Platform.OS === "ios" ? 10 : null }]}>
+
                         <CustomHeader pageName={isLabel?.addrsadd_heading} />
+                        <View style={{ marginBottom: 20 }}></View>
 
                         <ScrollView showsVerticalScrollIndicator={false}>
                             <View style={{ gap: 20, width: '100%', paddingHorizontal: 12, marginVertical: 12 }}>
@@ -340,7 +344,7 @@ const AddNewAddress = ({ navigation }) => {
                                     ErrorMessage={isLastnameError}
                                 />
 
-                                <InputBox
+                                {/* <InputBox
                                     label={isLabel?.addrcmpny_label}
                                     placeholder={isLabel?.addrcmpny_label}
                                     inputStyle={{ w: '100%', h: 50, ph: 20 }}
@@ -350,7 +354,7 @@ const AddNewAddress = ({ navigation }) => {
                                     isRequired={true}
                                     ErrorMessage={isCompanyError}
                                     borderColor={isCompanyError ? 'red' : null}
-                                />
+                                /> */}
 
                                 <InputBox
                                     label={isLabel?.addraddrs1_label}
@@ -364,14 +368,14 @@ const AddNewAddress = ({ navigation }) => {
                                     ErrorMessage={isAddress1Error}
                                 />
 
-                                <InputBox
+                                {/* <InputBox
                                     label={isLabel?.addraddrs2_label}
                                     placeholder={isLabel?.addraddrs2_label}
                                     inputStyle={{ w: '100%', h: 50, ph: 20 }}
                                     InputType={'text'}
                                     onChangeText={(text) => setAddress2(text)}
                                     textVlaue={isAddress2}
-                                />
+                                /> */}
 
                                 <InputBox
                                     label={isLabel?.addrcity_label}
@@ -394,7 +398,7 @@ const AddNewAddress = ({ navigation }) => {
                                     textVlaue={isPostalCode}
                                 />
 
-                                <View style={styles.container}>
+                                {/* <View style={styles.container}>
                                     <View style={{ flexDirection: 'row' }}>
                                         <Text style={[styles.label, { color: 'red', }]}>*</Text>
                                         <Text style={[styles.label, { color: '#fff' }]}>{isLabel?.addrcntry_label}</Text>
@@ -420,7 +424,20 @@ const AddNewAddress = ({ navigation }) => {
                                         <Text style={{ color: 'red' }}>{isCountryError}</Text>
                                     )}
 
-                                </View>
+                                </View> */}
+
+                                <SelectModalField
+                                    label={isLabel?.addrcntry_label}
+                                    required
+                                    value={isDefaultCountry}
+                                    data={countryList}
+                                    error={isCountryError}
+                                    onSelect={(item) => {
+                                        setDefaultCountry(item);
+                                        setCountryError(null);
+                                    }}
+                                />
+
 
                                 <View style={styles.container}>
                                     <View style={{ flexDirection: 'row' }}>
@@ -589,7 +606,7 @@ const AddNewAddress = ({ navigation }) => {
                                     </View>
                                 </View>
 
-                                <TouchableOpacity onPress={onAddAdreesBtn} style={{ width: '100%', height: 50, borderRadius: 12, alignSelf: 'center', justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.primary }}>
+                                <TouchableOpacity onPress={onAddAdreesBtn} style={{ width: '100%', height: 50, borderRadius: 12, alignSelf: 'center', justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.primary, marginBottom: 20 }}>
                                     <Text style={commonStyles.textWhite_lg}>{isLabel?.addrnewaddrsbtn_label}</Text>
                                 </TouchableOpacity>
 
@@ -599,77 +616,174 @@ const AddNewAddress = ({ navigation }) => {
                     </View>
                 </KeyboardAvoidingView>
             </BackgroundWrapper>
+
             {/* contry list modal */}
             <Modal
-                animationType="slide"
-                transparent={true}
+                animationType="fade"
+                transparent
                 visible={isCountryModal}
                 onRequestClose={() => setCountryModal(false)}
             >
-                <View style={{ flex: 1, width: '100%', justifyContent: 'center', alignItems: 'center' }}>
-                    <View style={{ width: '90%', height: '80%', }}>
-                        <BackgroundWrapper>
+                <View style={{ flex: 1 }}>
 
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', margin: 12 }}>
-                                <View />
-                                <TouchableOpacity onPress={() => setCountryModal(false)}>
-                                    <IconComponentClose color={'rgba(255,255,255,0.6)'} />
-                                </TouchableOpacity>
-                            </View>
-                            <FlatList
-                                data={countryList}
-                                keyExtractor={(item, index) => index.toString()}
-                                renderItem={({ item }) => (
-                                    <TouchableOpacity onPress={() => onSelectCountry(item)}>
-                                        <Text style={{ borderBottomWidth: 1, paddingBottom: 10, color: 'white', borderBottomColor: 'rgba(255,255,255,0.6)' }}>
-                                            {item.name}
-                                        </Text>
+                    {/* 🔥 BLUR BACKGROUND */}
+                    <BlurView
+                        style={StyleSheet.absoluteFill}
+                        blurType="dark"
+                        blurAmount={15}
+                        reducedTransparencyFallbackColor="rgba(0,0,0,0.6)"
+                    />
+
+                    {/* Optional dark overlay for contrast */}
+                    <View
+                        style={{
+                            ...StyleSheet.absoluteFillObject,
+                            backgroundColor: 'rgba(0,0,0,0.25)',
+                        }}
+                    />
+
+                    {/* MODAL CONTENT */}
+                    <View
+                        style={{
+                            flex: 1,
+                            width: '100%',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                        }}
+                    >
+                        <View style={{ width: '90%', height: '80%' }}>
+                            <BackgroundWrapper>
+
+                                <View
+                                    style={{
+                                        flexDirection: 'row',
+                                        justifyContent: 'space-between',
+                                        alignItems: 'center',
+                                        margin: 12,
+                                    }}
+                                >
+                                    <View />
+                                    <TouchableOpacity onPress={() => setCountryModal(false)}>
+                                        <IconComponentClose color="rgba(255,255,255,0.6)" />
                                     </TouchableOpacity>
-                                )}
-                                contentContainerStyle={{ margin: 10, gap: 20 }}
-                            />
-                        </BackgroundWrapper>
+                                </View>
+
+                                <FlatList
+                                    data={countryList}
+                                    keyExtractor={(item, index) => index.toString()}
+                                    renderItem={({ item }) => (
+                                        <TouchableOpacity onPress={() => onSelectCountry(item)}>
+                                            <Text
+                                                style={{
+                                                    borderBottomWidth: 1,
+                                                    paddingBottom: 10,
+                                                    color: 'white',
+                                                    borderBottomColor: 'rgba(255,255,255,0.6)',
+                                                }}
+                                            >
+                                                {item.name}
+                                            </Text>
+                                        </TouchableOpacity>
+                                    )}
+                                    contentContainerStyle={{ margin: 10, gap: 20 }}
+                                />
+
+                            </BackgroundWrapper>
+                        </View>
                     </View>
-
-
                 </View>
-            </Modal >
+            </Modal>
+
 
             {/* State list modal */}
 
             <Modal
-                animationType="slide"
-                transparent={true}
+                animationType="fade"
+                transparent
                 visible={isStateModal}
                 onRequestClose={() => setStateModal(false)}
             >
-                <View style={{ flex: 1, width: '100%', backgroundColor: 'rgba(0, 0, 0, 0.5)', justifyContent: 'center', alignItems: 'center' }}>
-                    <View style={{ width: '90%', height: '80%', }}>
-                        <BackgroundWrapper>
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', margin: 12 }}>
-                                <View />
-                                <TouchableOpacity onPress={() => setStateModal(false)}>
-                                    <IconComponentClose color={'rgba(255,255,255,0.6)'} />
-                                </TouchableOpacity>
-                            </View>
-                            <FlatList
-                                data={isStateList}
-                                keyExtractor={(item, index) => index.toString()}
-                                renderItem={({ item }) => (
-                                    <TouchableOpacity onPress={() => { setDefaultState(item); setStateModal(false) }}>
-                                        <Text style={{ borderBottomWidth: 1, paddingBottom: 10, borderBottomColor: 'rgba(255,255,255,0.6)', color: '#fff' }}>
-                                            {item.name}
-                                        </Text>
+                <View style={{ flex: 1 }}>
+
+                    {/* 🔥 BLUR BACKGROUND */}
+                    <BlurView
+                        style={StyleSheet.absoluteFill}
+                        blurType="dark"
+                        blurAmount={15}
+                        reducedTransparencyFallbackColor="rgba(0,0,0,0.6)"
+                    />
+
+                    {/* Optional dark overlay for better contrast */}
+                    <View
+                        style={{
+                            ...StyleSheet.absoluteFillObject,
+                            backgroundColor: 'rgba(0,0,0,0.25)',
+                        }}
+                    />
+
+                    {/* MODAL CONTENT */}
+                    <View
+                        style={{
+                            flex: 1,
+                            width: '100%',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                        }}
+                    >
+                        <View style={{ width: '90%', height: '80%' }}>
+                            <BackgroundWrapper>
+
+                                <View
+                                    style={{
+                                        flexDirection: 'row',
+                                        justifyContent: 'space-between',
+                                        alignItems: 'center',
+                                        margin: 12,
+                                    }}
+                                >
+                                    <View />
+                                    <TouchableOpacity onPress={() => setStateModal(false)}>
+                                        <IconComponentClose color="rgba(255,255,255,0.6)" />
                                     </TouchableOpacity>
-                                )}
-                                contentContainerStyle={{ margin: 10, gap: 20 }}
-                                ListEmptyComponent={<Text style={{ textAlign: 'center' }}>nema podataka</Text>}
-                            />
-                        </BackgroundWrapper>
+                                </View>
+
+                                <FlatList
+                                    data={isStateList}
+                                    keyExtractor={(item, index) => index.toString()}
+                                    renderItem={({ item }) => (
+                                        <TouchableOpacity
+                                            onPress={() => {
+                                                setDefaultState(item);
+                                                setStateModal(false);
+                                            }}
+                                        >
+                                            <Text
+                                                style={{
+                                                    borderBottomWidth: 1,
+                                                    paddingBottom: 10,
+                                                    borderBottomColor: 'rgba(255,255,255,0.6)',
+                                                    color: '#fff',
+                                                }}
+                                            >
+                                                {item.name}
+                                            </Text>
+                                        </TouchableOpacity>
+                                    )}
+                                    contentContainerStyle={{ margin: 10, gap: 20 }}
+                                    ListEmptyComponent={
+                                        <Text style={{ textAlign: 'center', color: '#fff' }}>
+                                            nema podataka
+                                        </Text>
+                                    }
+                                />
+
+                            </BackgroundWrapper>
+                        </View>
                     </View>
 
                 </View>
-            </Modal >
+            </Modal>
+
 
             {/* success modal */}
 

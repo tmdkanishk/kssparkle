@@ -10,6 +10,8 @@ import CustomButton from '../components/CustomButton';
 import { checkAutoLogin } from '../utils/helpers';
 import NotificationAlert from '../components/NotificationAlert';
 import BottomBar from '../components/BottomBar';
+import BackgroundWrapper from '../components/customcomponents/BackgroundWrapper';
+import CustomHeader from '../components/customcomponents/CustomHeader';
 
 const Notification = ({ navigation }) => {
     const { Colors, EndPoint, GlobalText } = useCustomContext();
@@ -99,8 +101,13 @@ const Notification = ({ navigation }) => {
                 ) : (
 
                     <>
-                        <View style={commonStyles.bodyConatiner}>
-                            <TitleBarName onClickBackIcon={() => navigation.goBack()} titleName={isLabel?.pagename} />
+                    <BackgroundWrapper>
+                        {/* <View style={commonStyles.bodyConatiner}> */}
+                            {/* <TitleBarName onClickBackIcon={() => navigation.goBack()} titleName={isLabel?.pagename} /> */}
+                            <View style={{marginTop:50, marginLeft:10}}>
+                            <CustomHeader pageName={isLabel?.pagename} />
+                            </View>
+
 
                             <FlatList
                                 key={isLandscape}
@@ -120,8 +127,10 @@ const Notification = ({ navigation }) => {
                                     </View>
                                 }
                             />
-                        </View>
-                        <BottomBar />
+                        {/* </View> */}
+                        {/* <BottomBar /> */}
+
+                        </BackgroundWrapper>
 
                         <NotificationAlert />
                     </>

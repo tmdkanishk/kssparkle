@@ -24,6 +24,8 @@ export const getMyAddresses = async (address) => {
 
         const response = await axios.post(url, body, { headers: headers });
 
+        console.log("getMyAddresses",url, body)
+
         if (response.status === HttpStatusCode.Ok) {
             return response.data
         }

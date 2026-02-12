@@ -1,5 +1,5 @@
 import React, { useCallback, useRef, useState } from "react";
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Image, Alert, Animated, useWindowDimensions } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Image, Alert, Animated, useWindowDimensions, KeyboardAvoidingView, TextInput } from "react-native";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import GlassContainer from "../components/customcomponents/GlassContainer";
 import GlassButton from "../components/customcomponents/GlassButton";
@@ -15,33 +15,34 @@ import { checkAutoLogin } from "../utils/helpers";
 import { useLanguageCurrency } from "../hooks/LanguageCurrencyContext";
 import { addBillingAndShippingAddress } from "../services/addBillingAndShippingAddress";
 import { getMyAddresses } from "../services/getMyAddresses";
+import { useLoading } from "../hooks/LoadingProvider";
 
 const ChooseDeliveryAddress = () => {
 
-    const defaultAddress = {
-        id: 1,
-        name: "Customer Name",
-        tag: "Home",
-        address: "123, MG Road, Mumbai, Maharashtra - 400001",
-        mobile: "+91 9876543210",
-    };
+    // const defaultAddress = {
+    //     id: 1,
+    //     name: "Customer Name",
+    //     tag: "Home",
+    //     address: "123, MG Road, Mumbai, Maharashtra - 400001",
+    //     mobile: "+91 9876543210",
+    // };
 
-    const otherAddresses = [
-        {
-            id: 2,
-            name: "Customer Name",
-            tag: "Home",
-            address: "456, Park Avenue, Pune, Maharashtra - 411001",
-            mobile: "+91 9998887777",
-        },
-        {
-            id: 3,
-            name: "Customer Name",
-            tag: "Home",
-            address: "789, Lake View, Bangalore, Karnataka - 560001",
-            mobile: "+91 9988776655",
-        },
-    ];
+    // const otherAddresses = [
+    //     {
+    //         id: 2,
+    //         name: "Customer Name",
+    //         tag: "Home",
+    //         address: "456, Park Avenue, Pune, Maharashtra - 411001",
+    //         mobile: "+91 9998887777",
+    //     },
+    //     {
+    //         id: 3,
+    //         name: "Customer Name",
+    //         tag: "Home",
+    //         address: "789, Lake View, Bangalore, Karnataka - 560001",
+    //         mobile: "+91 9988776655",
+    //     },
+    // ];
 
 
     const { language, currency, changeLanguage, changeCurrency } = useLanguageCurrency();
@@ -57,8 +58,16 @@ const ChooseDeliveryAddress = () => {
     const [isDefaultAddress, setDefaultAddress] = useState(null);
     const scrollY = useRef(new Animated.Value(0)).current;
     const navigation = useNavigation();
-    const [selectedAddress, setSelectedAddress] = useState(1);
+    const [selectedAddress, setSelectedAddress] = useState(null);
     const [screenLoading, setScreenLoading] = useState(false);
+    const [otherAddresses, setOtherAddresses] = useState([]);
+    const defaultAddressArray = isDefaultAddress
+        ? [isDefaultAddress]
+        : [];
+
+    const { setGlobalLoading } = useLoading();
+    const [isGiftWrap, setIsGiftWrap] = useState(false);
+
 
     useFocusEffect(
         useCallback(() => {
@@ -107,17 +116,18 @@ const ChooseDeliveryAddress = () => {
 
     const onClickCheckoutContinueBtn = async () => {
         try {
+            setGlobalLoading(true)
             // setLoading(true);
-            const shippingAddressId = selectShippingAddress?.address_id
-            const paymentAddressId = selectBillingAddress?.address_id
-            const result = await addBillingAndShippingAddress(shippingAddressId, paymentAddressId, EndPoint?.checkout_Shippingandpaymentaddress);
+            // const shippingAddressId = selectShippingAddress?.address_id
+            // const paymentAddressId = selectBillingAddress?.address_id
+            const result = await addBillingAndShippingAddress(selectedAddress, selectedAddress, EndPoint?.checkout_Shippingandpaymentaddress);
             console.log("save shipping and billing address :", result);
-            navigation.navigate('Payment');
+            navigation.navigate('ShippingMethod');
         } catch (error) {
             console.log("error", error.response.data);
             alert(GlobalText?.extrafield_somethingwrong);
         } finally {
-            setLoading(false);
+            setGlobalLoading(false);
         }
     }
 
@@ -125,11 +135,25 @@ const ChooseDeliveryAddress = () => {
         try {
 
             const result = await getMyAddresses(EndPoint?.address);
-            console.log("result getMyAddresses:", result);
-            setAddressList(result?.response);
-            const addresses = result?.response;
-            const defaultAddress = addresses.find(addr => addr.defaultaddrstatus === true);
-            setDefaultAddress(defaultAddress);
+            const addresses = result?.response || [];
+
+            const defaultAddr = addresses.find(a => a.defaultaddrstatus);
+            const others = addresses.filter(a => !a.defaultaddrstatus);
+
+            setAddressList(addresses);
+            setDefaultAddress(defaultAddr);
+            setOtherAddresses(others);
+
+            // pre-select default address
+            if (defaultAddr) {
+                setSelectedAddress(defaultAddr.address_id);
+            }
+
+
+
+            // console.log("defaultAddress", defaultAddress)
+            // setDefaultAddress(defaultAddress);
+            // setOtherAddresses(others);
             setSelectShippingAddress(defaultAddress);
             setSelectBillingAddress(defaultAddress);
         } catch (error) {
@@ -174,87 +198,301 @@ const ChooseDeliveryAddress = () => {
         }
     }
 
+    const onClickDeleteAddress = async (addressId) => {
+        try {
+            setGlobalLoading(true);
+            const url = `${BASE_URL}${EndPoint?.address_validateAddressDelete}`;
+            const lang = await _retrieveData('SELECT_LANG');
+            const cur = await _retrieveData('SELECT_CURRENCY');
+            const user = await _retrieveData("CUSTOMER_ID");
+            const sessionId = await _retrieveData('SESSION_ID');
+
+            const headers = {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                Key: API_KEY,
+            };
+
+            const body = {
+                code: lang?.code,
+                currency: cur,
+                customer_id: user,
+                sessionid: sessionId,
+                address_id: addressId
+            }
+
+            const response = await axios.post(url, body, { headers: headers });
+
+            if (response.status === HttpStatusCode.Ok) {
+                await fetchAllMyAddress();
+                // setAddressList(prev => prev.filter(item => item.address_id !== addressId));
+            }
+        } catch (error) {
+            console.log("error delete address:", error.message);
+        } finally {
+            setGlobalLoading(false);
+        }
+
+    }
+
+
+    const deleteConfirmationAlert = (addressId) => {
+        Alert.alert(
+            GlobalText?.text_chkout_delete_address, // Title
+            GlobalText?.text_chkout_doyou_delete, // Message
+            [
+                {
+                    text: GlobalText?.extrafield_cancelbtn,
+                    onPress: () => console.log('Cancel Pressed'),
+                    style: 'cancel',
+                },
+                {
+                    text: GlobalText?.extrafield_okbtn,
+                    onPress: () => onClickDeleteAddress(addressId),
+                },
+            ]
+        );
+    };
+
+
+
 
     return (
         <BackgroundWrapper>
-
-            <ScrollView
-                contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 20, marginTop: Platform.OS === "ios" ? 60 : 10 }}
-                showsVerticalScrollIndicator={false}
-            >
-                <TouchableOpacity style={{ marginTop: 20, marginLeft: 10 }} onPress={() => navigation.goBack()}>
-                    <Image source={require("../assets/images/back.png")} style={{ width: 18, height: 18, tintColor: "#fff", }} />
-                </TouchableOpacity>
-                {/* Header */}
-                <View style={styles.header}>
-                    {/* <TouchableOpacity onPress={() => navigation.goBack()}>
+            <View style={{ flex: 1 }}>
+                <ScrollView
+                    contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 20, marginTop: Platform.OS === "ios" ? 60 : 10 }}
+                    showsVerticalScrollIndicator={false}
+                >
+                    <TouchableOpacity style={{ marginTop: 20, marginLeft: 10 }} onPress={() => navigation.goBack()}>
+                        <Image source={require("../assets/images/back.png")} style={{ width: 18, height: 18, tintColor: "#fff", }} />
+                    </TouchableOpacity>
+                    {/* Header */}
+                    <View style={styles.header}>
+                        {/* <TouchableOpacity onPress={() => navigation.goBack()}>
                         <Ionicons name="arrow-back" size={24} color="#fff" />
                     </TouchableOpacity> */}
-                    <Text style={styles.title}>Choose Delivery Address</Text>
-                    <TouchableOpacity onPress={() => { navigation.navigate('AddNewAddress') }} style={styles.addNewBtn}>
-                        <Text style={styles.addNewText}>Add New</Text>
-                    </TouchableOpacity>
-                </View>
-
-                {/* Default Address */}
-                <Text style={styles.sectionTitle}>Default Address</Text>
-                <GlassContainer style={styles.addressCard}>
-                    <View style={styles.addressRow}>
-                        <TouchableOpacity
-                            onPress={() => setSelectedAddress(defaultAddress.id)}
-                            style={styles.radioCircle}
-                        >
-                            {selectedAddress === defaultAddress.id && <View style={styles.radioInner} />}
-                        </TouchableOpacity>
-                        <Text style={styles.name}>{isDefaultAddress?.firstname}</Text>
-                        <View style={styles.tagBox}>
-                            <Text style={styles.tagText}>{defaultAddress.tag}</Text>
-                        </View>
-                    </View>
-
-                    <Text style={styles.addressText}>{isDefaultAddress?.address_1} {isDefaultAddress?.address_2}</Text>
-                    <Text style={styles.mobileText}>Mobile: {defaultAddress.mobile}</Text>
-
-                    <View style={styles.btnRow}>
-                        <TouchableOpacity style={styles.boxBtn}>
-                            <Text style={styles.boxBtnText}>Remove</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.boxBtn}>
-                            <Text style={styles.boxBtnText}>Edit</Text>
+                        <Text style={styles.title}>Choose Delivery Address</Text>
+                        <TouchableOpacity onPress={() => { navigation.navigate('AddNewAddress') }} style={styles.addNewBtn}>
+                            <Text style={styles.addNewText}>Add New</Text>
                         </TouchableOpacity>
                     </View>
-                </GlassContainer>
 
-                {/* Other Addresses */}
-                <Text style={[styles.sectionTitle, { marginTop: 24 }]}>Other Address</Text>
-                {otherAddresses.map((item) => (
-                    <GlassContainer key={item.id} style={styles.addressCard}>
-                        <View style={styles.addressRow}>
+
+                    
+
+
+                    {defaultAddressArray.length > 0 && (
+                        <>
+                            <Text style={styles.sectionTitle}>Default Address</Text>
+
+                            {defaultAddressArray.map(item => (
+                                <GlassContainer
+                                    key={item.address_id}
+                                    style={styles.addressCard}
+                                >
+                                    <View style={styles.addressRow}>
+                                        <TouchableOpacity
+                                            onPress={() => setSelectedAddress(item.address_id)}
+                                            style={styles.radioCircle}
+                                        >
+                                            {selectedAddress === item.address_id && (
+                                                <View style={styles.radioInner} />
+                                            )}
+                                        </TouchableOpacity>
+
+                                        <Text style={styles.name}>
+                                            {item.firstname} {item.lastname}
+                                        </Text>
+
+                                        <View style={styles.tagBox}>
+                                            <Text style={styles.tagText}>Default</Text>
+                                        </View>
+                                    </View>
+
+                                    <Text style={styles.addressText}>
+                                        {item.address_1} {item.address_2}, {item.city}
+                                    </Text>
+
+                                    <View style={styles.btnRow}>
+                                        {/* <TouchableOpacity onPress={()=>deleteConfirmationAlert(item?.address_id)} style={styles.boxBtn}>
+                                            <Text style={styles.boxBtnText}>Remove</Text>
+                                        </TouchableOpacity> */}
+
+                                        <TouchableOpacity
+                                            onPress={() =>
+                                                navigation.navigate('EditAddress', { item })
+                                            }
+                                            style={styles.boxBtn}
+                                        >
+                                            <Text style={styles.boxBtnText}>Edit</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                </GlassContainer>
+                            ))}
+                        </>
+                    )}
+
+
+                    {otherAddresses.length > 0 && (
+                        <>
+                            <Text style={[styles.sectionTitle, { marginTop: 24 }]}>
+                                Other Addresses
+                            </Text>
+
+                            {otherAddresses.map(item => (
+                                <GlassContainer
+                                    key={item.address_id}
+                                    style={styles.addressCard}
+                                >
+                                    <View style={styles.addressRow}>
+                                        <TouchableOpacity
+                                            onPress={() => setSelectedAddress(item.address_id)}
+                                            style={styles.radioCircle}
+                                        >
+                                            {selectedAddress === item.address_id && (
+                                                <View style={styles.radioInner} />
+                                            )}
+                                        </TouchableOpacity>
+
+                                        <Text style={styles.name}>
+                                            {item.firstname} {item.lastname}
+                                        </Text>
+
+                                        <View style={styles.tagBox}>
+                                            <Text style={styles.tagText}>Address</Text>
+                                        </View>
+                                    </View>
+
+                                    <Text style={styles.addressText}>
+                                        {item.address_1} {item.address_2}, {item.city}
+                                    </Text>
+
+                                    <View style={styles.btnRow}>
+                                        <TouchableOpacity onPress={() => deleteConfirmationAlert(item?.address_id)} style={styles.boxBtn}>
+                                            <Text style={styles.boxBtnText}>Remove</Text>
+                                        </TouchableOpacity>
+
+                                        <TouchableOpacity
+                                            onPress={() =>
+                                                navigation.navigate('EditAddress', { item })
+                                            }
+                                            style={styles.boxBtn}
+                                        >
+                                            <Text style={styles.boxBtnText}>Edit</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                </GlassContainer>
+                            ))}
+                        </>
+                    )}
+
+                    <KeyboardAvoidingView
+                        style={{ flex: 1 }}
+                        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+                    >
+                    <ScrollView
+                        keyboardShouldPersistTaps="handled"
+                        contentContainerStyle={{ padding: 10 }}
+                    >
+                        {/* 🔹 Gift Section */}
+                        <View style={styles.giftSection}>
                             <TouchableOpacity
-                                onPress={() => setSelectedAddress(item.id)}
-                                style={styles.radioCircle}
+                                style={styles.giftWrapRow}
+                                activeOpacity={0.8}
+                                onPress={() => setIsGiftWrap(prev => !prev)}
+                                hitSlop={20}
                             >
-                                {selectedAddress === item.id && <View style={styles.radioInner} />}
-                            </TouchableOpacity>
-                            <Text style={styles.name}>{item.name}</Text>
-                            <View style={styles.tagBox}>
-                                <Text style={styles.tagText}>{item.tag}</Text>
-                            </View>
-                        </View>
+                                <View style={styles.radioOuterSmall}>
+                                    {isGiftWrap && <View style={styles.radioInnerSmall} />}
+                                </View>
 
-                        <Text style={styles.addressText}>{item.address}</Text>
-                        <Text style={styles.mobileText}>Mobile: {item.mobile}</Text>
+                                <Text style={styles.giftWrapText}>Gift Wrap</Text>
+                            </TouchableOpacity>
 
-                        <View style={styles.btnRow}>
-                            <TouchableOpacity style={styles.boxBtn}>
-                                <Text style={styles.boxBtnText}>Remove</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={styles.boxBtn}>
-                                <Text style={styles.boxBtnText}>Edit</Text>
-                            </TouchableOpacity>
+                            {isGiftWrap && (
+                                <>
+                                    <View style={styles.giftHeader}>
+                                        <Text style={styles.giftTitle}>Gift</Text>
+
+                                        <Image
+                                            style={{ width: 30, height: 30 }}
+                                            source={require('../assets/images/gift.png')}
+                                        />
+                                    </View>
+
+                                    <Text style={{marginTop:20, marginBottom:20, color:"#fff", lineHeight:25, }}>
+                                        Want to make your order a gift?
+
+                                        Activate this option and let us deliver the product to someone special in a beautiful way.
+
+                                        This option is optional; if the order is for you, you can proceed without activating it.
+                                    </Text>
+
+
+                                    <Text style={styles.sectionSubtitle}>Recipient’s Details</Text>
+
+                                    <GlassContainer padding={4} borderRadius={10}>
+                                        <TextInput
+                                            placeholder="Full Name"
+                                            placeholderTextColor="#fff"
+                                            style={styles.input}
+                                        />
+                                    </GlassContainer>
+
+                                    <GlassContainer padding={4} borderRadius={10}>
+                                        <TextInput
+                                            placeholder="Phone Number"
+                                            placeholderTextColor="#fff"
+                                            keyboardType="phone-pad"
+                                            style={styles.input}
+                                        />
+                                    </GlassContainer>
+
+                                    <GlassContainer padding={4} borderRadius={10} style={{ height: 70 }}>
+                                        <TextInput
+                                            placeholder="Address"
+                                            placeholderTextColor="#fff"
+                                            style={styles.input}
+                                            multiline
+                                        />
+                                    </GlassContainer>
+
+                                    <GlassContainer>
+                                         <TextInput
+                                            placeholder="City"
+                                            placeholderTextColor="#fff"
+                                            style={styles.input}
+                                        />
+                                    </GlassContainer>
+
+                                     <GlassContainer>
+                                         <TextInput
+                                            placeholder="Post Code"
+                                            placeholderTextColor="#fff"
+                                            style={styles.input}
+                                        />
+                                    </GlassContainer>
+
+                                    <View style={{ marginTop: 20 }}>
+                                        <GlassContainer padding={4} borderRadius={10} style={{ height: 70 }}>
+                                            <TextInput
+                                                placeholder="Custom Message"
+                                                placeholderTextColor="#fff"
+                                                style={styles.input}
+                                                multiline
+                                            />
+                                        </GlassContainer>
+                                    </View>
+                                </>
+                            )}
                         </View>
-                    </GlassContainer>
-                ))}
+                    </ScrollView>
+                    </KeyboardAvoidingView>
+
+
+
+
+                </ScrollView>
 
                 {/* Bottom Section */}
                 <View style={styles.footer}>
@@ -263,15 +501,19 @@ const ChooseDeliveryAddress = () => {
                         <View style={styles.horizontalLine} />
                     </View>
 
-                    <GlassmorphismButton title="PROCEED" onPress={() => navigation.navigate("ChoosePaymentMethod")} />
+                    <GlassmorphismButton
+                        title="PROCEED"
+                        disabled={!isDefaultAddress && !selectedAddress}
+                        onPress={() => onClickCheckoutContinueBtn()}
+
+                    />
 
                     <View style={styles.footerBottomRow}>
                         <Text style={styles.totalText}>₹16669.25</Text>
                         <Text style={styles.itemText}>1 Item</Text>
                     </View>
                 </View>
-            </ScrollView>
-
+            </View>
         </BackgroundWrapper>
     );
 };
@@ -403,12 +645,16 @@ const styles = StyleSheet.create({
         fontSize: 12,
     },
     footer: {
-        marginTop: 40,
+        // marginTop: 40,
+        marginBottom: 10,
+        paddingBottom: 20,
+        padding: 15
     },
     footerTopRow: {
         flexDirection: "row",       // ← align text + line horizontally
         alignItems: "center",       // ← vertically center both
         justifyContent: "flex-end", // ← move both to the right
+
     },
     pointsText: {
         color: "#fff",
@@ -435,5 +681,68 @@ const styles = StyleSheet.create({
     itemText: {
         color: "#fff",
         marginRight: 5
+    },
+    giftSection: {
+        marginTop: 10,
+        marginBottom: 10
+    },
+    giftWrapRow: {
+        flexDirection: "row",
+        alignItems: "center",
+        // marginBottom: 30,
+        marginLeft: 0
+    },
+    radioOuterSmall: {
+        width: 18,
+        height: 18,
+        borderRadius: 9,
+        borderWidth: 1,
+        borderColor: "#fff",
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    radioInnerSmall: {
+        width: 9,
+        height: 9,
+        borderRadius: 5,
+        backgroundColor: "#fff",
+    },
+    giftWrapText: {
+        color: "#fff",
+        fontSize: 19,
+        marginLeft: 8,
+        fontWeight: 'bold'
+    },
+    giftHeader: {
+        flexDirection: "row",
+        alignItems: "center",   // vertically center everything
+        gap: 8,                 // cleaner spacing
+        marginLeft: 0,
+        marginTop: 20
+    },
+    giftTitle: {
+        color: "#fff",
+        fontSize: 22,
+        fontWeight: "700",
+    },
+    sectionSubtitle: {
+        color: "#fff",
+        fontWeight: "600",
+        fontSize: 14,
+        marginTop: 10,
+        marginBottom: 10,
+    },
+    inputContainer: {
+        borderRadius: 5,
+        marginBottom: 12,
+    },
+    input: {
+        // borderWidth:1,
+        // borderColor:'white',
+        padding: 10,
+        color: "#fff",
+        // fontSize: 14,
+        // paddingHorizontal: 8,
+        // paddingVertical: Platform.OS === "android" ? 4 : 4,
     },
 });

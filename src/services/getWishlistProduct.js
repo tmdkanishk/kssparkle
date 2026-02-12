@@ -8,7 +8,7 @@ export const getWishlistProduct = async (page, accountdashboard_wishlist) => {
         const url = `${BASE_URL}${accountdashboard_wishlist}`;
         const lang = await _retrieveData('SELECT_LANG');
         const cur = await _retrieveData('SELECT_CURRENCY');
-        const user = await _retrieveData('USER');
+        const user = await _retrieveData('CUSTOMER_ID');
         const sessionId = await _retrieveData('SESSION_ID');
 
 
@@ -19,8 +19,8 @@ export const getWishlistProduct = async (page, accountdashboard_wishlist) => {
 
         const body = {
             code: lang?.code,
-            currency: cur?.code,
-            customer_id: user[0]?.customer_id,
+            currency: cur,
+            customer_id: user ? user : null,
             sessionId: sessionId,
             page: page
         }

@@ -26,6 +26,8 @@ import CustomCouponSection from "../components/customcomponents/CustomCouponSect
 import CustomVoucherSection from "../components/customcomponents/CustomVoucherSection";
 import { shareAllUrlProdcuts } from "../services/shareAllUrlProdcuts";
 import { useLoading } from "../hooks/LoadingProvider";
+import FailedModal from "../components/FailedModal";
+import PriceView from "../components/customcomponents/PriceView";
 
 
 const ShoppingBag = ({ navigation }) => {
@@ -66,6 +68,8 @@ const ShoppingBag = ({ navigation }) => {
 
     // multi selection
     const [cartItem, setCartItem] = useState([]);
+    const [showOffersOnly, setShowOffersOnly] = useState(false);
+
 
     useFocusEffect(
         useCallback(() => {
@@ -113,12 +117,12 @@ const ShoppingBag = ({ navigation }) => {
 
             const body = {
                 code: lang?.code,
-                currency: cur?.code,
+                currency: cur,
                 customer_id: user,
                 sessionid: sessionId
             }
 
-            // console.log("fetchCartData", url, body)
+            console.log("fetchCartData", url, body)
 
             const response = await axios.post(url, body, { headers: headers });
             // console.log("response", response.data);
@@ -141,6 +145,12 @@ const ShoppingBag = ({ navigation }) => {
         try {
             setGlobalLoading(true);
             const cartIds = cartItem.map(item => item.cart_id);
+            if (cartIds?.length == 0) {
+                console.log("removeAllProduct got hit")
+                setErrorMgs("Please Select the Products");
+                setErrorModal(true);
+                return;
+            }
             const response = await removeAllProductFromCart(cartIds, EndPoint?.cart_remove);
             console.log("removeAllProductFromCart response ", response)
             updateCartCount(response?.cartproductcount);
@@ -183,6 +193,7 @@ const ShoppingBag = ({ navigation }) => {
             const response = await appyCoupon(coupon, EndPoint?.cart_coupon);
             console.log("applyCouponCode response : ", response);
             if (response?.success) {
+                console.log("applyCouponCode" ,response?.success)
                 setCouponSuccess(response?.success);
                 setCouponError(null);
                 fetchCartData();
@@ -196,7 +207,7 @@ const ShoppingBag = ({ navigation }) => {
                 setErrorModal(true);
             }
         } finally {
-            setCouponSuccess(null);
+            // setCouponSuccess(null);
             setGlobalLoading(false);
         }
     }
@@ -210,6 +221,7 @@ const ShoppingBag = ({ navigation }) => {
 
 
     const toggleCart = (item) => {
+        console.log("toggleCart getting hit")
         setCartItem(prev =>
             prev.includes(item)
                 ? prev.filter(id => id?.cart_id !== item?.cart_id) // remove
@@ -233,6 +245,13 @@ const ShoppingBag = ({ navigation }) => {
                 cartItem.map(item => item?.product_id)
             )]; // find  unique productIds
 
+            if (productIds?.length == 0) {
+                console.log("addAllWishList got hit")
+                setErrorMgs("Please Select the products");
+                setErrorModal(true);
+                return;
+            }
+
             handleAllWishlistToggle(productIds);
 
 
@@ -254,6 +273,9 @@ const ShoppingBag = ({ navigation }) => {
             )]; // find  unique productIds
 
             if (productIds?.length == 0) {
+                console.log("shareAllProduct got hit")
+                setErrorMgs("Please Select the products");
+                setErrorModal(true);
                 return;
             }
             const response = await shareAllUrlProdcuts(productIds, EndPoint?.share)
@@ -383,39 +405,47 @@ const ShoppingBag = ({ navigation }) => {
                     }
 
                     {/* Available Offers */}
-                    <GlassContainer>
-                        <View style={styles.offerRow}>
-                            {/* <Icon name="tag-outline" size={18} color="#fff" /> */}
-                            <Image
-                                source={require("../assets/images/discount.png")} // white tick image
-                                style={{
-                                    width: 18,
-                                    height: 18,
-                                    marginRight: 8,
-                                }}
+                    <TouchableOpacity onPress={() => setShowOffersOnly(prev => !prev)}>
+
+                        <GlassContainer>
+                            <View style={styles.offerRow}>
+                                {/* <Icon name="tag-outline" size={18} color="#fff" /> */}
+                                <Image
+                                    source={require("../assets/images/discount.png")} // white tick image
+                                    style={{
+                                        width: 18,
+                                        height: 18,
+                                        marginRight: 8,
+                                    }}
+                                />
+                                <Text style={styles.offerTitle}>Available Offers</Text>
+                            </View>
+                            <Text style={styles.offerText}>
+                                10% Instant Discount on HDFC Bank Credit Card, Credit Card EMI & Debit Card EMI on a min spend of ₹3,500.
+                            </Text>
+                            <Text style={styles.showMore}>▼ Show more</Text>
+                        </GlassContainer>
+
+                    </TouchableOpacity>
+
+                    {showOffersOnly && (
+                        <>
+                            {/* coupon section */}
+                            <CustomCouponSection
+                                onClickApply={(coupon) => applyCouponCode(coupon)}
+                                error={isCouponError}
+                                success={isCouponSuccess}
                             />
-                            <Text style={styles.offerTitle}>Available Offers</Text>
-                        </View>
-                        <Text style={styles.offerText}>
-                            10% Instant Discount on HDFC Bank Credit Card, Credit Card EMI & Debit Card EMI on a min spend of ₹3,500.
-                        </Text>
-                        <Text style={styles.showMore}>▼ Show more</Text>
-                    </GlassContainer>
 
-                    {/* coupon section */}
-                    <CustomCouponSection
-                        onClickApply={(coupon) => applyCouponCode(coupon)}
-                        error={isCouponError}
-                        success={isCouponSuccess}
-                    />
+                            {/* voucher section */}
+                            <CustomVoucherSection
+                                onVoucherApply={(voucher) => applyVoucherCode(voucher)}
+                                error={isGiftError}
+                                success={isVoucherSuccess}
+                            />
+                        </>
+                    )}
 
-                    {/* voucher section */}
-                    <CustomVoucherSection
-                        onVoucherApply={(voucher) => applyVoucherCode(voucher)}
-                        error={isGiftError}
-                        success={isVoucherSuccess}
-
-                    />
 
 
 
@@ -441,7 +471,13 @@ const ShoppingBag = ({ navigation }) => {
                                     </Text>
 
                                     <Text style={isFinal ? styles.totalValue : styles.value}>
-                                        {item.text}
+                                        {item.text && (
+                                            <PriceView
+                                                priceHtml={item.text}
+                                                textStyle={{ fontWeight: '700' }}
+                                            />
+                                        )}
+                                        {/* {item.text} */}
                                     </Text>
                                 </View>
                             );
@@ -465,6 +501,14 @@ const ShoppingBag = ({ navigation }) => {
                     </View>
                 </ScrollView>
             </KeyboardAvoidingView>
+
+
+            <FailedModal
+                isSuccessMessage={isErrorMgs}
+                handleCloseModal={() => { setErrorModal(false); setErrorMgs() }}
+                isModal={isErrorModal}
+                onClickClose={() => { setErrorModal(false); setErrorMgs() }}
+            />
 
             <SuccessModal
                 handleCloseModal={() => setSuccess('')}

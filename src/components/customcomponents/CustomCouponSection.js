@@ -3,9 +3,14 @@ import React, { memo, useState } from 'react'
 import GlassContainer from './GlassContainer'
 import { IconComponentDownArrow, IconComponentUpArrow } from '../../constants/IconComponents'
 
+// http://192.168.0.135/customclient/2025/oct/sparkleksa/index.php?route=extension/restapi/coupon
+// http://192.168.0.135/customclient/2025/oct/sparkleksa/index.php?route=extension/restapi/coupon/allcoupons
+
 const CustomCouponSection = ({ title, placeholderText, error, success, onClickApply }) => {
     const [show, setShow] = useState(false);
     const [couponCode, setCouponCode] = useState('');
+
+    console.log("success", success)
     return (
         <View>
             <GlassContainer>
