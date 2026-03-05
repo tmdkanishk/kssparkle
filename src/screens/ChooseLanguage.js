@@ -6,6 +6,8 @@ import CustomActivity from '../components/CustomActivity';
 import commonStyles from '../constants/CommonStyles';
 import { useCustomContext } from '../hooks/CustomeContext';
 import { _retrieveData, _storeData } from '../utils/storage';
+import BackgroundWrapper from '../components/customcomponents/BackgroundWrapper';
+import { useLoading } from '../hooks/LoadingProvider';
 
 const ChooseLanguage = ({ navigation }) => {
     const { Colors, EndPoint, SetAppLanguage } = useCustomContext();
@@ -13,6 +15,9 @@ const ChooseLanguage = ({ navigation }) => {
     const [isLabel, setLabel] = useState();
     const [loading, setloading] = useState(false);
     const [isError, setError] = useState();
+    const { setGlobalLoading } = useLoading();
+
+
 
     useEffect(() => {
         fetchLanguageData();
@@ -21,7 +26,7 @@ const ChooseLanguage = ({ navigation }) => {
 
     const fetchLanguageData = async () => {
         try {
-            setloading(true);
+            setGlobalLoading(true);
             const url = `${BASE_URL}${EndPoint?.languages}`; // Replace with your endpoint
             const sessionId = await _retrieveData('SESSION_ID');
             const user = await _retrieveData('USER');
@@ -42,23 +47,53 @@ const ChooseLanguage = ({ navigation }) => {
         } catch (error) {
             setError("Something went wrong! Please try again later!");
         } finally {
-            setloading(false);
+            setGlobalLoading(false);
         }
     };
 
-    const onSelectLanguage = async (item) => {
+    //   const onSelectLanguage = async (item) => {
+    //         await _storeData('SELECT_LANG', item);
+
+    //         const locales = Localization.getLocales();
+    //         const region = locales?.[0]?.languageRegionCode;
+
+    //         if (region === 'IN') {
+    //             const inrCurrency = {
+    //                 code: 'INR',
+    //                 symbol_left: 'Rs ',
+    //                 symbol_right: '',
+    //                 title: 'INR',
+    //             };
+
+    //             await _storeData('SELECT_CURRENCY', inrCurrency);
+    //             await _storeData('ONBOARDING_DONE', true);
+
+    //             navigation.replace('Home');
+    //         } else {
+    //             navigation.replace('ChooseCurrency');
+    //         }
+    //     };
+
+
+    // const onSelectLanguage = async (item) => {
+    //     await _storeData('SELECT_LANG', item);
+    //     navigation.replace('Login');
+    //     //  navigation.replace('Home');
+    //     // navigation.replace('ChooseCurrency')
+    // }
+
+        const onSelectLanguage = async (item) => {
         await _storeData('SELECT_LANG', item);
         SetAppLanguage(item?.code);
+        console.log(item?.code)
         navigation.replace('ChooseCurrency')
     }
 
     return (
         <>
-            {loading ? (
-                <CustomActivity />
-            ) :
+            <BackgroundWrapper>
 
-                <View style={{ width: '100%', height: '100%', backgroundColor: Colors.white, paddingBottom: 50 }}>
+                <View style={{ width: '100%', height: '100%', paddingBottom: 50 }}>
                     {
                         isError ? (
                             <View style={{ width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center' }}>
@@ -66,8 +101,8 @@ const ChooseLanguage = ({ navigation }) => {
                             </View>
                         ) : (
                             <ScrollView showsVerticalScrollIndicator={false}>
-                                <View style={{ width: '90%', alignSelf: 'center', marginVertical: 20 }}>
-                                    <Text style={[commonStyles.heading, { color: Colors.primary }]}>{isLabel}</Text>
+                                <View style={{ width: '90%', alignSelf: 'center', marginVertical: 20, marginTop:60 }}>
+                                    <Text style={[commonStyles.heading, { color: Colors.white }]}>{isLabel}</Text>
                                 </View>
 
                                 <View style={{ width: '90%', alignSelf: 'center', }}>
@@ -82,7 +117,7 @@ const ChooseLanguage = ({ navigation }) => {
                                                     <View style={{ width: 28, height: 24 }}>
                                                         <Image source={{ uri: item?.image }} style={{ width: '100%', height: '100%', resizeMode: 'contain' }} />
                                                     </View>
-                                                    <Text>{item.name}</Text>
+                                                    <Text style={{ color: Colors.white }}>{item.name}</Text>
                                                 </TouchableOpacity>
                                             ))
 
@@ -96,7 +131,9 @@ const ChooseLanguage = ({ navigation }) => {
                         )
                     }
                 </View>
-            }
+
+            </BackgroundWrapper>
+
         </>
 
     )

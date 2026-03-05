@@ -11,76 +11,76 @@ const WishlistCard = ({ image, productName, price, discountPrice, onClickWishLis
     const { Colors } = useCustomContext();
     return (
         <GlassContainer padding={0.1}>
-        <View style={{ marginTop: 20, flexDirection: 'row', paddingVertical: 10, borderColor: Colors.gray, borderRadius: 10, justifyContent: 'space-between', alignItems: 'center', opacity: isLoading ? 0.5 : 1 }}>
-            <TouchableOpacity onPress={() => onClickProduct()} style={{ width: '40%', height: 130, padding: 10, alignItems: 'center', justifyContent: 'center' }}>
-                {
-                    image ? (
-                        <Image source={{ uri: image }} style={{ width: '100%', height: '100%', resizeMode: 'contain' }} />
-                    ) : (
-                        <IconComponentImage size={40} />
-                    )
-                }
+            <View style={{ flexDirection: 'row', paddingVertical: 10, borderColor: Colors.gray, borderRadius: 10, justifyContent: 'space-between', alignItems: 'center', opacity: isLoading ? 0.5 : 1 }}>
+                <TouchableOpacity onPress={() => onClickProduct()} style={{ width: '40%', height: 130, padding: 10, alignItems: 'center', justifyContent: 'center' }}>
+                    {
+                        image ? (
+                            <Image source={{ uri: image }} style={{ width: '100%', height: '100%', resizeMode: 'contain' }} />
+                        ) : (
+                            <IconComponentImage size={40} />
+                        )
+                    }
 
-            </TouchableOpacity>
-            <View style={{ width: '60%', }}>
-                <View style={{ gap: 5 }}>
-                    <TouchableOpacity onPress={() => onClickProduct()}>
-                        <Text style={commonStyles.text_lg}>
-                            {productName}
-                        </Text>
-                    </TouchableOpacity>
+                </TouchableOpacity>
+                <View style={{ width: '60%', }}>
+                    <View style={{ gap: 5 }}>
+                        <TouchableOpacity onPress={() => onClickProduct()}>
+                            <Text style={commonStyles.text_lg}>
+                                {productName}
+                            </Text>
+                        </TouchableOpacity>
 
-                    <Text style={{color:"#fff", fontWeight:'400'}}>{1}<Entypo name="star" size={16} color={Colors.white} /> /5 {'(0)'}</Text>
-                    <View style={styles.priceContainer}>
-                        <Text style={commonStyles.text_lg}>
-                            {/* product price */}
-                            {discountPrice ? <PriceView
-                            priceHtml={discountPrice}
-                            textStyle={{}}
-                        /> : <PriceView
-                            priceHtml={price}
-                            textStyle={{}}
-                        /> }
-                        </Text>
+                        <Text style={{ color: "#fff", fontWeight: '400' }}>{1}<Entypo name="star" size={16} color={Colors.white} /> /5 {'(0)'}</Text>
+                        <View style={styles.priceContainer}>
+                            <Text style={commonStyles.text_lg}>
+                                {/* product price */}
+                                {discountPrice ? <PriceView
+                                    priceHtml={discountPrice}
+                                    textStyle={{}}
+                                /> : <PriceView
+                                    priceHtml={price}
+                                    textStyle={{}}
+                                />}
+                            </Text>
 
-                        {/* old price  */}
-                        {
-                            discountPrice ? <View>
-                            <PriceView
-                            priceHtml={discountPrice}
-                            textStyle={{}}
-                        /> :
-                                {
-                                    price ?   <PriceView
-                            priceHtml={price}
-                            textStyle={{}}
-                        />  : null
-                                }
+                            {/* old price  */}
+                            {
+                                discountPrice ? <View>
+                                    <PriceView
+                                        priceHtml={discountPrice}
+                                        textStyle={{}}
+                                    /> :
+                                    {
+                                        price ? <PriceView
+                                            priceHtml={price}
+                                            textStyle={{}}
+                                        /> : null
+                                    }
 
-                            </View> : null
-                        }
+                                </View> : null
+                            }
+
+
+                        </View>
+                    </View>
+                    <View style={{ flexDirection: 'row', gap: 20, marginTop: 10, alignItems: 'center' }}>
+                        <TouchableOpacity onPress={onClickWishList}>
+                            <IconComponentTrash size={32} color={Colors?.error} />
+                        </TouchableOpacity>
+
+                        <TouchableOpacity disabled={isLoading} style={[styles.cartBtn, { backgroundColor: Colors.primary, }]} onPress={onclickAddTocart}>
+                            <IconComponentCarts color={Colors.white} size={21} />
+                            <Text style={commonStyles.textwhite}>{addToCartText}</Text>
+                        </TouchableOpacity>
+
+                    </View>
+                    <View>
 
 
                     </View>
-                </View>
-                <View style={{ flexDirection: 'row', gap: 20, marginTop: 10, alignItems: 'center' }}>
-                    <TouchableOpacity onPress={onClickWishList}>
-                        <IconComponentTrash size={32} color={Colors?.error} />
-                    </TouchableOpacity>
-
-                    <TouchableOpacity disabled={isLoading} style={[styles.cartBtn, { backgroundColor: Colors.primary, }]} onPress={onclickAddTocart}>
-                        <IconComponentCarts color={Colors.white} size={21} />
-                        <Text style={commonStyles.textwhite}>{addToCartText}</Text>
-                    </TouchableOpacity>
 
                 </View>
-                <View>
-
-
-                </View>
-
             </View>
-        </View>
         </GlassContainer>
     )
 }

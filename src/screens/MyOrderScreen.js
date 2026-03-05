@@ -221,6 +221,7 @@ const MyOrderScreen = ({ navigation }) => {
 
 
     return (
+        <>
         <BackgroundWrapper>
             <FlatList
                 data={orderHistoryData}
@@ -284,6 +285,7 @@ const MyOrderScreen = ({ navigation }) => {
                 }
             />
         </BackgroundWrapper>
+        </>
     );
 };
 

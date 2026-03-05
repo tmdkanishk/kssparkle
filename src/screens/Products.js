@@ -1,4 +1,4 @@
-import { View, Text, SafeAreaView, Platform, ScrollView, Alert, Image, FlatList, ActivityIndicator, useWindowDimensions, Pressable, Animated } from 'react-native'
+import { View, Text, SafeAreaView, Platform, ScrollView, Alert, Image, FlatList, ActivityIndicator, useWindowDimensions, Pressable, Animated, TouchableOpacity } from 'react-native'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useCustomContext } from '../hooks/CustomeContext';
 import TopStatusBar from '../components/TopStatusBar';
@@ -25,6 +25,9 @@ import SearchBarSection from '../components/SearchBarSection';
 import { useLanguageCurrency } from '../hooks/LanguageCurrencyContext';
 import { getSortsFilterList } from '../services/getSortsFilterList';
 import { IconComponentCaretdown, IconComponentCaretup } from '../constants/IconComponents';
+import ProductGlassCard from '../components/customcomponents/ProductGlassCard';
+import BackgroundWrapper from '../components/customcomponents/BackgroundWrapper';
+import Header from '../components/customcomponents/Header';
 
 
 const Products = ({ navigation, route }) => {
@@ -141,12 +144,16 @@ const Products = ({ navigation, route }) => {
     }
   }
 
-  const renderItem = ({ item }) => (
-    <ProductCard
-      ContainerWidth={isLandscape ? '24%' : '48%'}
-      itemdetail={item}
-    />
-  )
+    const renderItem = useCallback(({ item }) => (
+        <ProductGlassCard
+            item={item}
+            onPress={(product) =>
+                navigation.navigate("ProductDetail", {
+                    productId: product?.product_id,
+                })
+            }
+        />
+    ))
 
   const renderFooter = () => {
     if (!hasMoreData) return null;
@@ -154,8 +161,24 @@ const Products = ({ navigation, route }) => {
   };
 
   const renderEmptyList = () => (
-    <Image source={require('../assets/images/notfound.png')} style={{ width: 200, height: 200, resizeMode: 'contain', alignSelf: 'center' }} />
-  )
+    <View
+      style={{
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+    >
+      <Image
+        source={require('../assets/images/notfound.png')}
+        style={{
+          width: 200,
+          height: 200,
+          resizeMode: 'contain',
+        }}
+      />
+    </View>
+  );
+
 
   if (loading) {
     return (
@@ -165,7 +188,7 @@ const Products = ({ navigation, route }) => {
 
   const renderHeader = () => (
     <View>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+      {/* <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
         <Text style={[commonStyles.heading, { marginTop: 12 }]}>{titleName}</Text>
         <Pressable disabled={data?.length == 0} onPress={() => setShowSort(!showSort)} style={{ borderWidth: 1, gap: 10, flexDirection: 'row', alignItems: 'center', padding: 10, borderRadius: 10, marginTop: 10, borderColor: Colors.gray, opacity: data?.length == 0 ? 0.5 : 1 }}>
           <Text>{GlobalText?.sortby}</Text>
@@ -182,55 +205,66 @@ const Products = ({ navigation, route }) => {
             </Pressable>))
           }
         </View>
-      </View>}
+      </View>} */}
+
+      <TouchableOpacity style={{ margin: 20, marginLeft:10 }} onPress={() => navigation.goBack()}>
+        <Image source={require("../assets/images/back.png")} style={{ width: 18, height: 18, tintColor: "#fff", }} />
+      </TouchableOpacity>
     </View>
 
   );
 
   return (
     <>
-      <View style={commonStyles.bodyConatiner}>
-        <View style={{ paddingHorizontal: 12, backgroundColor: '#F5F5F5' }}>
-          <TopStatusBar scrollY={scrollY} onChangeLang={handleOnChangeLang} onChangeCurren={handleOnChangeCurrency} isLogin={isLogin} />
+      <BackgroundWrapper>
+        <View style={{padding:10}}>
+          <View style={{paddingTop: 42,}}>
+          {/* <TopStatusBar scrollY={scrollY} onChangeLang={handleOnChangeLang} onChangeCurren={handleOnChangeCurrency} isLogin={isLogin} /> */}
         </View>
         <SearchBarSection onClickSearch={(query) => handleSearch(query)} />
 
-        <View style={{ paddingHorizontal: 12 }}>
-          <Animated.FlatList
-            onScroll={Animated.event(
-              [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-              { useNativeDriver: false }
-            )}
-            data={data}
-            renderItem={renderItem}
-            numColumns={isLandscape ? 4 : 2}
-            keyExtractor={(item, index) => index.toString()}
-            contentContainerStyle={{ paddingBottom: 200, gap: 10 }}
-            columnWrapperStyle={{
-              justifyContent: isLandscape ? 'flex-start' : 'space-between',
-              paddingHorizontal: 8,
-              gap: isLandscape ? 12 : 0
-            }}
-            ListHeaderComponent={renderHeader}
-            ListFooterComponent={renderFooter}
-            ListEmptyComponent={!loadingMore && !hasMoreData && renderEmptyList}
-            onEndReachedThreshold={0.5}
-            showsVerticalScrollIndicator={false}
-            onEndReached={handleLoadMore}
-            key={isLandscape}
-          />
+        {/* <Header /> */}
+
+
+          {/* <View style={{ }}> */}
+
+
+            <Animated.FlatList
+              onScroll={Animated.event(
+                [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+                { useNativeDriver: false }
+              )}
+              data={data}
+              renderItem={renderItem}
+              numColumns={isLandscape ? 4 : 2}
+              keyExtractor={(item, index) => index.toString()}
+              contentContainerStyle={{ paddingBottom: 100, gap: 10 }}
+              // columnWrapperStyle={{
+              //   justifyContent: isLandscape ? 'flex-start' : 'space-between',
+              //   paddingHorizontal: 8,
+              //   gap: isLandscape ? 12 : 0
+              // }}
+              columnWrapperStyle={{ justifyContent: 'space-evenly' }}
+              ListHeaderComponent={renderHeader}
+              ListFooterComponent={renderFooter}
+              ListEmptyComponent={!loadingMore && !hasMoreData && renderEmptyList}
+              onEndReachedThreshold={0.5}
+              showsVerticalScrollIndicator={false}
+              onEndReached={handleLoadMore}
+              key={isLandscape}
+            />
+          {/* </View> */}
+
         </View>
+        {/* <BottomBar /> */}
 
-      </View>
-      <BottomBar />
-
-      <FailedModal
-        isModal={isErrorModal}
-        isSuccessMessage={isErrorMgs}
-        handleCloseModal={() => { setErrorModal(false); setErrorMgs() }}
-        onClickClose={() => { setErrorModal(false); setErrorMgs() }}
-      />
-
+        <FailedModal
+          isModal={isErrorModal}
+          isSuccessMessage={isErrorMgs}
+          handleCloseModal={() => { setErrorModal(false); setErrorMgs() }}
+          onClickClose={() => { setErrorModal(false); setErrorMgs() }}
+        />
+      </BackgroundWrapper>
     </ >
   )
 }

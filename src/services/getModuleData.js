@@ -19,7 +19,7 @@ export const getModuleData = async (route, position, endpointUrl) => {
 
         const body = {
             code: lang?.code,
-            currency: cur,
+            currency: cur?.code,
             customer_id: user ? user : null,
             sessionid: sessionId,
             route: route,

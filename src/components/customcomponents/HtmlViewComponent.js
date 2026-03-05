@@ -1,137 +1,183 @@
-import React from 'react';
-import { View, Text, ScrollView, Image } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, Image } from 'react-native';
 import HTMLView from 'react-native-htmlview';
 
 const TEXT_COLOR = '#FFFFFF';
 const FONT_SIZE = 17;
 const LINE_HEIGHT = 30;
+const COLLAPSED_HEIGHT = LINE_HEIGHT * 3;
+
 
 
 const HtmlViewComponent = ({ descriptionData }) => {
+  const [expanded, setExpanded] = useState(false);
+  const [showReadMore, setShowReadMore] = useState(false);
+  const [measured, setMeasured] = useState(false);
+
   return (
-    <ScrollView showsVerticalScrollIndicator={false}>
-      <HTMLView
-        value={descriptionData || ''}
+    <View>
 
-        /* Force font globally */
-        textComponentProps={{
-          style: {
-            color: TEXT_COLOR,
-            fontSize: FONT_SIZE,
-            lineHeight: LINE_HEIGHT,
-          },
+      {/* Content */}
+      <View
+        style={{
+          maxHeight:
+            measured && !expanded ? COLLAPSED_HEIGHT : undefined,
+          overflow: 'hidden',
         }}
+      >
+        <View
+          onLayout={(e) => {
+            if (measured) return;
 
-        onLinkPress={(url) => {
-          console.log('Link clicked:', url);
-        }}
+            const height = e.nativeEvent.layout.height;
 
-        /* Main place to control fonts */
-        stylesheet={{
-          p: {
-            color: TEXT_COLOR,
-            fontSize: FONT_SIZE,
-            lineHeight: LINE_HEIGHT,
-            marginBottom: 8,
-          },
+            if (height > COLLAPSED_HEIGHT) {
+              setShowReadMore(true);
+            }
 
-          h1: {
-            color: TEXT_COLOR,
-            fontSize: 25,
-            fontWeight: '700',
-            marginVertical: 12,
-          },
-          h2: {
-            color: TEXT_COLOR,
-            fontSize: 25,
-            fontWeight: '700',
-            marginVertical: 10,
-          },
-          h3: {
-            color: TEXT_COLOR,
-            fontSize: 25,
-            fontWeight: '600',
-            marginVertical: 8,
-          },
-          h4: {
-            color: TEXT_COLOR,
-            fontSize: 25,
-            fontWeight: '600',
-            marginVertical: 6,
-          },
+            setMeasured(true);
+          }}
+        >
+          <HTMLView
+            value={descriptionData || ''}
 
-          span: {
-            color: TEXT_COLOR,
-            fontSize: FONT_SIZE,
-          },
+            /* Force font globally */
+            textComponentProps={{
+              style: {
+                color: TEXT_COLOR,
+                fontSize: FONT_SIZE,
+                lineHeight: LINE_HEIGHT,
+              },
+            }}
 
-          strong: {
-            color: TEXT_COLOR,
-            fontWeight: '700',
-          },
+            onLinkPress={(url) => {
+              console.log('Link clicked:', url);
+            }}
 
-          b: {
-            color: TEXT_COLOR,
-            fontWeight: '700',
-          },
+            /* Main place to control fonts */
+            stylesheet={{
+              p: {
+                color: TEXT_COLOR,
+                fontSize: FONT_SIZE,
+                lineHeight: LINE_HEIGHT,
+                marginBottom: 8,
+              },
 
-          em: {
-            color: TEXT_COLOR,
-          },
+              h1: {
+                color: TEXT_COLOR,
+                fontSize: 25,
+                fontWeight: '700',
+                marginVertical: 12,
+              },
+              h2: {
+                color: TEXT_COLOR,
+                fontSize: 25,
+                fontWeight: '700',
+                marginVertical: 10,
+              },
+              h3: {
+                color: TEXT_COLOR,
+                fontSize: 25,
+                fontWeight: '600',
+                marginVertical: 8,
+              },
+              h4: {
+                color: TEXT_COLOR,
+                fontSize: 25,
+                fontWeight: '600',
+                marginVertical: 6,
+              },
 
-          li: {
-            color: TEXT_COLOR,
-            fontSize: FONT_SIZE,
-            lineHeight: LINE_HEIGHT,
-            marginBottom: 6,
-          },
+              span: {
+                color: TEXT_COLOR,
+                fontSize: FONT_SIZE,
+              },
 
-          ul: {
-            marginVertical: 8,
-          },
+              strong: {
+                color: TEXT_COLOR,
+                fontWeight: '700',
+              },
 
-          ol: {
-            marginVertical: 8,
-          },
+              b: {
+                color: TEXT_COLOR,
+                fontWeight: '700',
+              },
 
-          a: {
+              em: {
+                color: TEXT_COLOR,
+              },
+
+              li: {
+                color: TEXT_COLOR,
+                fontSize: FONT_SIZE,
+                lineHeight: LINE_HEIGHT,
+                marginBottom: 6,
+              },
+
+              ul: {
+                marginVertical: 8,
+              },
+
+              ol: {
+                marginVertical: 8,
+              },
+
+              a: {
+                color: '#4DA6FF',
+                fontSize: FONT_SIZE,
+                textDecorationLine: 'underline',
+              },
+            }}
+
+            /* Use renderNode ONLY for images */
+            renderNode={(node, index) => {
+              if (node.name === 'img') {
+                const src = node.attribs?.src;
+                if (!src) return null;
+
+                return (
+                  <View
+                    key={index}
+                    style={{
+                      alignItems: 'center',
+                      marginVertical: 16,
+                    }}
+                  >
+                    <Image
+                      source={{ uri: src }}
+                      style={{
+                        width: '100%',
+                        height: 220,
+                        resizeMode: 'contain',
+                        borderRadius: 12,
+                      }}
+                    />
+                  </View>
+                );
+              }
+
+              return undefined;
+            }}
+          />
+        </View>
+      </View>
+
+ {/* Read More */}
+      {showReadMore && (
+        <Text
+          onPress={() => setExpanded(!expanded)}
+          style={{
             color: '#4DA6FF',
-            fontSize: FONT_SIZE,
-            textDecorationLine: 'underline',
-          },
-        }}
+            marginTop: 5,
+            fontSize: 14,
+            fontWeight: '600',
+          }}
+        >
+          {expanded ? 'Read Less' : 'Read More'}
+        </Text>
+      )}
 
-        /* Use renderNode ONLY for images */
-        renderNode={(node, index) => {
-          if (node.name === 'img') {
-            const src = node.attribs?.src;
-            if (!src) return null;
-
-            return (
-              <View
-                key={index}
-                style={{
-                  alignItems: 'center',
-                  marginVertical: 16,
-                }}
-              >
-                <Image
-                  source={{ uri: src }}
-                  style={{
-                    width: '100%',
-                    height: 220,
-                    resizeMode: 'contain',
-                    borderRadius: 12,
-                  }}
-                />
-              </View>
-            );
-          }
-
-          return undefined;
-        }}
-      />
-    </ScrollView>
+    </View>
   );
 };
 

@@ -76,8 +76,8 @@ const ReturnOrder = ({ navigation, route }) => {
 
             const body = {
                 // code: lang?.code,
-                code: "en-gb",
-                currency: cur,
+                code: lang?.code,
+                currency: cur?.code,
                 customer_id: user ? user : null,
                 // customer_id: user ? user[0]?.customer_id : null,
                 sessionid: sessionId,

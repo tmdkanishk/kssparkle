@@ -17,7 +17,7 @@ export const getProductList = async (endpoint, page) => {
 
         const body = {
             code: lang?.code,
-            currency: cur,
+            currency: cur?.code,
             sessionid: sessionId,
             customer_id: user,
             page: page,

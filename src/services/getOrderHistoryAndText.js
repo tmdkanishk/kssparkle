@@ -17,7 +17,7 @@ export const getOrderHistoryAndText = async (page, order_orderhistory) => {
 
         const body = {
             code: lang?.code,
-            currency: cur,
+            currency: cur?.code,
             customer_id: user ? user: null,
             sessionid: sessionId,
             page: page

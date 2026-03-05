@@ -18,7 +18,7 @@ export const appyCoupon = async (coupon, cart_coupon) => {
 
         const body = {
             code: lang?.code,
-            currency: cur,
+            currency: cur?.code,
             sessionid: sessionId,
             // customer_id: user ? user[0]?.customer_id : null,
             customer_id: user,

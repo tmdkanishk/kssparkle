@@ -35,6 +35,9 @@ const AddNewAddress = ({ navigation }) => {
     const [isDefaultState, setDefaultState] = useState(null);
     const [isStateList, setStateList] = useState([]);
     const [isStateModal, setStateModal] = useState(false);
+    const [citylist, setCityList] = useState([]);
+    const [isDefaultCity, setDefaultCity] = useState(null);
+    const [isCityModal, setCityyModal] = useState(false);
 
     const [isName, setName] = useState();
     const [isLastname, setLastname] = useState();
@@ -174,7 +177,8 @@ const AddNewAddress = ({ navigation }) => {
 
                 // console.log("response.data?.zones", response.data?.zones[0]);
                 if (response.data?.zones.length > 0) {
-                    setDefaultState(response.data?.zones[0])
+                    setDefaultState(response.data?.zones[0]);
+                    await fetchCity(response.data?.zones[0]?.zone_id);
                 } else {
                     setDefaultState(null);
                 }
@@ -185,6 +189,47 @@ const AddNewAddress = ({ navigation }) => {
             console.log('error:', error.response.data);
         }
     }
+
+
+    const fetchCity = async (zoneid) => {
+        console.log("fetchCity functions calling");
+        try {
+
+            const url = `${BASE_URL}${EndPoint?.address_citylist}`;
+            const lang = await _retrieveData('SELECT_LANG');
+            const cur = await _retrieveData('SELECT_CURRENCY');
+
+            const headers = {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                Key: API_KEY,
+            };
+
+            const body = {
+                code: lang?.code,
+                currency: cur?.code,
+                zone_id: zoneid
+            }
+
+
+            const response = await axios.post(url, body, { headers: headers });
+
+            console.log("zoneid", zoneid, body, url, response?.data)
+            if (response.status === HttpStatusCode.Ok) {
+
+                // console.log("response.data?.city", response.data?.city[0]);
+                if (response.data?.cities.length > 0) {
+                    setDefaultCity(response.data?.cities[0])
+                } else {
+                    setDefaultCity(null);
+                }
+                setCityList(response.data?.cities);
+            }
+
+        } catch (error) {
+            console.log('error:', error.response.data);
+        }
+    }
+
 
     const fetchMyAddressText = async () => {
         try {
@@ -249,16 +294,18 @@ const AddNewAddress = ({ navigation }) => {
                 customer_id: user,
                 firstname: isName,
                 lastname: isLastname,
-                company: isCompany,
+                company: isCompany || "",
                 address_1: isAddress1,
                 address_2: isAddress2,
-                city: isCity,
+                city: isDefaultCity?.name || "",
                 postcode: isPostalCode,
                 country_id: isDefaultCountry?.country_id,
                 zone_id: isDefaultState?.zone_id,
+                // city_id: isDefaultCity?.city_id,
                 'custom_field[address]': customFormData,
                 default: isDefault ? "Yes" : "No",
             }
+            console.log("add new address post", body)
             const response = await axios.post(url, body, { headers: headers });
             if (response.status === HttpStatusCode.Ok) {
                 console.log("response.data?.success?.addressadd", response.data);
@@ -377,7 +424,7 @@ const AddNewAddress = ({ navigation }) => {
                                     textVlaue={isAddress2}
                                 /> */}
 
-                                <InputBox
+                                {/* <InputBox
                                     label={isLabel?.addrcity_label}
                                     placeholder={isLabel?.addrcity_label}
                                     inputStyle={{ w: '100%', h: 50, ph: 20 }}
@@ -387,7 +434,7 @@ const AddNewAddress = ({ navigation }) => {
                                     isRequired={true}
                                     borderColor={isCityError ? 'red' : null}
                                     ErrorMessage={isCityError}
-                                />
+                                /> */}
 
                                 <InputBox
                                     label={isLabel?.addrpostcode_label}
@@ -444,8 +491,9 @@ const AddNewAddress = ({ navigation }) => {
                                         <Text style={{ color: 'red' }}>*</Text>
                                         <Text style={[styles.label, { color: '#fff' }]}>{isLabel?.addrstate_label}</Text>
                                     </View>
+                                    <GlassContainer padding={0.1}>
                                     <TouchableOpacity onPress={() => setStateModal(true)} style={{
-                                        borderWidth: 1,
+                                        // borderWidth: 1,
                                         borderColor: isZoneError ? 'red' : 'rgba(255,255,255,0.6)',
                                         height: 54,
                                         overflow: 'hidden',
@@ -459,6 +507,7 @@ const AddNewAddress = ({ navigation }) => {
                                         <Text style={{ color: '#fff' }}>{isDefaultState?.name || 'N/A'}</Text>
 
                                     </TouchableOpacity>
+                                    </GlassContainer>
 
                                     {
                                         isZoneError && (
@@ -594,6 +643,18 @@ const AddNewAddress = ({ navigation }) => {
 
                                     )
                                 }
+
+                                 <SelectModalField
+                                    label={isLabel?.addrcity_label}
+                                    required
+                                    value={isDefaultCity}
+                                    data={citylist}
+                                    error={isCityError}
+                                    onSelect={(item) => {
+                                        setDefaultCity(item);
+                                        setCityError(null);
+                                    }}
+                                />
 
 
                                 <View style={{ gap: 10 }}>
@@ -754,6 +815,7 @@ const AddNewAddress = ({ navigation }) => {
                                         <TouchableOpacity
                                             onPress={() => {
                                                 setDefaultState(item);
+                                                fetchCity(item?.zone_id)
                                                 setStateModal(false);
                                             }}
                                         >

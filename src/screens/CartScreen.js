@@ -112,7 +112,7 @@ const CartScreen = ({ navigation }) => {
             }
 
             const response = await axios.post(url, body, { headers: headers });
-            console.log("response", response.data);
+            console.log("response", response.data, url);
             if (response.status === HttpStatusCode.Ok) {
                 setShowCouponOption(response.data?.applycoupon_status);
                 setShowGiftOption(response.data?.applyvoucher_status);

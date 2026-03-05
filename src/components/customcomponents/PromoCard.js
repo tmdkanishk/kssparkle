@@ -5,6 +5,7 @@ import Header from "./Header";
 import Video from "react-native-video";
 import LottieView from "lottie-react-native";
 import { useNavigation } from "@react-navigation/native";
+import { LiquidGlassView } from "@callstack/liquid-glass";
 
 const width = Dimensions.get('window')
 const PromoCard = ({ onSearchPress }) => {
@@ -59,13 +60,32 @@ const PromoCard = ({ onSearchPress }) => {
         activeOpacity={0.8}
         onPress={() => Linking.openURL('https://sparkleksa.com/عروضنا-المميزه')}
       > */}
-        <TouchableOpacity  onPress={() => navigation.navigate("Category")} style={styles.infoBubble}>
+      <LiquidGlassView
+        effect="clear"
+        interactive
+        style={{
+          position: "absolute",
+          right: Platform.OS === "ios" ? 47 : 7,
+          bottom: 40,
+          paddingVertical: 5,
+          paddingHorizontal: 12,
+          maxWidth: 150,
+          borderRadius: 18,
+          // backgroundColor: "rgba(255,255,255,0.18)",
+          // borderWidth: 0.4,
+          // borderColor: "rgba(255,255,255,0.4)",
+          // backdropFilter: "blur(6px)", // iOS only, optional
+          zIndex: 2,
+        }}
+      >
+        <TouchableOpacity onPress={() => navigation.navigate("Category")}>
           <Text style={styles.infoText}>
             We carefully select the best and offer it at a lower price. Not everything
             is discounted, but every offer is worthwhile. Enter with confidence, and
             leave satisfied.
           </Text>
         </TouchableOpacity>
+      </LiquidGlassView>
       {/* </TouchableOpacity> */}
 
     </LinearGradient>

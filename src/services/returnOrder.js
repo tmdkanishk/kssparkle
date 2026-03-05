@@ -17,7 +17,7 @@ export const returnOrder = async (formData, order_returnorder) => {
 
         const body = {
             code: lang?.code,
-            currency: cur,
+            currency: cur?.code,
             customer_id: user ? user : null,
             sessionid: sessionId,
         }

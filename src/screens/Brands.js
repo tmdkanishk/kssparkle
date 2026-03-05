@@ -1,4 +1,4 @@
-import { View, Text, SafeAreaView, Platform, FlatList, Alert, useWindowDimensions, Animated } from 'react-native'
+import { View, Text, SafeAreaView, Platform, FlatList, Alert, useWindowDimensions, Animated, TouchableOpacity } from 'react-native'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useCustomContext } from '../hooks/CustomeContext';
 import BrandCardList from '../components/BrandCardList';
@@ -16,6 +16,9 @@ import { useFocusEffect } from '@react-navigation/native';
 import { checkAutoLogin } from '../utils/helpers';
 import SearchBarSection from '../components/SearchBarSection';
 import { useLanguageCurrency } from '../hooks/LanguageCurrencyContext';
+import BackgroundWrapper from '../components/customcomponents/BackgroundWrapper';
+import { useLoading } from '../hooks/LoadingProvider';
+import { Image } from 'react-native';
 
 const Brands = ({ navigation }) => {
   const { language, currency, changeLanguage, changeCurrency } = useLanguageCurrency();
@@ -25,6 +28,7 @@ const Brands = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
   const [isBrandList, setBrandList] = useState([]);
   const scrollY = useRef(new Animated.Value(0)).current;
+   const { setGlobalLoading } = useLoading();
 
   useEffect(() => {
     checkAutoLogin();
@@ -34,14 +38,14 @@ const Brands = ({ navigation }) => {
 
   const fetchAllBrands = async () => {
     try {
-      setLoading(true);
+      setGlobalLoading(true);
       const response = await getAllBrands(EndPoint?.manufacturer);
       setBrandList(response?.manufacturers);
       console.log("response :", response);
     } catch (error) {
       console.log("error :", error.response.data);
     } finally {
-      setLoading(false);
+      setGlobalLoading(false);
     }
   }
 
@@ -56,33 +60,37 @@ const Brands = ({ navigation }) => {
 
   const handleSearch = async (query) => {
     try {
-      setLoading(true);
+      setGlobalLoading(true);
       navigation.navigate('Search', { query: query })
     } catch (error) {
       console.log('Search results:', error.response.data);
     } finally {
-      setLoading(false);
+      setGlobalLoading(false);
     }
   }
 
   const renderItem = ({ item }) => (
-    <View style={{ paddingHorizontal: 12, gap: 10 }}>
-      <Text style={{ fontWeight: '600', fontSize: 20 }}>{item.headingName}</Text>
+    <View style={{  gap: 15 }}>
+      <Text style={{ fontWeight: '600', fontSize: 20, color:'#fff',  }}>{item.headingName}</Text>
       <BrandCardList data={item?.data} />
     </View>
   )
 
   return (
 
-    loading ? (
-      <CustomActivity />
-    ) : <>
-      <View style={[commonStyles.bodyConatiner]}>
-        <View style={{ paddingHorizontal: 12, backgroundColor: '#F5F5F5' }}>
-          <TopStatusBar scrollY={scrollY} onChangeCurren={handleOnChangeCurrency} onChangeLang={handleOnChangeLang} />
+  <>
+    <BackgroundWrapper>
+      {/* <View style={[commonStyles.bodyConatiner]}> */}
+        <View style={{ paddingHorizontal: 0, paddingTop:40 }}>
+          {/* <TopStatusBar scrollY={scrollY} onChangeCurren={handleOnChangeCurrency} onChangeLang={handleOnChangeLang} /> */}
         </View>
-        <SearchBarSection onClickSearch={(query) => handleSearch(query)} />
-        <View style={{ paddingHorizontal: 12 }}>
+        {/* <SearchBarSection onClickSearch={(query) => handleSearch(query)} /> */}
+        
+              <TouchableOpacity style={{ margin:20 }} onPress={() => navigation.goBack()}>
+                <Image source={require("../assets/images/back.png")} style={{ width: 18, height: 18, tintColor: "#fff", }} />
+              </TouchableOpacity>
+    
+        <View style={{ paddingHorizontal:30 }}>
           <Animated.FlatList
             onScroll={Animated.event(
               [{ nativeEvent: { contentOffset: { y: scrollY } } }],
@@ -92,15 +100,16 @@ const Brands = ({ navigation }) => {
             data={isBrandList}
             renderItem={renderItem}
             keyExtractor={(item, index) => index.toString()}
-            contentContainerStyle={{ paddingBottom: 250 }}
+            contentContainerStyle={{ paddingBottom: 150 }}
             showsVerticalScrollIndicator={false}
             ListHeaderComponent={<Text style={[commonStyles.heading, { marginTop: 12 }]}>{GlobalText?.extrafield_brand_label}</Text>}
           />
 
         </View>
-      </View>
-      <BottomBar tab={3} />
+      {/* </View> */}
+      {/* <BottomBar tab={3} /> */}
       <NotificationAlert />
+      </BackgroundWrapper>
     </>
 
 

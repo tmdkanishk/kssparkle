@@ -16,6 +16,9 @@
 
 
 
-export const BASE_URL = "https://sparkleksa.com/index.php?route=extension/";
-export const API_KEY = "qclJaSv7sE2A6Y670qydtwv2kJm5nVZ0bhOXPoWIfQHP0fts5GTmQLKYiTLQyC0nLGEhKev7tIhtIRhxKVeX4cV4LUkdfxdaVhrFrUFsm20jrYLKMzT3T8HuUDB1f0hz1mQkoFb0hJxDgLkFVkFqbp14Khyeik1pZRol2bSO0eczvDb10BYYtxoWQ5c2jfXGmXAjJsNYuWiuSckKzdA2v1qsi45EhxuEQpWRLvqMthlHY6n7GTqP24roItjYbSbM";
+// export const BASE_URL = "https://sparkleksa.com/index.php?route=extension/";
+// export const API_KEY = "qclJaSv7sE2A6Y670qydtwv2kJm5nVZ0bhOXPoWIfQHP0fts5GTmQLKYiTLQyC0nLGEhKev7tIhtIRhxKVeX4cV4LUkdfxdaVhrFrUFsm20jrYLKMzT3T8HuUDB1f0hz1mQkoFb0hJxDgLkFVkFqbp14Khyeik1pZRol2bSO0eczvDb10BYYtxoWQ5c2jfXGmXAjJsNYuWiuSckKzdA2v1qsi45EhxuEQpWRLvqMthlHY6n7GTqP24roItjYbSbM";
 
+
+export const BASE_URL = "https://dev.sparkleksa.com/index.php?route=extension/";
+export const API_KEY = "qclJaSv7sE2A6Y670qydtwv2kJm5nVZ0bhOXPoWIfQHP0fts5GTmQLKYiTLQyC0nLGEhKev7tIhtIRhxKVeX4cV4LUkdfxdaVhrFrUFsm20jrYLKMzT3T8HuUDB1f0hz1mQkoFb0hJxDgLkFVkFqbp14Khyeik1pZRol2bSO0eczvDb10BYYtxoWQ5c2jfXGmXAjJsNYuWiuSckKzdA2v1qsi45EhxuEQpWRLvqMthlHY6n7GTqP24roItjYbSbM";

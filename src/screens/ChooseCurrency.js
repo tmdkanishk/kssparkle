@@ -6,6 +6,8 @@ import axios, { HttpStatusCode } from 'axios';
 import { useCustomContext } from '../hooks/CustomeContext';
 import commonStyles from '../constants/CommonStyles';
 import { _retrieveData, _storeData } from '../utils/storage';
+import { useLoading } from '../hooks/LoadingProvider';
+import BackgroundWrapper from '../components/customcomponents/BackgroundWrapper';
 
 const ChooseCurrency = ({ navigation }) => {
     const { Colors, EndPoint, GlobalText } = useCustomContext();
@@ -13,6 +15,7 @@ const ChooseCurrency = ({ navigation }) => {
     const [isLabel, setLabel] = useState();
     const [loading, setloading] = useState(false);
     const [isError, setError] = useState();
+    const { setGlobalLoading } = useLoading();
 
 
     useEffect(() => {
@@ -22,7 +25,7 @@ const ChooseCurrency = ({ navigation }) => {
 
     const fetchCurrencyData = async () => {
         try {
-            setloading(true);
+            setGlobalLoading(true);
             const url = `${BASE_URL}${EndPoint?.currency}`; // Replace with your endpoint
             const sessionId = await _retrieveData('SESSION_ID');
             const user = await _retrieveData('USER');
@@ -47,30 +50,29 @@ const ChooseCurrency = ({ navigation }) => {
         } catch (error) {
             setError(GlobalText?.extrafield_somethingwrong);
         } finally {
-            setloading(false);
+            setGlobalLoading(false);
         }
     };
 
     const onSelectCurrency = async (item) => {
         await _storeData('SELECT_CURRENCY', item);
-        navigation.replace('Home');
+        navigation.replace('Login');
     }
 
     return (
         <>
-            {loading ? (
-                <CustomActivity />
-            ) :
 
-                <View style={{ width: '100%', height: '100%', backgroundColor: Colors?.white, paddingBottom: 50 }}>
+            <BackgroundWrapper>
+
+                <View style={{ width: '100%', height: '100%', paddingBottom: 50 }}>
                     {
                         isError ? (
                             <View style={{ width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center' }}>
                                 <Text style={{ fontSize: 18, color: 'red', textAlign: 'center' }}>{isError}</Text>
                             </View>
                         ) : (<ScrollView showsVerticalScrollIndicator={false}>
-                            <View style={{ width: '90%', alignSelf: 'center', marginVertical: 20 }}>
-                                <Text style={[commonStyles.heading, { color: Colors.primary }]}>{isLabel}</Text>
+                            <View style={{ width: '90%', alignSelf: 'center', marginVertical: 20, marginTop:60 }}>
+                                <Text style={[commonStyles.heading, { color: Colors.white }]}>{isLabel}</Text>
                             </View>
 
                             <View style={{ width: '90%', alignSelf: 'center', }}>
@@ -84,7 +86,7 @@ const ChooseCurrency = ({ navigation }) => {
                                                 <View style={{ width: 28, height: 30 }}>
                                                     <Text style={{ fontSize: 24 }}>{item?.symbol_left || item?.symbol_right}</Text>
                                                 </View>
-                                                <Text>{item.title}</Text>
+                                                 <Text style={{ color: Colors.white }}>{item.title}</Text>
                                             </TouchableOpacity>
                                         ))
                                     ) : null
@@ -96,9 +98,8 @@ const ChooseCurrency = ({ navigation }) => {
                     }
                 </View>
 
+            </BackgroundWrapper>
 
-
-            }
         </>
     )
 }

@@ -244,6 +244,7 @@ const SubCategory = ({ navigation, route }) => {
 
 
     return (
+        <>
         <BackgroundWrapper>
             <FlatList
                 data={products}
@@ -341,6 +342,7 @@ const SubCategory = ({ navigation, route }) => {
                 }
             />
         </BackgroundWrapper>
+        </>
 
     );
 };

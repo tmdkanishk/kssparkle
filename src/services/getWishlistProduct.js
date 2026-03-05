@@ -19,7 +19,7 @@ export const getWishlistProduct = async (page, accountdashboard_wishlist) => {
 
         const body = {
             code: lang?.code,
-            currency: cur,
+            currency: cur?.code,
             customer_id: user ? user : null,
             sessionId: sessionId,
             page: page

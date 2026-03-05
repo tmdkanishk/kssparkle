@@ -3,9 +3,10 @@ import { View, TextInput, StyleSheet, TouchableOpacity, Dimensions } from 'react
 import { BlurView } from '@react-native-community/blur';
 import LinearGradient from 'react-native-linear-gradient';
 import { Image } from 'react-native';
+import GlassContainer from './GlassContainer';
 // import Ionicons from 'react-native-vector-icons/Ionicons';
 
-const GlassmorphismInput = ({ placeholder, style, secureTextEntry = false, value, onChangeText, ...props }) => {
+const GlassmorphismInput = ({ placeholder, style, secureTextEntry = false, value, onChangeText, editable, ...props }) => {
 const width = Dimensions.get("window").width;
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
@@ -13,9 +14,10 @@ const width = Dimensions.get("window").width;
 
 
   return (
+    <GlassContainer padding={0.1}>
     <View style={styles.glowWrapper}>
       {/* Gradient Border Glow */}
-      <LinearGradient
+      {/* <LinearGradient
         colors={[
           'rgba(255,255,255,0.25)',
           'rgba(255,255,255,0)',
@@ -24,18 +26,18 @@ const width = Dimensions.get("window").width;
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.borderGlow}
-      />
+      /> */}
 
       <View style={styles.wrapper}>
-        {/* Blur layer */}
-        <BlurView
+       
+        {/* <BlurView
           style={StyleSheet.absoluteFill}
           blurType="light"
           blurAmount={15}
           reducedTransparencyFallbackColor="white"
         />
 
-        {/* Dark Center Gradient */}
+
         <LinearGradient
           colors={[
             'rgba(0,0,0,0.3)',
@@ -45,7 +47,7 @@ const width = Dimensions.get("window").width;
           start={{ x: 0, y: 0.5 }}
           end={{ x: 1, y: 0.5 }}
           style={StyleSheet.absoluteFill}
-        />
+        /> */}
 
         {/* Input with icon */}
         <View style={styles.inputRow}>
@@ -57,6 +59,8 @@ const width = Dimensions.get("window").width;
             secureTextEntry={secureTextEntry && !isPasswordVisible}
              value={value}                 // ✅ IMPORTANT
             onChangeText={onChangeText}   // ✅ IMPORTANT
+            editable={editable !== false}
+
           />
 
           {secureTextEntry && (
@@ -76,6 +80,7 @@ const width = Dimensions.get("window").width;
         </View>
       </View>
     </View>
+    </GlassContainer>
   );
 };
 
@@ -97,10 +102,10 @@ const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
     borderRadius: 15,
-    overflow: 'hidden',
-    backgroundColor: 'rgba(255,255,255,0.03)',
-    borderWidth: 0.4,
-    borderColor: 'rgba(255,255,255,0.5)',
+    // overflow: 'hidden',
+    // backgroundColor: 'rgba(255,255,255,0.03)',
+    // borderWidth: 0.4,
+    // borderColor: 'rgba(255,255,255,0.5)',
   },
   inputRow: {
     flexDirection: 'row',

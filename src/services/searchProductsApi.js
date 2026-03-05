@@ -18,13 +18,15 @@ export const searchProductsApi = async (query, search) => {
         };
 
         const body = {
-            code: lang,
-            currency: cur,
+            code: lang?.code,
+            currency: cur?.code,
             customer_id: user,
             sessionid: sessionId,
             search: query
         }
+
         const response = await axios.post(url, body, { headers: headers });
+         console.log("searchProductsApi",body, url, response.data)
 
         if (response.status === HttpStatusCode.Ok) {
             return response.data;

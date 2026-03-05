@@ -1,11 +1,11 @@
-import { View, Text, FlatList, useWindowDimensions, ActivityIndicator } from 'react-native'
+import { View, Text, FlatList, useWindowDimensions, ActivityIndicator, Animated } from 'react-native'
 import React, { useCallback, useEffect, useState } from 'react'
 import { getProductList } from '../../services/getProductList';
 import ProductGlassCard from './ProductGlassCard';
 import { useCustomContext } from '../../hooks/CustomeContext';
 import { useNavigation } from '@react-navigation/native';
 
-const CustomProductList = ({ header, moduleProducts = [] }) => {
+const CustomProductList = ({ header, moduleProducts = [], scrollY }) => {
     const { width, height } = useWindowDimensions();
     const isLandscape = width > height;
     const { Colors, EndPoint, GlobalText } = useCustomContext();
@@ -19,16 +19,16 @@ const CustomProductList = ({ header, moduleProducts = [] }) => {
     const [isFooterLoading, setIsFooterLoading] = useState(false);
 
 
-useEffect(() => {
-    fetchProducts(isCurretPage);
-}, [isCurretPage]);
+    useEffect(() => {
+        fetchProducts(isCurretPage);
+    }, [isCurretPage]);
 
 
     const fetchProducts = async (page) => {
         try {
-             if (page > 1) {
-            setIsFooterLoading(true); // 👈 show footer loader only for pagination
-        }
+            if (page > 1) {
+                setIsFooterLoading(true); // 👈 show footer loader only for pagination
+            }
             const response = await getProductList('restapi/layout/getallproducts', isCurretPage);
             console.log("response customProductList", response)
             if (response?.products?.length > 0) {
@@ -45,8 +45,8 @@ useEffect(() => {
         } catch (error) {
             console.log("error:", error);
         }
-        finally{
-             setIsFooterLoading(false);
+        finally {
+            setIsFooterLoading(false);
         }
     }
 
@@ -60,36 +60,36 @@ useEffect(() => {
     // }
 
     const handleLoadMore = () => {
-    if (
-        !isFooterLoading &&
-        hasMoreData &&
-        isCurretPage < isTotalPage
-    ) {
-        setCurrentPage(prev => prev + 1);
-    }
-};
+        if (
+            !isFooterLoading &&
+            hasMoreData &&
+            isCurretPage < isTotalPage
+        ) {
+            setCurrentPage(prev => prev + 1);
+        }
+    };
 
-const renderFooter = () => {
-    if (!isFooterLoading) return null;
+    const renderFooter = () => {
+        if (!isFooterLoading) return null;
 
-    return (
-        <View style={{ paddingVertical: 20 }}>
-            <ActivityIndicator  color="#FFFFFF" size="large" />
-        </View>
-    );
-};
+        return (
+            <View style={{ paddingVertical: 20 }}>
+                <ActivityIndicator color="#FFFFFF" size="large" />
+            </View>
+        );
+    };
 
-const combinedProducts = React.useMemo(() => {
-  const map = new Map();
+    const combinedProducts = React.useMemo(() => {
+        const map = new Map();
 
-  moduleProducts.forEach(p => map.set(p.product_id, p));
-  data.forEach(p => map.set(p.product_id, p));
+        moduleProducts.forEach(p => map.set(p.product_id, p));
+        data.forEach(p => map.set(p.product_id, p));
 
-  return Array.from(map.values());
-}, [moduleProducts, data]);
+        return Array.from(map.values());
+    }, [moduleProducts, data]);
 
 
-  
+
 
     const renderItem = useCallback(({ item }) => (
         <ProductGlassCard
@@ -103,7 +103,12 @@ const combinedProducts = React.useMemo(() => {
     ))
 
     return (
-        <FlatList
+        <Animated.FlatList
+            onScroll={Animated.event(
+                [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+                { useNativeDriver: true }
+            )}
+            scrollEventThrottle={16}
             data={combinedProducts}
             keyExtractor={(item, index) => index.toString()}
             renderItem={renderItem}
@@ -114,7 +119,6 @@ const combinedProducts = React.useMemo(() => {
             columnWrapperStyle={{ justifyContent: 'space-evenly' }}
             contentContainerStyle={{ paddingBottom: 200, gap: 12 }}
             onEndReached={handleLoadMore}
-            scrollEventThrottle={16}
             onEndReachedThreshold={0.2}
             bounces={false}
             ListFooterComponent={renderFooter}

@@ -1,4 +1,4 @@
-import React, { useState, memo, useEffect, useCallback } from "react";
+import React, { useState, memo, useEffect, useCallback, useRef } from "react";
 import {
     View,
     Text,
@@ -52,6 +52,10 @@ const ShippingMethod = ({ navigation }) => {
     const [isGiftWrap, setIsGiftWrap] = useState(false);
     const [isErrorModal, setErrorModal] = useState(false);
     const [isErrorMgs, setErrorMgs] = useState();
+    const swipeButtonRef = useRef(null);
+    const [swipeKey, setSwipeKey] = useState(0);
+
+
 
 
     const shippingMethods = [
@@ -64,9 +68,11 @@ const ShippingMethod = ({ navigation }) => {
         useCallback(() => {
             //   checkAutoLogin();
             checkUserLogin();
+            setSwipeKey(prev => prev + 1);
             //   fetchAllMyAddress();
             //   fetchCheckOutText();
         }, [language, currency, navigation])
+
     )
 
     const checkUserLogin = async () => {
@@ -137,6 +143,7 @@ const ShippingMethod = ({ navigation }) => {
 
                 setErrorMgs(GlobalText?.extrafield_okbtn);
                 setErrorModal(true);
+                setSwipeKey(prev => prev + 1);
                 return;
             }
 
@@ -152,8 +159,9 @@ const ShippingMethod = ({ navigation }) => {
                     navigation.navigate("OrderPlace")
                 } catch (error) {
                     console.log("error", error.response.data);
-                     setErrorMgs(GlobalText?.extrafield_okbtn);
-                     setErrorModal(true);
+                    setErrorMgs(GlobalText?.extrafield_okbtn);
+                    setErrorModal(true);
+                    setSwipeKey(prev => prev + 1);
                     // Alert.alert("", GlobalText?.extrafield_somethingwrong, [{ text: GlobalText?.extrafield_okbtn }]);
                 }
             } else {
@@ -166,7 +174,7 @@ const ShippingMethod = ({ navigation }) => {
                 // );
                 setErrorMgs(GlobalText?.extrafield_okbtn);
                 setErrorModal(true);
-
+                setSwipeKey(prev => prev + 1);
             }
 
         } else {
@@ -177,9 +185,9 @@ const ShippingMethod = ({ navigation }) => {
             //         { text: GlobalText?.extrafield_okbtn, onPress: () => console.log('ok pressed!') }
             //     ]
             // );
-                setErrorMgs(GlobalText?.extrafield_okbtn);
-                setErrorModal(true);
-
+            setErrorMgs(GlobalText?.extrafield_okbtn);
+            setErrorModal(true);
+            setSwipeKey(prev => prev + 1);
 
         }
         setGlobalLoading(false);
@@ -226,7 +234,9 @@ const ShippingMethod = ({ navigation }) => {
     `;
 
     return (
+                    <>
         <BackgroundWrapper>
+
             <ScrollView
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={[styles.container, { marginTop: Platform.OS === "ios" ? 60 : 10 }]}
@@ -275,11 +285,26 @@ const ShippingMethod = ({ navigation }) => {
                 {isPaymentMethodList?.length > 0 && (
                     <>
                         <View style={{ flexDirection: "row", alignItems: "center", gap: 10, marginTop: 30 }}>
-                            <Text style={[styles.title, {marginBottom:10}]}>Choose Payment Method</Text>
+                            <Text style={[styles.title, { marginBottom: 10 }]}>Choose Payment Method</Text>
                         </View>
 
                         {isPaymentMethodList.map((item) => (
-                            <GlassContainer key={item?.code} style={styles.paymentOption}>
+                            <GlassContainer
+                                key={item?.code}
+                                style={[
+                                    styles.paymentOption,
+                                    selected === item?.code && {
+                                        // borderColor: '#00E5FF',
+                                        // // glow effect
+                                        // shadowColor: '#00E5FF',
+                                        // shadowOffset: { width: 0, height: 0 },
+                                        // shadowOpacity: 1,
+                                        // shadowRadius: 25,   // 👈 increase glow spread (iOS)
+
+                                        // elevation: 15,      // 👈 increase glow spread (Android)
+                                    }
+                                ]}
+                            >
                                 <TouchableOpacity
                                     style={styles.paymentRow}
                                     activeOpacity={0.8}
@@ -395,12 +420,23 @@ const ShippingMethod = ({ navigation }) => {
 
 
                 {/* <GlassmorphismButton title="SLIDE TO ORDER" onPress={()=>navigation.navigate("ChooseDeliveryAddress")}/> */}
+                {/* <GlassSwipeButton
+                    title="SLIDE TO ORDER"
+                    onSwipeStart={() => setScrollEnabled(false)}
+                    onSwipeEnd={() => setScrollEnabled(true)}
+                    onSwipeSuccess={() => onClickContinueOrder()}
+                /> */}
+
                 <GlassSwipeButton
+                    key={swipeKey}
                     title="SLIDE TO ORDER"
                     onSwipeStart={() => setScrollEnabled(false)}
                     onSwipeEnd={() => setScrollEnabled(true)}
                     onSwipeSuccess={() => onClickContinueOrder()}
                 />
+
+
+
 
                 <View style={styles.footerBottomRow}>
                     <Text style={styles.totalText}>₹16669.25</Text>
@@ -408,13 +444,15 @@ const ShippingMethod = ({ navigation }) => {
                 </View>
             </View>
 
-             <FailedModal
+            <FailedModal
                 isSuccessMessage={isErrorMgs}
                 handleCloseModal={() => { setErrorModal(false); setErrorMgs() }}
                 isModal={isErrorModal}
                 onClickClose={() => { setErrorModal(false); setErrorMgs() }}
             />
+  
         </BackgroundWrapper>
+                  </>
     );
 };
 
@@ -602,6 +640,18 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         marginTop: 5,
         width: '100%'
+    },
+    paymentOptionActive: {
+        borderColor: '#00E5FF',
+
+        // iOS glow
+        shadowColor: '#00E5FF',
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.9,
+        shadowRadius: 12,
+
+        // Android glow
+        elevation: 8,
     },
     paymentRow: {
         flexDirection: "row",

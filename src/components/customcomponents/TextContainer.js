@@ -4,6 +4,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import PriceView from './PriceView';
 import parsePriceText from '../../utils/parsePriceText';
 import InlinePromoText from './InlinePromoText';
+import GlassContainer from './GlassContainer';
 
 const TextContainer = ({ navigation, tabbyHtml, tamaraHtml, price, tamaraText, tabbyText }) => {
   const { before, priceHtml, after } = parsePriceText(tamaraText);
@@ -11,6 +12,7 @@ const TextContainer = ({ navigation, tabbyHtml, tamaraHtml, price, tamaraText, t
   console.log("dknfkndkn", before, priceHtml, after)
 
   return (
+    <GlassContainer padding={0.1}>
     <View style={styles.glowWrapper}>
       <View style={styles.wrapper}>
         <View style={styles.content}>
@@ -105,6 +107,7 @@ const TextContainer = ({ navigation, tabbyHtml, tamaraHtml, price, tamaraText, t
         </View>
       </View>
     </View>
+    </GlassContainer>
   );
 };
 
@@ -128,9 +131,9 @@ const styles = StyleSheet.create({
     flex: 1,
     borderRadius: 15,
     overflow: 'hidden',
-    backgroundColor: 'rgba(255,255,255,0.12)',
-    borderWidth: 0.6,
-    borderColor: 'rgba(255,255,255,0.9)',
+    // backgroundColor: 'rgba(255,255,255,0.12)',
+    // borderWidth: 0.6,
+    // borderColor: 'rgba(255,255,255,0.9)',
   },
 
   content: {

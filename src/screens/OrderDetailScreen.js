@@ -15,11 +15,9 @@ const OrderDetailsScreen = () => {
     const screenHeight = Dimensions.get('window').height;
 
     return (
-        // <LinearGradient
-        //   colors={["#101010", "#1C1C1C"]}
-        //   style={styles.background}
-        // >
+        <>
         <BackgroundWrapper>
+            
             <ScrollView contentContainerStyle={[styles.container, {marginTop: Platform.OS === "ios" ? 40 : 10}]}>
                 <View style={{ marginTop: 10, marginHorizontal: 20, flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
                     <TouchableOpacity onPress={() => { navigation.goBack() }}>
@@ -122,7 +120,8 @@ const OrderDetailsScreen = () => {
                 </TouchableOpacity>
             </ScrollView>
         </BackgroundWrapper>
-        // </LinearGradient>
+        </>
+
     );
 };
 

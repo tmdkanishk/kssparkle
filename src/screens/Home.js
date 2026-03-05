@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, Modal, TouchableOpacity, Alert, Platform, useWindowDimensions, Animated, FlatList, Pressable, Image, } from 'react-native'
+import { View, Text, ScrollView, Modal, TouchableOpacity, Alert, Platform, useWindowDimensions, Animated, FlatList, Pressable, Image, StyleSheet } from 'react-native'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import BottomBar from '../components/BottomBar';
 import SideBar from '../components/SideBar';
@@ -38,6 +38,11 @@ import AddToCartOptionUiModal from '../components/AddToCartOptionUiModal';
 import CustomSearchBar from './CustomSearchBar';
 import CustomProductList from '../components/customcomponents/CustomProductList';
 import GlassTestContainer from '../components/customcomponents/GlassTestComponent';
+import GlassContainer from '../components/customcomponents/GlassContainer';
+import BoxWithShadow from '../test';
+import AddressCard from '../components/AddressCard';
+
+
 
 const Home = ({ navigation }) => {
     const { language, currency, changeLanguage, changeCurrency } = useLanguageCurrency();
@@ -62,7 +67,7 @@ const Home = ({ navigation }) => {
     const [selectedItem, setSelectedItem] = useState(null);
     const [activeSeachingScreen, setActiveSeachingScreen] = useState(false);
     const [loadingMore, setLoadingMore] = useState(false);
-
+    const BG = require('../assets/images/backgroundimage.png');
     const products = [
         {
             id: 1,
@@ -210,23 +215,89 @@ const Home = ({ navigation }) => {
         );
     }
 
+    const moduleProducts =
+        isModuleData
+            ?.filter(m => m.type === 'products')
+            ?.flatMap(m => m.data) || [];
 
-const moduleProducts =
-  isModuleData
-    ?.filter(m => m.type === 'products')
-    ?.flatMap(m => m.data) || [];
 
-    
+    const hideAnimation = scrollY.interpolate({
+        inputRange: [0, 450],
+        outputRange: [1, 0],   // 1 = visible, 0 = hidden
+        extrapolate: "clamp",
+    });
 
-    const Header = () => (
+    const showHeader = scrollY.interpolate({
+        inputRange: [500, 600],  // starts showing at 200px, fully visible at 300px
+        outputRange: [0, 1],     // 0 = hidden, 1 = visible
+        extrapolate: "clamp",
+    });
+
+
+    const onClickBrand = () => {
+        // setActiveTab(1)
+        navigation.navigate('Brands');
+    }
+
+
+    const HomeHeader = () => (
         <View style={{ marginTop: Platform.OS === "ios" ? 20 : 0 }}>
-            <Pressable style={{ width: Platform.OS === "ios" ? '100%' : "100%", paddingHorizontal: Platform.OS === "ios" ? 5 : 20 }}>
-                <PromoCard onSearchPress={toggleSearch} />
-            </Pressable>
+            <Animated.View style={{ opacity: hideAnimation }}>
+                <Pressable style={{ width: Platform.OS === "ios" ? '100%' : "100%", paddingHorizontal: Platform.OS === "ios" ? 5 : 20 }}>
+                    <PromoCard onSearchPress={toggleSearch} />
+                </Pressable>
+            </Animated.View>
+
+            {/* <AddressCard /> */}
+
+            {/* <GlassContainer title={"Brands"}>
+
+</GlassContainer> */}
+
+            {/* <View style={{ flex: 1 }}>
+  
+  <Image
+    source={{ uri: "https://picsum.photos/500" }}
+    style={StyleSheet.absoluteFill}
+  /> */}
+
+            {/* <BoxWithShadow backgroundSource={require("../assets/images/backgroundimage.png")} /> */}
+
+            {/* </View> */}
+
+            {/* <BoxWithShadow /> */}
+
+            <View style={{ flexDirection: 'row', marginBottom: 10, marginTop: 10 }}>
+
+                <View>
+                    <GlassContainer borderRadius={10} padding={10} style={{ paddingHorizontal: 30, alignItems: 'center', justifyContent: 'center', }}>
+                        <TouchableOpacity onPress={onClickBrand}>
+                            <Text style={{ color: 'white', textAlign: 'center' }}>Brands</Text>
+                        </TouchableOpacity>
+                    </GlassContainer>
+
+                </View>
+
+
+                <View>
+                    <GlassContainer borderRadius={10} padding={10} style={{ paddingHorizontal: 30, alignItems: 'center', justifyContent: 'center', }}>
+                        <TouchableOpacity onPress={() => navigation.navigate('Category')}>
+                            <Text style={{ color: 'white', textAlign: 'center' }}>Category</Text>
+                        </TouchableOpacity>
+                    </GlassContainer>
+                </View>
+
+
+            </View>
+
+
+
+
+
 
             {/* <GlassTestContainer /> */}
 
-            {
+            {/* {
                 isModuleData?.length > 0 ? (
                     isModuleData?.map((item, index) => {
                         if (item?.type === 'categorystory') {
@@ -258,7 +329,7 @@ const moduleProducts =
                     )
                 ) : null
 
-            }
+            } */}
         </View>
     )
 
@@ -269,15 +340,34 @@ const moduleProducts =
         <>
 
             <BackgroundWrapper>
-                
+
+                <Animated.View
+                    style={{
+                        opacity: showHeader,
+                        position: 'absolute',
+                        top: 40, // adjust for status bar
+                        zIndex: 10,
+                        width: '90%',          // your desired width
+                        alignSelf: 'center',   // center horizontally
+                        backgroundColor: 'grey',
+                        borderRadius: 15,      // optional: rounded corners
+                        paddingVertical: 5,    // optional: spacing inside
+                    }}
+                >
+                    <Header
+                        noBackground={true}
+                        paddingHorizontal={width * 0.05}
+                        onSearchPress={toggleSearch}
+                    />
+                </Animated.View>
 
                 {loading ? (
                     <CustomActivity />
                 ) : (
                     <View style={{ paddingHorizontal: 12 }}>
                         <CustomProductList header={
-                            <Header />
-                        }   moduleProducts={moduleProducts}/>
+                            <HomeHeader />
+                        } moduleProducts={moduleProducts} scrollY={scrollY} />
 
                     </View>)}
 

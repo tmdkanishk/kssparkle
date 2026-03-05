@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import { View, TextInput, StyleSheet } from "react-native";
 import { BlurView } from "@react-native-community/blur";
 import LinearGradient from "react-native-linear-gradient";
+import GlassContainer from './GlassContainer';
 
 const OTPInput = ({ length = 6, value = "", onChange }) => {
   const inputs = useRef([]);
@@ -36,8 +37,9 @@ const OTPInput = ({ length = 6, value = "", onChange }) => {
   return (
     <View style={styles.container}>
       {Array.from({ length }).map((_, index) => (
+        <GlassContainer padding={0.1} borderRadius={15}>
         <View key={index} style={styles.glowWrapper}>
-          <LinearGradient
+          {/* <LinearGradient
             colors={[
               "rgba(255,255,255,0.25)",
               "rgba(255,255,255,0)",
@@ -46,14 +48,14 @@ const OTPInput = ({ length = 6, value = "", onChange }) => {
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.borderGlow}
-          />
+          /> */}
 
           <View style={styles.wrapper}>
-            <BlurView
+            {/* <BlurView
               style={StyleSheet.absoluteFill}
               blurType="light"
               blurAmount={15}
-            />
+            /> */}
 
             <TextInput
               ref={(ref) => (inputs.current[index] = ref)}
@@ -69,6 +71,7 @@ const OTPInput = ({ length = 6, value = "", onChange }) => {
             />
           </View>
         </View>
+        </GlassContainer>
       ))}
     </View>
   );
@@ -100,8 +103,8 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     overflow: "hidden",
     backgroundColor: "rgba(255,255,255,0.03)",
-    borderWidth: 0.4,
-    borderColor: "rgba(255,255,255,0.5)",
+    // borderWidth: 1,
+    // borderColor: "rgba(255,255,255,0.5)",
   },
   input: {
     flex: 1,

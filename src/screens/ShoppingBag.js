@@ -28,6 +28,7 @@ import { shareAllUrlProdcuts } from "../services/shareAllUrlProdcuts";
 import { useLoading } from "../hooks/LoadingProvider";
 import FailedModal from "../components/FailedModal";
 import PriceView from "../components/customcomponents/PriceView";
+import { getAllCouponCode } from "../services/getAllCouponCode";
 
 
 const ShoppingBag = ({ navigation }) => {
@@ -69,6 +70,7 @@ const ShoppingBag = ({ navigation }) => {
     // multi selection
     const [cartItem, setCartItem] = useState([]);
     const [showOffersOnly, setShowOffersOnly] = useState(false);
+    const [couponList, setCouponList] = useState([]);
 
 
     useFocusEffect(
@@ -76,6 +78,7 @@ const ShoppingBag = ({ navigation }) => {
             checkAutoLogin();
             // checkUserLogin();
             fetchCartData();
+            fetchCouponCodeList();
         }, [language, currency, cartCount])
     );
 
@@ -117,7 +120,7 @@ const ShoppingBag = ({ navigation }) => {
 
             const body = {
                 code: lang?.code,
-                currency: cur,
+                currency: cur?.code,
                 customer_id: user,
                 sessionid: sessionId
             }
@@ -167,7 +170,7 @@ const ShoppingBag = ({ navigation }) => {
     const applyVoucherCode = async (voucher) => {
         try {
             setGlobalLoading(true);
-            const response = await applyVoucher(voucher, EndPoint?.cart_voucher);
+            const response = await applyVoucher(voucher, EndPoint?.list_coupons);
             console.log("response", response);
             console.log("applyCouponCode response : ", response);
             if (response?.success) {
@@ -183,6 +186,33 @@ const ShoppingBag = ({ navigation }) => {
                 setErrorModal(true);
             }
         } finally {
+            setGlobalLoading(false);
+        }
+    }
+    const fetchCouponCodeList = async () => {
+         try {
+            setGlobalLoading(true);
+            const response = await getAllCouponCode(EndPoint?.list_coupons);
+            console.log("fetchCouponCodeList response : ", response);
+            // if (response?.success) {
+            //     console.log("applyCouponCode" ,response?.success)
+            //     setCouponSuccess(response?.success);
+            //     setCouponError(null);
+            //     fetchCartData();
+            // }
+              if (response?.coupons) {
+      setCouponList(response.coupons);
+    }
+        } catch (error) {
+            console.log("fetchCouponCodeList error : ", error.response.data);
+            // if (error.response.data?.error) {
+            //     setCouponError(error.response.data?.error);
+            // } else {
+            //     setErrorMgs(GlobalText?.extrafield_somethingwrong);
+            //     setErrorModal(true);
+            // }
+        } finally {
+            // setCouponSuccess(null);
             setGlobalLoading(false);
         }
     }
@@ -309,6 +339,7 @@ const ShoppingBag = ({ navigation }) => {
     }
 
     return (
+          <>
         <BackgroundWrapper>
             <KeyboardAvoidingView
                 style={{ flex: 1 }}
@@ -331,20 +362,22 @@ const ShoppingBag = ({ navigation }) => {
                             color: "#fff", fontSize: 22, fontWeight: "700", textAlign: isRTLText(isLabel?.cartshoping_heading) ? 'right' : 'left',
                             writingDirection: isRTLText(isLabel?.cartshoping_heading) ? 'rtl' : 'ltr',
                         }}>{isLabel?.cartshoping_heading}</Text> */}
-
-                            <TouchableOpacity style={{
-                                borderWidth: 1,
-                                borderColor: "#fff",
-                                borderRadius: 8,
-                                paddingVertical: 6,
-                                paddingHorizontal: 12,
+                        <GlassContainer padding={10} borderRadius={0.1} style={{
+                                // borderWidth: 1,
+                                // borderColor: "#fff",
+                                // borderRadius: 8,
+                                // paddingVertical: 6,
+                                // paddingHorizontal: 12,
                             }}>
+
+                            <TouchableOpacity>
                                 <Text style={{
                                     color: "#fff",
                                     fontSize: 12,
                                     fontWeight: "600",
                                 }}>ENTER PIN CODE</Text>
                             </TouchableOpacity>
+                            </GlassContainer>
                         </View>
 
                         <Text style={{
@@ -432,6 +465,7 @@ const ShoppingBag = ({ navigation }) => {
                         <>
                             {/* coupon section */}
                             <CustomCouponSection
+                            coupons={couponList}
                                 onClickApply={(coupon) => applyCouponCode(coupon)}
                                 error={isCouponError}
                                 success={isCouponSuccess}
@@ -518,6 +552,7 @@ const ShoppingBag = ({ navigation }) => {
             />
 
         </BackgroundWrapper>
+      </>
     );
 };
 

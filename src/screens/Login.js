@@ -21,6 +21,7 @@ import GlassmorphismInput from '../components/customcomponents/GlassmorphismInpu
 import BackgroundWrapper from '../components/customcomponents/BackgroundWrapper';
 import GlassmorphismButton from '../components/customcomponents/GlassmorphismButton';
 import GlassSwipeButton from '../components/customcomponents/GlassSwipeButton';
+import GlassContainer from '../components/customcomponents/GlassContainer';
 
 
 const Login = ({ navigation }) => {
@@ -149,27 +150,30 @@ const Login = ({ navigation }) => {
                 <TouchableOpacity
                     onPress={handleSkipLogin}
                     style={{
-                        borderWidth: 1,
+                        // borderWidth: 1,
                         padding: 10,
                         width: "30%",
                         alignItems: "center",
                         borderRadius: 12,
                         alignSelf: "flex-end",
                         marginTop: 12,
-                        backgroundColor: 'rgba(255,255,255,0.15)',
-                        borderWidth: 0.6,
-                        borderColor: 'rgba(255,255,255,0.35)',
+                        // backgroundColor: 'rgba(255,255,255,0.15)',
+                        // borderWidth: 0.6,
+                        // borderColor: 'rgba(255,255,255,0.35)',
                         marginRight: 20,
                         marginTop: Platform.OS === "ios" ? 60 : 40
                     }}
                 >
+                    <GlassContainer borderRadius={10}>
                     <Text style={{ color: "white" }}>Skip Login</Text>
+                     </GlassContainer>
                 </TouchableOpacity>
+               
                 <View style={{ backgroundColor: "transparent", justifyContent: "center", alignItems: 'center', flex: 1 }}>
 
 
 
-                    <View style={{ marginHorizontal: 12, marginBottom: 100, opacity: loading ? 0.5 : 1, width: "85%" }}>
+                    <View style={{ marginHorizontal: 12, marginBottom: 150, opacity: loading ? 0.5 : 1, width: "85%" }}>
 
 
                         <View style={{ marginTop: 10, alignItems: 'flex-start', gap: 10 }}>

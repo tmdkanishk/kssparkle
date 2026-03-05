@@ -19,7 +19,7 @@ export const autoSearch = async (query, search) => {
 
         const body = {
             code: lang?.code,
-            currency: cur,
+            currency: cur?.code,
             customer_id: user,
             sessionid: sessionId,
             search: query

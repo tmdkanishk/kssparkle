@@ -1,5 +1,5 @@
 import React, { memo, useState } from "react";
-import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, Image, StyleSheet, TouchableOpacity, Platform } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import AddToCartOptionUiModal from "../AddToCartOptionUiModal";
 import { useCustomContext } from "../../hooks/CustomeContext";
@@ -9,6 +9,7 @@ import { addToCartProduct } from "../../services/addToCartProduct";
 import SuccessModal from "../SuccessModal";
 import { useCartCount } from "../../hooks/CartContext";
 import PriceView from "./PriceView";
+import { LiquidGlassView } from "@callstack/liquid-glass";
 const ProductGlassCard = ({ item, onPress, onAddToCart }) => {
     const { Colors, EndPoint, GlobalText } = useCustomContext();
     const { updateCartCount } = useCartCount();
@@ -60,54 +61,61 @@ const ProductGlassCard = ({ item, onPress, onAddToCart }) => {
                     productId: item?.product_id,
                 })}
             >
-                {/* ✅ Glass background without blur - using gradient only */}
-                <LinearGradient
-                    colors={["rgba(255,255,255,0.25)", "rgba(255,255,255,0.10)"]}
+                <LiquidGlassView
                     style={styles.glassBackground}
+                    interactive
+                    effect="clear"
                 >
-                    {/* ✅ Foreground Content */}
-                    <View style={styles.content}>
-                        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-                            <View style={styles.headerStrip}>
-                                <Text style={styles.categoryText}>{item?.category}</Text>
+                    {/* ✅ Glass background without blur - using gradient only */}
+                    {/* <LinearGradient
+                        colors={["rgba(255,255,255,0.25)", "rgba(255,255,255,0.10)"]}
+                        style={styles.glassBackground}
+                    > */}
+                        {/* ✅ Foreground Content */}
+                        <View style={styles.content}>
+                            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+                                <View style={styles.headerStrip}>
+                                    <Text style={styles.categoryText}>{item?.category_name}</Text>
+                                </View>
+                                {/* 🛍️ Bag Icon */}
+                                <TouchableOpacity
+                                    hitSlop={60}
+                                    activeOpacity={0.8}
+                                    onPress={() => { item?.optionsstatus ? onClickAddToCartOption() : onclickAddToCart() }}
+                                >
+                                    <Image
+                                        source={require("../../assets/images/parcel.png")}
+                                        style={styles.bagIcon}
+                                        resizeMode="contain"
+                                    />
+                                </TouchableOpacity>
+
                             </View>
-                            {/* 🛍️ Bag Icon */}
-                            <TouchableOpacity
-                                hitSlop={60}
-                                activeOpacity={0.8}
-                                onPress={() => { item?.optionsstatus ? onClickAddToCartOption() : onclickAddToCart() }}
-                            >
+
+                            {/* ✅ Product Image Center */}
+                            <View style={styles.imageWrapper}>
                                 <Image
-                                    source={require("../../assets/images/parcel.png")}
-                                    style={styles.bagIcon}
+                                    source={{ uri: item?.thumb }}
+                                    style={styles.productImage}
                                     resizeMode="contain"
                                 />
-                            </TouchableOpacity>
-
-                        </View>
-
-                        {/* ✅ Product Image Center */}
-                        <View style={styles.imageWrapper}>
-                            <Image
-                                source={{ uri: item?.thumb }}
-                                style={styles.productImage}
-                            />
-                        </View>
-
-                        {/* ✅ Product Info */}
-                        <View style={styles.infoContainer}>
-                            <Text style={styles.productName} numberOfLines={2}>{item?.name}</Text>
-                            <View style={{ marginLeft: 10 }}>
-                                <PriceView
-                                    priceHtml={item?.price}
-                                    textStyle={styles.price}
-                                />
                             </View>
 
-                            {/* <Text style={styles.price}>{item?.price}</Text> */}
+                            {/* ✅ Product Info */}
+                            <View style={styles.infoContainer}>
+                                <Text style={styles.productName} numberOfLines={2}>{item?.name}</Text>
+                                <View style={{ marginLeft: 10 }}>
+                                    <PriceView
+                                        priceHtml={item?.price}
+                                        textStyle={styles.price}
+                                    />
+                                </View>
+
+                                {/* <Text style={styles.price}>{item?.price}</Text> */}
+                            </View>
                         </View>
-                    </View>
-                </LinearGradient>
+                    {/* </LinearGradient> */}
+                </LiquidGlassView>
             </TouchableOpacity>
 
 
@@ -135,11 +143,11 @@ const styles = StyleSheet.create({
     cardWrapper: {
         width: "45%",
         marginBottom: 15,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.2,
-        shadowRadius: 6,
-        elevation: 5,
+        // shadowColor: "#000",
+        // shadowOffset: { width: 0, height: 4 },
+        // shadowOpacity: 0.2,
+        // shadowRadius: 6,
+        // elevation: 5,
     },
     glassBackground: {
         height: 200,
@@ -182,8 +190,8 @@ const styles = StyleSheet.create({
         marginVertical: 5,
     },
     productImage: {
-        width: "65%",
-        height: "65%",
+        width: "90%",
+        height: "90%",
     },
     infoContainer: {
         flexDirection: "row",

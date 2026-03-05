@@ -17,7 +17,7 @@ export const gatSubCategoryOrProduct = async (path, page, categorydetails) => {
 
         const body = {
             code: lang?.code,
-            currency: cur,
+            currency: cur?.code,
             sessionid: sessionId,
             customer_id: user,
             path: path,

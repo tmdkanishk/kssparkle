@@ -19,7 +19,7 @@ export const getAllWishlistProducts = async (accountdashboard_getAllWishlists) =
 
         const body = {
             code: lang?.code,
-            currency: cur,
+            currency: cur?.code,
             customer_id: user,
             sessionId: sessionId,
         }

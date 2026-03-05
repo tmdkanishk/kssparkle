@@ -6,7 +6,8 @@ import {
   StyleSheet,
   ScrollView,
   Text,
-  Image
+  Image,
+  Platform
 } from "react-native";
 import BackgroundWrapper from "../components/customcomponents/BackgroundWrapper";
 import Header from "../components/customcomponents/Header";
@@ -17,6 +18,7 @@ import { gatCategoryList } from "../services/gatCategoryList";
 import { useCustomContext } from "../hooks/CustomeContext";
 import CategoryCard from "../components/customcomponents/CategoryCard";
 import CustomSearchBar from "./CustomSearchBar";
+import { isLiquidGlassSupported, LiquidGlassView } from "@callstack/liquid-glass";
 
 
 const categories = [
@@ -229,6 +231,7 @@ const Category = ({ navigation }) => {
                   innerStyle={{ paddingHorizontal: 80 }}
                 />
               </GlassContainer>
+
             </TouchableOpacity>
           </>
         }

@@ -27,11 +27,12 @@ export const getBrandsProduct = async (manufacturerId, page, sort, order, endpoi
         }
 
 
-        console.log("bodyof manefacture", body);
+        console.log("bodyof manefacture", body, url);
 
         const response = await axios.post(url, body, { headers: headers });
 
         if (response.status === HttpStatusCode.Ok) {
+             console.log("respone of getBrands products", response?.data);
             return response.data;
         }
 

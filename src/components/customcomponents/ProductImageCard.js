@@ -2,14 +2,16 @@ import React, { useRef, useState } from "react";
 import {
   View,
   Text,
-  Image,
   StyleSheet,
   FlatList,
   Dimensions,
+  Animated,
+  Image,
 } from "react-native";
+
 import LinearGradient from "react-native-linear-gradient";
 import PriceView from "./PriceView";
-import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
+// import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
 
 
 const { width } = Dimensions.get("window");
@@ -19,7 +21,7 @@ const DEFAULT_IMAGE = require("../../assets/images/headphones.png");
 const ProductImageCard = ({ headingTitle, images = [], price }) => {
   console.log("ProductImageCard price", price)
   const [activeIndex, setActiveIndex] = useState(0);
-  const [imageLoading, setImageLoading] = useState(true);
+  // const [imageLoading, setImageLoading] = useState(true);
 
 
   const safeImages =
@@ -30,6 +32,20 @@ const ProductImageCard = ({ headingTitle, images = [], price }) => {
       setActiveIndex(viewableItems[0].index);
     }
   }).current;
+
+  const ImageItem = React.memo(({ uri }) => {
+    return (
+      <Image
+        source={uri ? { uri } : DEFAULT_IMAGE}
+        style={styles.image}
+        resizeMode="contain"
+        fadeDuration={200}   // 👈 Native smooth fade (Android) 
+      />
+    );
+  });
+
+
+
 
   return (
     <LinearGradient
@@ -61,28 +77,16 @@ const ProductImageCard = ({ headingTitle, images = [], price }) => {
         renderItem={({ item }) => (
           <View style={styles.imageWrapper}>
             <View style={styles.imageContainer}>
-              {/* Skeleton */}
-              {imageLoading && (
-                <ShimmerPlaceHolder
-                  LinearGradient={LinearGradient}
-                  shimmerColors={['#3A3A3A', '#4A4A4A', '#3A3A3A']}
-                  style={styles.shimmer}
-                />
-              )}
-
-              {/* Actual Image */}
-              <Image
-                source={item?.popup ? { uri: item.popup } : DEFAULT_IMAGE}
-                style={styles.image}
-                resizeMode="contain"
-                onLoadStart={() => setImageLoading(true)}
-                onLoadEnd={() => setImageLoading(false)}
-              />
+              <ImageItem uri={item?.popup} />
             </View>
-
           </View>
-
         )}
+
+        removeClippedSubviews={false}
+        windowSize={5}
+        initialNumToRender={images.length}
+        maxToRenderPerBatch={images.length}
+
       />
 
       {safeImages.length > 1 && (
@@ -125,20 +129,17 @@ const styles = StyleSheet.create({
     marginRight: 15
   },
 
-  imageWrapper: {
-    width: width - 36,
-    height: 350,
-    justifyContent: "center",
-    alignItems: "center",
-    position: "relative",
-    aspectRatio: 1,
-    // backgroundColor:'green',
-  },
+imageWrapper: {
+  width: width - 36,
+  height: 400,
+  justifyContent: "center",
+  alignItems: "center",
+},
 
-  image: {
-    width: '100%',
-    height: 260,
-  },
+  // image: {
+  //   width: '100%',
+  //   height: 260,
+  // },
 
 
   dotsContainer: {
@@ -168,9 +169,10 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     width: '100%',
-    height: 260,
+    height: 360,
     justifyContent: 'center',
     alignItems: 'center',
+    // backgroundColor:'red'
   },
 
   shimmer: {
@@ -182,8 +184,9 @@ const styles = StyleSheet.create({
 
   image: {
     width: '100%',
-    height: 260,
+    height: "100%",
   },
+
 
 });
 

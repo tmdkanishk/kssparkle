@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native'
 import React from 'react'
 import { useCustomContext } from '../hooks/CustomeContext';
+import GlassContainer from './customcomponents/GlassContainer';
 
 const InputBox = ({
     label,
@@ -35,6 +36,7 @@ const InputBox = ({
             </View>
 
             {/* Input */}
+            <GlassContainer padding={0.1}>
             <View style={[styles.inputFieldContainer, {
                 height: inputStyle.h || 48,
                 paddingHorizontal: inputStyle.ph || 12,
@@ -64,6 +66,7 @@ const InputBox = ({
                     </TouchableOpacity>
                 )}
             </View>
+            </GlassContainer>
 
             {/* Error */}
             {ErrorMessage && (
@@ -97,7 +100,7 @@ const styles = StyleSheet.create({
     inputFieldContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        borderWidth: 0.6,
+        // borderWidth: 0.6,
         borderColor: 'rgba(255,255,255,0.6)',
         backgroundColor: 'rgba(255,255,255,0.05)', // 🔥 subtle glass fill
     },

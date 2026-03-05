@@ -11,7 +11,7 @@ import {
   Platform,
   KeyboardAvoidingView,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useCustomContext } from "../hooks/CustomeContext";
 import CustomActivity from "../components/CustomActivity";
 import TitleBarName from "../components/TitleBarName";
@@ -54,6 +54,9 @@ import GlassContainer from "../components/customcomponents/GlassContainer";
 import { Tabby, TabbyPaymentWebView } from "tabby-react-native-sdk";
 import PriceView from "../components/customcomponents/PriceView";
 import { buildMoyasarConfig } from "../utils/buildMoyasarConfig";
+import GlassSwipeButton from "../components/customcomponents/GlassSwipeButton";
+import { useFocusEffect } from "@react-navigation/native";
+import { buildApplePayConfig } from "../utils/buildApplePayConfig";
 
 const OrderPlace = ({ navigation }) => {
   const { Colors, EndPoint, GlobalText } = useCustomContext();
@@ -66,6 +69,7 @@ const OrderPlace = ({ navigation }) => {
   const [isPaypalModal, setPaypalModal] = useState(false);
   const [paypalUrl, setPaypalUrl] = useState(null);
   const [isTotalPrice, setTotalPrice] = useState(0);
+  const [isTotal, setTotal] = useState(0);
   const [isErrorModal, setErrorModal] = useState(false);
   const [isError, setError] = useState();
   const [isRazorPayData, setRazorPayData] = useState();
@@ -86,7 +90,22 @@ const OrderPlace = ({ navigation }) => {
   const [tabbyCheckoutUrl, setTabbyCheckoutUrl] = useState()
   const [showTabby, setShowTabby] = useState(false)
   const [tabbyUrl, setTabbyUrl] = useState()
+  const [telephone, setTelephone] = useState(null);
+  const [fullName, setFullName] = useState(null);
+  const [email, setEmail] = useState(null);
+  const [swipeKey, setSwipeKey] = useState(0);
+  const [scrollEnabled, setScrollEnabled] = useState(true);
 
+
+  useFocusEffect(
+    useCallback(() => {
+      //   checkAutoLogin();
+      setSwipeKey(prev => prev + 1);
+      //   fetchAllMyAddress();
+      //   fetchCheckOutText();
+    }, [])
+
+  )
 
 
   useEffect(() => {
@@ -98,8 +117,18 @@ const OrderPlace = ({ navigation }) => {
     try {
       setGlobalLoading(true);
       const result = await getOrderSummaries(EndPoint?.confirm);
+      const telephone = await _retrieveData('telephone');
+      const fullName = await _retrieveData('full_name');
+      const email = await _retrieveData('email');
+      setTelephone(telephone);
+      setFullName(fullName);
+      setEmail(email);
       console.log("result in fetchAllOrderSummary", result);
-      console.log("confirm api response", result?.totalsprice);
+      // console.log("confirm api response", result?.totalsprice);
+      const finalTotal = result?.totals?.[result?.totals?.length - 1]?.text;
+
+      setTotal(finalTotal);
+
       setProductInfo(result?.products);
       setTotalsInfo(result?.totals);
       setOtherInfo(result);
@@ -173,9 +202,10 @@ const OrderPlace = ({ navigation }) => {
           const result = await onPlaceOrder(EndPoint?.success);
           console.log("result susuccess 1: ", result);
           updateCartCount(0);
-          navigation.navigate("OrderConfirmation", {
+          navigation.navigate("OrderSuccessScreen", {
             orderId: isOtherInfo?.order_id,
           });
+          break;
 
         case "tabby_installments":
           console.log("tabby_installments")
@@ -185,7 +215,9 @@ const OrderPlace = ({ navigation }) => {
         case "moyasar3":
           console.log("hit moyasar3")
           const moyasarConfig = buildMoyasarConfig({
-            amount:  1000,
+            amount: isTotal
+              ?.replace(/[^0-9.]/g, '')   // remove $, commas etc
+              ?.trim(),
             orderId: isOtherInfo?.order_id,
             publishableKey: "pk_live_Mijc7Htr4NhyQG27DUdp9DgALzzWSN4yhXS5eH8M",
           });
@@ -193,9 +225,25 @@ const OrderPlace = ({ navigation }) => {
           navigation.navigate("MoyasarPayment", {
             paymentConfig: moyasarConfig,
             orderId: isOtherInfo?.order_id,
+            paymentType: "card"
           });
 
           break;
+
+        case "applepay":
+          console.log("apple_pay")
+           const appleConfig = buildApplePayConfig({
+            amount: isTotal
+              ?.replace(/[^0-9.]/g, '')   // remove $, commas etc
+              ?.trim(),
+            orderId: isOtherInfo?.order_id,
+            publishableKey: "pk_live_Mijc7Htr4NhyQG27DUdp9DgALzzWSN4yhXS5eH8M",
+          });
+          navigation.navigate("MoyasarPayment", {
+            paymentConfig: appleConfig,
+            orderId: isOtherInfo?.order_id,
+            paymentType: "apple",
+          });
 
         default:
           // Code to run if no case matches
@@ -203,6 +251,7 @@ const OrderPlace = ({ navigation }) => {
 
       }
     } catch (error) {
+      setSwipeKey(prev => prev + 1);
       console.log("error : ", error.response.data);
     } finally {
       setGlobalLoading(false);
@@ -251,21 +300,38 @@ const OrderPlace = ({ navigation }) => {
   //   }
   // };
 
+  // const customerPhone = "964699212"
+  const customerName = "kanishk sharma"
+
+
+  // 964699212
   const createCheckoutSession = async () => {
     try {
+
+      // total is coming from state (setTotal)
+      const amount = isTotal
+        ?.replace(/[^0-9.]/g, '')   // remove $, commas etc
+        ?.trim();
+
+      const cur = await _retrieveData('SELECT_CURRENCY');
+
+      const currency = cur?.code || "SAR";
+
       const payload = {
         merchant_code: "sa",
         lang: "en",
         payment: {
-          amount: "100.00",
+          amount: amount,
           currency: "SAR",
           buyer: {
-            email: "successful.payment@tabby.ai",
-            phone: "+966500000001",
-            name: "Test User",
+            email: email,
+            phone: telephone,
+            name: fullName,
           },
         },
       };
+
+      console.log("Tabby payload →", payload);
 
       const { availableProducts } = await Tabby.createSession(payload);
 
@@ -273,13 +339,22 @@ const OrderPlace = ({ navigation }) => {
         p => p.type === "installments"
       );
 
+      if (!installments?.webUrl) {
+        console.log("Tabby installments not available");
+        return;
+      }
+
       navigation.navigate("TabbyCheckoutScreen", {
         url: installments.webUrl,
       });
+
     } catch (e) {
       console.log("Tabby FAILED →", e);
     }
   };
+
+
+
 
 
 
@@ -574,7 +649,11 @@ const OrderPlace = ({ navigation }) => {
                   onClickBackIcon={() => navigation.goBack()}
                   titleName={isLabel?.placeorderpagename_label}
                 /> */}
-            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 5, gap: 16, marginTop: Platform.OS === "ios" ? 40 : 0, opacity: screenLoader ? 0.5 : 1 }}>
+            <ScrollView
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={{ padding: 5, gap: 16, marginTop: Platform.OS === "ios" ? 40 : 0, opacity: screenLoader ? 0.5 : 1 }}
+              scrollEnabled={scrollEnabled}
+            >
               <View style={{ marginTop: 30, marginLeft: 10 }}>
                 <CustomHeader pageName={isLabel?.placeordersummary_heading} />
               </View>
@@ -793,80 +872,80 @@ const OrderPlace = ({ navigation }) => {
                       </View>
                     </GlassContainer>
 
-<GlassContainer
-  style={{
-    padding: 12,
-    borderColor: Colors.lightGray,
-    borderRadius: 8,
-  }}
->
-  {/* HEADER */}
-  <View
-    style={{
-      height: 40,
-      borderBottomWidth: 1,
-      borderColor: Colors.lightGray,
-      justifyContent: "center",
-    }}
-  >
-    <Text style={commonStyles.smallHeading}>
-      {isLabel?.placeorderpayshipaddres_heading}
-    </Text>
-  </View>
+                    <GlassContainer
+                      style={{
+                        padding: 12,
+                        borderColor: Colors.lightGray,
+                        borderRadius: 8,
+                      }}
+                    >
+                      {/* HEADER */}
+                      <View
+                        style={{
+                          height: 40,
+                          borderBottomWidth: 1,
+                          borderColor: Colors.lightGray,
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Text style={commonStyles.smallHeading}>
+                          {isLabel?.placeorderpayshipaddres_heading}
+                        </Text>
+                      </View>
 
-  {/* BODY */}
-  <View style={{ gap: 12, paddingVertical: 12 }}>
-    {/* PAYMENT ADDRESS */}
-    {!isOtherInfo?.sameaddrssstatus && (
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "flex-start",
-          gap: 8,
-        }}
-      >
-        <IconComponentLocation
-          size={20}
-          color={Colors.primary}
-          style={{ marginTop: 2 }}
-        />
-        <Text
-          style={{
-            flex: 1,
-            color: "#fff",
-            lineHeight: 18,
-          }}
-        >
-          {isOtherInfo?.payment_address}
-        </Text>
-      </View>
-    )}
+                      {/* BODY */}
+                      <View style={{ gap: 12, paddingVertical: 12 }}>
+                        {/* PAYMENT ADDRESS */}
+                        {!isOtherInfo?.sameaddrssstatus && (
+                          <View
+                            style={{
+                              flexDirection: "row",
+                              alignItems: "flex-start",
+                              gap: 8,
+                            }}
+                          >
+                            <IconComponentLocation
+                              size={20}
+                              color={Colors.primary}
+                              style={{ marginTop: 2 }}
+                            />
+                            <Text
+                              style={{
+                                flex: 1,
+                                color: "#fff",
+                                lineHeight: 18,
+                              }}
+                            >
+                              {isOtherInfo?.payment_address}
+                            </Text>
+                          </View>
+                        )}
 
-    {/* SHIPPING ADDRESS */}
-    <View
-      style={{
-        flexDirection: "row",
-        alignItems: "flex-start",
-        gap: 8,
-      }}
-    >
-      <IconComponentLocation
-        size={20}
-        color={Colors.primary}
-        style={{ marginTop: 2 }}
-      />
-      <Text
-        style={{
-          flex: 1,
-          color: "#fff",
-          lineHeight: 18,
-        }}
-      >
-        {isOtherInfo?.shipping_address}
-      </Text>
-    </View>
-  </View>
-</GlassContainer>
+                        {/* SHIPPING ADDRESS */}
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            alignItems: "flex-start",
+                            gap: 8,
+                          }}
+                        >
+                          <IconComponentLocation
+                            size={20}
+                            color={Colors.primary}
+                            style={{ marginTop: 2 }}
+                          />
+                          <Text
+                            style={{
+                              flex: 1,
+                              color: "#fff",
+                              lineHeight: 18,
+                            }}
+                          >
+                            {isOtherInfo?.shipping_address}
+                          </Text>
+                        </View>
+                      </View>
+                    </GlassContainer>
 
 
                     {/* <TouchableOpacity onPress={createCheckoutSession}>
@@ -874,7 +953,7 @@ const OrderPlace = ({ navigation }) => {
                     </TouchableOpacity> */}
 
                     <View style={{ marginBottom: 30, marginTop: 30, paddingHorizontal: 14 }}>
-                      <CustomButton
+                      {/* <CustomButton
                         btnDisabled={screenLoading}
                         OnClickButton={() => onClickPlaceOrder()}
                         // OnClickButton={() => openPaymentGetwayScreen()}
@@ -886,8 +965,19 @@ const OrderPlace = ({ navigation }) => {
                           borderRadius: 12,
                         }}
                         buttonText={isLabel?.confirmorderbtn_label}
+                      /> */}
+                      <GlassSwipeButton
+                        key={swipeKey}
+                        title={isLabel?.confirmorderbtn_label}
+                        onSwipeStart={() => setScrollEnabled(false)}
+                        onSwipeEnd={() => setScrollEnabled(true)}
+                        onSwipeSuccess={() => onClickPlaceOrder()}
                       />
+
+
                     </View>
+
+
 
 
 

@@ -6,7 +6,7 @@ import { IconComponentDownArrow, IconComponentUpArrow } from '../../constants/Ic
 // http://192.168.0.135/customclient/2025/oct/sparkleksa/index.php?route=extension/restapi/coupon
 // http://192.168.0.135/customclient/2025/oct/sparkleksa/index.php?route=extension/restapi/coupon/allcoupons
 
-const CustomCouponSection = ({ title, placeholderText, error, success, onClickApply }) => {
+const CustomCouponSection = ({ title, placeholderText, error, success, onClickApply, coupons = [], }) => {
     const [show, setShow] = useState(false);
     const [couponCode, setCouponCode] = useState('');
 
@@ -36,6 +36,48 @@ const CustomCouponSection = ({ title, placeholderText, error, success, onClickAp
                         </TouchableOpacity>
                     </View>
                 </GlassContainer>
+
+                {coupons?.length > 0 && (
+                    <View style={{ marginTop: 15 }}>
+                        <Text style={{ color: '#fff', marginBottom: 8 }}>
+                            Available Coupons
+                        </Text>
+
+                        {coupons.map((item) => (
+                            <GlassContainer padding={10}>
+                            <TouchableOpacity
+                                key={item.coupon_id}
+                                onPress={() => onClickApply(item.code)}
+                                style={{
+                                    // padding: 10,
+                                    // borderWidth: 1,
+                                    // borderColor: 'rgba(255,255,255,0.3)',
+                                    // borderRadius: 8,
+                                    // marginBottom: 8
+                                }}
+                            >
+                                <Text style={{ color: '#fff', fontWeight: 'bold' }}>
+                                    {item.code}
+                                </Text>
+
+                                <Text style={{ color: '#ccc', fontSize: 12 }}>
+                                    {item.name}
+                                </Text>
+
+                                <Text style={{ color: '#0f0', fontSize: 12 }}>
+                                    {item.type === 'P'
+                                        ? `${item.discount}% OFF`
+                                        : `₹${item.discount} OFF`}
+                                </Text>
+
+                                <Text style={{ color: '#aaa', fontSize: 11 }}>
+                                    Valid till: {item.date_end}
+                                </Text>
+                            </TouchableOpacity>
+                            </GlassContainer>
+                        ))}
+                    </View>
+                )}
 
                 {
                     success && <Text style={styles.successText}>{success}</Text>

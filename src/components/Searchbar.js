@@ -19,6 +19,7 @@ import { useNavigation } from '@react-navigation/native';
 import { autoSearch } from '../services/autoSearch';
 import GlassSearchBox from './customcomponents/GlassSearchBox';
 import { BlurView } from '@react-native-community/blur';
+import GlassContainer from './customcomponents/GlassContainer';
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
@@ -79,6 +80,7 @@ const Searchbar = ({ w, h, iconSize, onClickSearch, query }) => {
   };
 
   const openModal = () => {
+    console.log("open modal hits")
     setModalVisible(true);
     setTimeout(() => inputRef.current?.focus(), 100);
   };
@@ -88,7 +90,29 @@ const Searchbar = ({ w, h, iconSize, onClickSearch, query }) => {
 
   return (
     <>
-      {/* Search Bar */}
+
+    <View style={{width:'90%', marginLeft:20}}>
+<GlassContainer padding={10}>
+  <TextInput
+    ref={inputRef}
+    style={[styles.searchInputBox, { color: '#fff' }]} 
+    placeholder={GlobalText?.extrafield_searchhere}
+    placeholderTextColor="rgba(255,255,255,0.7)"   // softer white placeholder
+    value={searchQuery}
+    onChangeText={setSearchQuery}
+    returnKeyType="search"
+    selectionColor="#fff"   // cursor color (optional but recommended)
+    onSubmitEditing={() => {
+      onClickSearch(searchQuery);
+      handleCloseModal();
+    }}
+  />
+</GlassContainer>
+
+    </View>
+
+
+
       {/* <TouchableOpacity
         activeOpacity={1}
         style={[
@@ -110,7 +134,7 @@ const Searchbar = ({ w, h, iconSize, onClickSearch, query }) => {
           />
           <Text style={{ color: Colors.placeholderColor }}>{GlobalText?.extrafield_searchhere}</Text>
         </View>
-      </TouchableOpacity> */}
+      </TouchableOpacity>
 
       <GlassSearchBox
         h={46}
@@ -121,104 +145,85 @@ const Searchbar = ({ w, h, iconSize, onClickSearch, query }) => {
       />
 
 
-      {/* Modal with suggestions */}
       <Modal
         visible={modalVisible}
         animationType="fade"
         transparent
         onRequestClose={handleCloseModal}
       >
-         <View style={{ flex: 1 }}>
-        <TouchableWithoutFeedback activeOpacity={1} onPress={handleCloseModal} style={{
-                        flex: 1,
-                        backgroundColor: 'rgba(0,0,0,0.6)',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                    }}>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+         
+              <View style={styles.modalOverlay}>
+                <TouchableWithoutFeedback>
+                  <View style={styles.modalContent}>
 
-                                  <ImageBackground
-                                      source={require('../assets/images/backgroundimage.png')}
-                                      resizeMode="cover"
-                                      style={{
-                                          width:"80%",   // 👈 THIS FIXES IT
-                                          borderRadius: 16,
-                                          overflow: 'hidden',
-                                      }}
-                                  >
-          <View style={styles.modalOverlay}>
-            <TouchableWithoutFeedback>
-              <View style={styles.modalContent}>
-                {/* Search input in modal */}
-                <View style={[styles.searchContainer, { marginBottom: 10 }]}>
-                  <Feather
-                    name="search"
-                    size={iconSize || 24}
-                    color={Colors.placeholderColor || 'black'}
-                    style={{ marginRight: 10 }}
-                  />
-                  <TextInput
-                    ref={inputRef}
-                    style={[styles.searchInputBox, { color: Colors.placeholderColor }]}
-                    placeholder={GlobalText?.extrafield_searchhere}
-                    value={searchQuery}
-                    onChangeText={setSearchQuery}
-                    returnKeyType="search"
-                    onSubmitEditing={() => {
-                      onClickSearch(searchQuery);
-                      handleCloseModal();
-                    }}
-                  />
-                </View>
-
-                {/* Search suggestions list */}
-                <FlatList
-                  showsVerticalScrollIndicator={false}
-                  keyboardShouldPersistTaps="handled"
-                  data={displayedData}
-                  keyExtractor={(item) => item.id.toString()}
-                  renderItem={({ item }) => (
-                    <TouchableOpacity
-                      style={styles.suggestionItem}
-                      onPress={() => handleSelectItem(item)}
-                    >
-                      <Image source={{ uri: item.image }} style={styles.itemImage} />
-                      <View style={{ flex: 1, justifyContent: 'center' }}>
-                        <Text style={styles.itemText}>{item.title}</Text>
-                        {(item.special !== null) ? <>
-                          <Text style={{ fontSize: 14, textDecorationLine: 'line-through' }}>{GlobalText?.extrafield_lowestprice_label}: {item.price}</Text>
-                          <Text style={{ fontSize: 14, color: '#DD0017' }}>{GlobalText?.extrafield_reducedtprice_label}: {item.special}</Text>
-                        </>
-                          : <Text style={{ fontSize: 14, }}>{GlobalText?.extrafield_lowestprice_label}: {item.price}</Text>
-                        }
-
-                      </View>
-                    </TouchableOpacity>
-                  )}
-                  ListEmptyComponent={() => (
-                    <View style={{ padding: 20, alignItems: 'center' }}>
-                      <Text style={{ fontSize: 16, color: '#888' }}>{GlobalText?.extrafield_noresult}</Text>
+                    <View style={[styles.searchContainer, { marginBottom: 10 }]}>
+                      <Feather
+                        name="search"
+                        size={iconSize || 24}
+                        color={Colors.placeholderColor || 'black'}
+                        style={{ marginRight: 10 }}
+                      />
+                      <TextInput
+                        ref={inputRef}
+                        style={[styles.searchInputBox, { color: Colors.placeholderColor }]}
+                        placeholder={GlobalText?.extrafield_searchhere}
+                        value={searchQuery}
+                        onChangeText={setSearchQuery}
+                        returnKeyType="search"
+                        onSubmitEditing={() => {
+                          onClickSearch(searchQuery);
+                          handleCloseModal();
+                        }}
+                      />
                     </View>
-                  )}
-                  ListFooterComponent={() =>
-                    !showAll && filteredData.length ? (
-                      <TouchableOpacity
-                        style={styles.viewMoreButton}
-                        onPress={() => onClickSearch(searchQuery)}
-                      >
-                        <Text style={styles.viewMoreText}>{GlobalText?.extrafield_viewmore}</Text>
-                      </TouchableOpacity>
-                    ) : null
-                  }
-                />
+
+
+                    <FlatList
+                      showsVerticalScrollIndicator={false}
+                      keyboardShouldPersistTaps="handled"
+                      data={displayedData}
+                      keyExtractor={(item) => item.id.toString()}
+                      renderItem={({ item }) => (
+                        <TouchableOpacity
+                          style={styles.suggestionItem}
+                          onPress={() => handleSelectItem(item)}
+                        >
+                          <Image source={{ uri: item.image }} style={styles.itemImage} />
+                          <View style={{ flex: 1, justifyContent: 'center' }}>
+                            <Text style={styles.itemText}>{item.title}</Text>
+                            {(item.special !== null) ? <>
+                              <Text style={{ fontSize: 14, textDecorationLine: 'line-through' }}>{GlobalText?.extrafield_lowestprice_label}: {item.price}</Text>
+                              <Text style={{ fontSize: 14, color: '#DD0017' }}>{GlobalText?.extrafield_reducedtprice_label}: {item.special}</Text>
+                            </>
+                              : <Text style={{ fontSize: 14, }}>{GlobalText?.extrafield_lowestprice_label}: {item.price}</Text>
+                            }
+
+                          </View>
+                        </TouchableOpacity>
+                      )}
+                      ListEmptyComponent={() => (
+                        <View style={{ padding: 20, alignItems: 'center' }}>
+                          <Text style={{ fontSize: 16, color: '#888' }}>{GlobalText?.extrafield_noresult}</Text>
+                        </View>
+                      )}
+                      ListFooterComponent={() =>
+                        !showAll && filteredData.length ? (
+                          <TouchableOpacity
+                            style={styles.viewMoreButton}
+                            onPress={() => onClickSearch(searchQuery)}
+                          >
+                            <Text style={styles.viewMoreText}>{GlobalText?.extrafield_viewmore}</Text>
+                          </TouchableOpacity>
+                        ) : null
+                      }
+                    />
+                  </View>
+                </TouchableWithoutFeedback>
               </View>
-            </TouchableWithoutFeedback>
-          </View>
 
-          </ImageBackground>    
-
-        </TouchableWithoutFeedback>
         </View>
-      </Modal>
+      </Modal> */}
     </>
   );
 };
@@ -230,21 +235,31 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     borderWidth: 1,
     borderRadius: 4,
-    backgroundColor: 'white',
+    // backgroundColor: 'white',
   },
   searchInputBox: {
-    flex: 1,
+    // flex: 1,
     fontSize: 14,
     fontWeight: '400',
     paddingVertical: 8,
+    color:'white'
   },
+  // modalOverlay: {
+  //   flex: 1,
+  //   backgroundColor: 'rgba(0,0,0,0.3)',
+  //   justifyContent: 'flex-end',
+  //   paddingTop: 60,
+  //   paddingHorizontal: 16,
+  // },
+
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.3)',
-    justifyContent: 'flex-start',
-    paddingTop: 60,
+    // backgroundColor: 'red',
+    justifyContent: 'center',   // ✅ center vertically
+    alignItems: 'center',       // ✅ center horizontally
     paddingHorizontal: 16,
   },
+
   modalContent: {
     backgroundColor: 'white',
     borderRadius: 8,

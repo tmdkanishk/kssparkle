@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, Alert, Platform, Image, useWindowDimensions, Animated, TouchableOpacity, } from 'react-native'
+import { View, Text, ScrollView, Alert, Platform, Image, useWindowDimensions, Animated, TouchableOpacity, FlatList, } from 'react-native'
 import React, { useCallback, useRef, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import TopStatusBar from '../components/TopStatusBar'
@@ -23,6 +23,9 @@ import NotificationAlert from '../components/NotificationAlert'
 import { useLanguageCurrency } from '../hooks/LanguageCurrencyContext'
 import ProductGlassCard from '../components/customcomponents/ProductGlassCard'
 import BackgroundWrapper from '../components/customcomponents/BackgroundWrapper'
+import { useLoading } from '../hooks/LoadingProvider'
+import Header from '../components/customcomponents/Header'
+import CustomSearchBar from './CustomSearchBar'
 
 
 
@@ -35,7 +38,7 @@ const Search = ({ route }) => {
   const bttomType = ['FilterOption', 'Sort', 'Filter']
   const [subIdSelectList, setSubIdSelectList] = useState([]);
   const [activeBottom, SetActiveBottom] = useState(bttomType[0]);
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
   const [issearchResult, setSearchResult] = useState();
   const [issearchResultText, setSearchResultText] = useState();
   const [sortsFilter, setSortsFilter] = useState();
@@ -45,6 +48,9 @@ const Search = ({ route }) => {
   const [isErrorMgs, setErrorMgs] = useState();
   const scrollY = useRef(new Animated.Value(0)).current;
   const navigation = useNavigation();
+  const { setGlobalLoading } = useLoading();
+  const [activeSeachingScreen, setActiveSeachingScreen] = useState(false);
+  const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
 
   useFocusEffect(
     useCallback(() => {
@@ -56,7 +62,7 @@ const Search = ({ route }) => {
 
   const fetchSearchResultAndText = async () => {
     try {
-      setLoading(true);
+      setGlobalLoading(true);
       const results = await searchProductsApi(query, EndPoint?.search);
       console.log("results serach", results);
       setSearchResult(results?.products);
@@ -64,33 +70,33 @@ const Search = ({ route }) => {
     } catch (error) {
       console.log('error:', error.response.data);
     } finally {
-      setLoading(false);
+      setGlobalLoading(false);
     }
   }
 
   const fetchSortsItems = async () => {
     try {
-      setLoading(true);
+      setGlobalLoading(true);
       const result = await getSortsFilterList(EndPoint?.sorts);
       setSortsFilter(result?.sorts);
 
     } catch (error) {
       console.log("error", error.response.data);
     } finally {
-      setLoading(false);
+      setGlobalLoading(false);
     }
   }
 
   const fetchFilterItmes = async () => {
     try {
-      setLoading(true);
+      setGlobalLoading(true);
       const result = await getFilterList(EndPoint?.filter);
       setFilterList(result?.filterinfos);
 
     } catch (error) {
       console.log("error", error.response.data);
     } finally {
-      setLoading(false);
+      setGlobalLoading(false);
     }
   }
 
@@ -120,7 +126,7 @@ const Search = ({ route }) => {
     console.log("on filter id ", id);
     setSubIdSelectList(id);
     try {
-      setLoading(true);
+      setGlobalLoading(true);
       const result = await getFilterProduct(query, id, EndPoint?.search);
       setSearchResult(result?.products);
       setSearchResultText(result?.text);
@@ -128,7 +134,7 @@ const Search = ({ route }) => {
     } catch (error) {
       console.log("error", error.response.data);
     } finally {
-      setLoading(false);
+      setGlobalLoading(false);
     }
 
   }
@@ -143,7 +149,7 @@ const Search = ({ route }) => {
 
   const handleSearch = async (query) => {
     try {
-      setLoading(true);
+      setGlobalLoading(true);
       setQuery(query);
       const results = await searchProductsApi(query, EndPoint?.search);
       setSearchResult(results?.products);
@@ -151,62 +157,118 @@ const Search = ({ route }) => {
     } catch (error) {
       console.log('error:', error.response.data);
     } finally {
-      setLoading(false);
+      setGlobalLoading(false);
     }
   }
+
+  const toggleSearch = () => {
+    setActiveSeachingScreen(prev => !prev);
+  };
+
+
+
+
+
+  if (activeSeachingScreen) {
+    return (
+      <CustomSearchBar
+        setActiveSeachingScreen={setActiveSeachingScreen}
+      />
+    );
+  }
+
 
 
   return (
     <>
-      {
+      {/* {
         loading ? (
           <CustomActivity />
-        ) : (
-          <BackgroundWrapper>
-          
-            <View style={commonStyles.bodyConatiner}>
-              <View style={{ paddingHorizontal: 12, backgroundColor: '#F5F5F5' }}>
+        ) : ( */}
+      <BackgroundWrapper>
+
+        <TouchableOpacity style={{ marginLeft: 25, marginBottom: 30, marginTop: 70 }} onPress={() => navigation.goBack()}>
+          <Image source={require("../assets/images/back.png")} style={{ width: 18, height: 18, tintColor: "#fff", }} />
+        </TouchableOpacity>
+
+        <View>
+          {/* <View style={{ paddingHorizontal: 12, }}>
                 <TopStatusBar scrollY={scrollY} onChangeLang={handleOnChangeLang} onChangeCurren={handleOnChangeCurrency} />
-              </View>
-              <SearchBarSection onClickSearch={(query) => handleSearch(query)} query={iSQuery} />
+              </View> */}
+          {/* <SearchBarSection onClickSearch={(query) => handleSearch(query)} query={iSQuery} /> */}
 
-                  <TouchableOpacity style={{ marginLeft: 25, marginBottom:10 }} onPress={() => navigation.goBack()}>
-                          <Image source={require("../assets/images/back.png")} style={{ width: 18, height: 18, tintColor: "#fff", }} />
-                        </TouchableOpacity>
-              <Animated.ScrollView
-                showsVerticalScrollIndicator={false}
-                onScroll={Animated.event(
-                  [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-                  { useNativeDriver: false }
-                )}
-              >
-                <ScrollView showsVerticalScrollIndicator={false}>
-                  <View style={{ padding: 12, marginBottom: 160, }}>
+          {/* <Header onLogoPress={() => navigation.navigate("Home")} onSearchPress={toggleSearch} /> */}
 
-                    <View style={{ marginVertical: 12, gap: 12 }}>
-                      <Text style={commonStyles.heading}>{issearchResultText?.search_label}</Text>
-                      <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: isLandscape ? 'flex-start' : 'space-between', gap: 12, }}>
-                        {
-                          issearchResult?.length > 0 ? (
-                            issearchResult?.map((item, index) => (
-                              <ProductGlassCard
-                                key={index}
-                                item={item}
-                              />
-                            ))
-                          ) : <View style={{ width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center' }}>
-                            <View style={{ width: 200, height: 400, alignSelf: 'center' }}>
-                              <Image source={require('../assets/images/notfound.png')} style={{ width: '100%', height: '100%', resizeMode: 'contain', }} />
-                            </View>
-                          </View>
-                        }
+          {/* <Animated.ScrollView
+            showsVerticalScrollIndicator={false}
+            onScroll={Animated.event(
+              [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+              { useNativeDriver: false }
+            )}
+          >
+            <ScrollView showsVerticalScrollIndicator={false}>
+              <View style={{ padding: 12, marginBottom: 100, }}>
+
+                <View style={{ marginVertical: 12, gap: 12 }}>
+                 
+                  <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: isLandscape ? 'flex-start' : 'space-between', gap: 12, }}>
+                    {
+                      issearchResult?.length > 0 ? (
+                        issearchResult?.map((item, index) => (
+                          <ProductGlassCard
+                            key={index}
+                            item={item}
+                          />
+                        ))
+                      ) : <View style={{ width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center' }}>
+                        <View style={{ width: 200, height: 400, alignSelf: 'center' }}>
+                          <Image source={require('../assets/images/notfound.png')} style={{ width: '100%', height: '100%', resizeMode: 'contain', }} />
+                        </View>
                       </View>
-                    </View>
-
+                    }
                   </View>
-                </ScrollView>
-              </Animated.ScrollView>
-              {
+                </View>
+
+              </View>
+            </ScrollView>
+          </Animated.ScrollView> */}
+
+          <AnimatedFlatList
+            data={issearchResult}
+            keyExtractor={(item, index) => index.toString()}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ paddingBottom: 200, gap: 2 }}
+            numColumns={2}
+            columnWrapperStyle={{ justifyContent: 'space-evenly' }}
+            onScroll={Animated.event(
+              [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+              { useNativeDriver: false }
+            )}
+            renderItem={({ item }) => (
+              <ProductGlassCard item={item} />
+            )}
+            ListEmptyComponent={() => (
+              <View
+                style={{
+                  width: '100%',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginTop: 50,
+                }}
+              >
+                <View style={{ width: 200, height: 400 }}>
+                  <Image
+                    source={require('../assets/images/notfound.png')}
+                    style={{ width: '100%', height: '100%', resizeMode: 'contain' }}
+                  />
+                </View>
+              </View>
+            )}
+          />
+
+
+
+          {/* {
                 activeBottom === bttomType[0] ? (
                   <BottomFilter onclickSort={onClickSortBtn} onClickFilter={onClickFilter} textLabel={issearchResultText} />
                 ) : activeBottom === bttomType[1] ? (
@@ -226,23 +288,23 @@ const Search = ({ route }) => {
 
                   />
                 )
-              }
+              } */}
 
-            </View>
+        </View>
 
-            {/* <BottomBar /> */}
+        {/* <BottomBar /> */}
 
-            <FailedModal
-              isModal={isErrorModal}
-              isSuccessMessage={isErrorMgs}
-              handleCloseModal={() => { setErrorModal(false); setErrorMgs() }}
-              onClickClose={() => { setErrorModal(false); setErrorMgs() }}
-            />
-            <NotificationAlert />
-          </BackgroundWrapper>
+        <FailedModal
+          isModal={isErrorModal}
+          isSuccessMessage={isErrorMgs}
+          handleCloseModal={() => { setErrorModal(false); setErrorMgs() }}
+          onClickClose={() => { setErrorModal(false); setErrorMgs() }}
+        />
+        <NotificationAlert />
+      </BackgroundWrapper>
 
-        )
-      }
+      {/* )
+      } */}
     </>
 
   )

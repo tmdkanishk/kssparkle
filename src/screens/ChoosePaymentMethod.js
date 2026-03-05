@@ -27,6 +27,7 @@ const ChoosePaymentMethod = () => {
     
 
     return (
+        <>
         <BackgroundWrapper>
 
 
@@ -200,6 +201,7 @@ const ChoosePaymentMethod = () => {
                 </View>
             </View> */}
         </BackgroundWrapper>
+        </>
     );
 };
 

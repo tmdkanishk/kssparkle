@@ -34,7 +34,7 @@ const CustomSearchBar = ({ setActiveSeachingScreen }) => {
 
 
     const onSearch = () => {
-        // navigation.navigate('Search', { query: query });
+        navigation.navigate('Search', { query: query });
         // setQuery('');
     }
 
@@ -103,6 +103,7 @@ const CustomSearchBar = ({ setActiveSeachingScreen }) => {
 
 
     return (
+        <>
         <BackgroundWrapper>
         <View style={{ flex: 1, paddingHorizontal:12, paddingVertical:30}}>
             <View style={{ flexDirection: 'row', width: '100%', gap: 10, alignItems: 'center', marginTop:20,}}>
@@ -137,6 +138,7 @@ const CustomSearchBar = ({ setActiveSeachingScreen }) => {
 
         </View>
         </BackgroundWrapper>
+        </>
 
     )
 }

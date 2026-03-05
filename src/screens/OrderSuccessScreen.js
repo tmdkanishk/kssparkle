@@ -1,27 +1,33 @@
 import React from "react";
-import { View, Text, Image, TouchableOpacity } from "react-native";
+import { View, Text, Image, TouchableOpacity, Dimensions } from "react-native";
 import GlassContainer from "../components/customcomponents/GlassContainer"; // adjust import
 import BackgroundWrapper from "../components/customcomponents/BackgroundWrapper";
 
-const OrderSuccessScreen = ({ navigation }) => {
+const OrderSuccessScreen = ({ navigation, route }) => {
+     const { orderId } = route.params;
+        const { width } = Dimensions.get('window');
     return (
         <BackgroundWrapper>
             <View style={{ flex: 1, justifyContent: "center", paddingHorizontal: 20 }}>
 
-                <View style={{ marginTop: 0, marginHorizontal: 20, flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-                    <TouchableOpacity onPress={()=>navigation.goBack()}>
+                                {/* <View style={{ marginTop: 0, marginHorizontal: 20, flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}></View> */}
+
+                <View style={{ marginVertical:10 }}>
+                    {/* <TouchableOpacity onPress={()=>navigation.goBack()}>
                         <Image source={require("../assets/images/back.png")} style={{ width: 18, height: 18, tintColor: "#fff", }} />
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                     <Text style={{
                         color: "#fff",
-                        fontSize: 16,
+                        fontSize: 20,
                         fontWeight: "400",
+                        textAlign:'center'
                     }}>Order Sucessfull</Text>
                     <View style={{ width: 4 }} />
                 </View>
 
 
                 {/* Main Success Card */}
+                <GlassContainer>
                 <View
                     borderRadius={30}
                     paddingVertical={35}
@@ -91,8 +97,13 @@ const OrderSuccessScreen = ({ navigation }) => {
                         </Text>
                     </TouchableOpacity>
                 </View>
+                </GlassContainer>
 
                 {/* Continue Shopping Button */}
+                <View style={{marginTop:15}}>
+
+
+                </View>
                 <GlassContainer
                     borderRadius={15}
                     padding={0.1}
@@ -104,14 +115,14 @@ const OrderSuccessScreen = ({ navigation }) => {
                         alignItems: "center",
                     }}
                 >
-                    <TouchableOpacity onPress={() => navigation.navigate("Home")} style={{ width: 300, alignItems: "center", justifyContent: 'center', padding: 12 }}>
+                    <TouchableOpacity onPress={() => navigation.replace("Home")} style={{ width: width * 0.9, alignItems: "center", justifyContent: 'center', padding: 12, }}>
                         <Text style={{ color: "#fff", fontSize: 16, fontWeight: "300", textAlign: "center " }}>
                             Continue Shopping
                         </Text>
                     </TouchableOpacity>
                 </GlassContainer>
             </View>
-        </BackgroundWrapper>
+       </BackgroundWrapper>
     );
 };
 

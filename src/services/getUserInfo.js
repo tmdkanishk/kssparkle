@@ -18,7 +18,7 @@ export const getUserInfo = async (accountdashboard_userdetailsedit) => {
         };
         const body = {
             code: lang?.code,
-            currency: cur,
+            currency: cur?.code,
             sessionid: sessionId,
             customer_id: user,
         }

@@ -3,6 +3,7 @@ import React, { useRef, useState } from 'react'
 import BrandCard from './BrandCard'
 import { useCustomContext } from '../hooks/CustomeContext';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import ProductGlassCard from './customcomponents/ProductGlassCard';
 
 const BrandCardList = ({ data }) => {
     const { Colors } = useCustomContext();
@@ -32,6 +33,9 @@ const BrandCardList = ({ data }) => {
 
 
     const renderItem = ({ item }) => (
+
+        // <ProductGlassCard item={item} />
+
         <BrandCard width={120} item={item} />
     )
 

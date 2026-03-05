@@ -7,7 +7,12 @@ import { CartProvider } from './src/hooks/CartContext';
 import { WishlistProvider } from './src/hooks/WishlistContext';
 import { LoadingProvider } from './src/hooks/LoadingProvider';
 import { UserProvider } from './src/hooks/UserContext';
+import BackgroundWrapper from './src/components/customcomponents/BackgroundWrapper';
 // import { Tabby } from 'tabby-react-native-sdk';
+import { I18nManager } from 'react-native';
+
+
+
 
 
 
@@ -49,7 +54,15 @@ export default function App() {
   //   )
   // }
 
+
+
   const [ready, setReady] = useState(false);
+
+
+  I18nManager.allowRTL(true);
+  I18nManager.forceRTL(true); // This actually triggers the change
+  console.log("Current RTL Status:", I18nManager.isRTL);
+
 
   useEffect(() => {
     async function preload() {
@@ -68,31 +81,33 @@ export default function App() {
     preload();
   }, []);
 
-// useEffect(() => {
-//   Tabby.setApiKey('pk_test_xxxxxxxxx');
-// }, []);
+  // useEffect(() => {
+  //   Tabby.setApiKey('pk_test_xxxxxxxxx');
+  // }, []);
 
 
   if (!ready) {
     // Show loader or splash screen
     return null;
   }
-  
+
 
   return (
+    // <BackgroundWrapper>
     <LoadingProvider>
       <CustomProvider>
         <LanguageCurrencyProvider>
           <UserProvider>
-          <CartProvider>
-            <WishlistProvider>
-              <AppNavigator />
-            </WishlistProvider>
-          </CartProvider>
+            <CartProvider>
+              <WishlistProvider>
+                <AppNavigator />
+              </WishlistProvider>
+            </CartProvider>
           </UserProvider>
         </LanguageCurrencyProvider>
       </CustomProvider>
     </LoadingProvider>
+    // </BackgroundWrapper>
 
 
 

@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { View, Text, Image, TouchableOpacity, ScrollView, StyleSheet, Platform, Dimensions, useWindowDimensions, Animated, Share, Alert, Modal, ImageBackground, KeyboardAvoidingView } from "react-native";
+import { View, Text, Image, TouchableOpacity, ScrollView, StyleSheet, Platform, Dimensions, useWindowDimensions, Animated, Share, Alert, Modal, ImageBackground, KeyboardAvoidingView, Linking } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import GlassContainer from "../components/customcomponents/GlassContainer";
 import BackgroundWrapper from "../components/customcomponents/BackgroundWrapper";
 import { useCustomContext } from "../hooks/CustomeContext";
 import { getCartItem } from "../services/getCartItem";
-import { _clearData, _retrieveData } from "../utils/storage";
+import { _clearData, _retrieveData, _storeData } from "../utils/storage";
 import { logout } from "../services/logout";
 import { useLanguageCurrency } from "../hooks/LanguageCurrencyContext";
 import { useCartCount } from "../hooks/CartContext";
@@ -15,7 +15,7 @@ import { API_KEY, BASE_URL } from "../utils/config";
 import axios, { HttpStatusCode } from "axios";
 import * as ImagePicker from 'expo-image-picker';
 import { getUserInfo } from "../services/getUserInfo";
-import { IconComponentClose, IconComponentEdit, IconComponentImage, IconComponentNotification } from "../constants/IconComponents";
+import { IconComponentClose, IconComponentEdit, IconComponentImage, IconComponentInstagram, IconComponentNotification, IconComponentSnapChat, IconComponentTikTok, IconComponentWhatsapp } from "../constants/IconComponents";
 import { updateUserInfomation } from "../services/updateUserInfomation";
 import InputBox from "../components/InputBox";
 import ImageContainer from "../components/ImageContainer";
@@ -23,6 +23,8 @@ import commonStyles from "../constants/CommonStyles";
 import { BlurView } from "@react-native-community/blur";
 import SuccessModal from "../components/SuccessModal";
 import { useUser } from "../hooks/UserContext";
+import TopStatusBar from '../components/TopStatusBar'
+import { isLiquidGlassSupported, LiquidGlassView } from "@callstack/liquid-glass";
 
 const MyAccountScreen = ({ navigation }) => {
 
@@ -52,6 +54,7 @@ const MyAccountScreen = ({ navigation }) => {
   const [totalCoins, setTotalCoins] = useState(null);
   const scrollY = useRef(new Animated.Value(0)).current;
   const [errors, setErrors] = useState({});
+  const [helplineNumber, setHelplineNumber] = useState('')
   const { refreshUser, profileImg } = useUser();
 
 
@@ -113,6 +116,9 @@ const MyAccountScreen = ({ navigation }) => {
 
       if (response.status === HttpStatusCode.Ok) {
         console.log("response data of fetchaccountdashboard", response.data)
+        setHelplineNumber(response?.data?.helplineno)
+        // response.data.helplineno
+        // helplineno
         setLabel(response.data.text);
         console.log("account dashboard", response.data.text);
         setOrderStatus(response.data?.orderstatusname);
@@ -138,7 +144,20 @@ const MyAccountScreen = ({ navigation }) => {
     try {
       const result = await getUserInfo(EndPoint?.accountdashboard_userdetailsedit);
       console.log("fetchUserInfo", result)
-      setUserInfo(result?.customer_info[0]);
+      const user = result?.customer_info?.[0];
+
+      setUserInfo(user);
+
+      const fullname = `${user?.firstname || ""} ${user?.lastname || ""}`;
+      const email = user?.email || "";
+
+      let telephone = user?.telephone || "";
+
+      console.log("getting values before saving the info", fullname, email, telephone)
+
+      await _storeData("full_name", fullname);
+      await _storeData("email", email);
+      await _storeData("telephone", telephone);
       setFormData({
         email: result?.customer_info[0]?.email,
         firstname: result?.customer_info[0]?.firstname,
@@ -278,11 +297,49 @@ const MyAccountScreen = ({ navigation }) => {
     await logout(EndPoint?.logout);
     await _clearData('CUSTOMER_ID');
     await _clearData('SKIP_LOGIN');
+    await _clearData('full_name');
+    await _clearData('email');
+    await _clearData('telephone');
     SetLogin(false);
     //  const cartresponse = await getCartItem(EndPoint?.cart_total);
     //  updateCartCount(cartresponse?.cartproductcount);
-    navigation.navigate('Login');
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'Login' }],
+    });
   }
+
+  const openLink = async (url) => {
+    const supported = await Linking.canOpenURL(url);
+    if (supported) {
+      await Linking.openURL(url);
+    } else {
+      console.log("Can't open URL:", url);
+    }
+  };
+
+  const openWhatsApp = async () => {
+    if (!helplineNumber) return;
+
+    // remove leading 0 and spaces
+    const formatted = helplineNumber.replace(/^0/, '').replace(/\s/g, '');
+
+    const url = `https://wa.me/966${formatted}`;
+
+    const supported = await Linking.canOpenURL(url);
+
+    if (supported) {
+      await Linking.openURL(url);
+    } else {
+      console.log("Can't open URL:", url);
+    }
+  };
+
+
+
+
+
+
   return (
     <>
 
@@ -290,49 +347,89 @@ const MyAccountScreen = ({ navigation }) => {
 
       <BackgroundWrapper>
 
+
         <View
           style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginTop: Platform.OS === 'ios' ? 60 : 40,
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginTop: Platform.OS === "ios" ? 60 : 40,
             paddingHorizontal: 20,
           }}
         >
-
-
+          {/* HOME BUTTON */}
           <TouchableOpacity
             onPress={() => navigation.replace("Home")}
-            style={{
-              padding: 10,
-              width: '45%',
-              alignItems: 'center',
-              borderRadius: 12,
-              backgroundColor: 'rgba(255,255,255,0.15)',
-              borderWidth: 0.6,
-              borderColor: 'rgba(255,255,255,0.35)',
-            }}
+            style={{ width: "45%" }}
+            activeOpacity={0.9}
           >
-            <Text style={{ color: 'white' }}>Go To Home Page</Text>
+            <LiquidGlassView
+              style={styles.liquid}
+              effect="clear"
+              interactive
+            >
+              <View
+                style={[
+                  styles.inner,
+                  {
+                    backgroundColor:
+                      !isLiquidGlassSupported && Platform.OS === "android"
+                        ? "rgba(255,255,255,0.08)"
+                        : "transparent",
+                  },
+                ]}
+              >
+                {/* <LinearGradient
+          colors={[
+            "rgba(255,255,255,0.35)",
+            "rgba(255,255,255,0.08)",
+            "rgba(255,255,255,0.25)",
+          ]}
+          style={StyleSheet.absoluteFill}
+          pointerEvents="none"
+        /> */}
+
+                <Text style={styles.text}>Go To Home Page</Text>
+              </View>
+            </LiquidGlassView>
           </TouchableOpacity>
 
+          {/* EDIT BUTTON */}
           <TouchableOpacity
             onPress={() => setModalVisible(true)}
-            style={{
-              padding: 10,
-              width: '45%',
-              alignItems: 'center',
-              borderRadius: 12,
-              backgroundColor: 'rgba(255,255,255,0.15)',
-              borderWidth: 0.6,
-              borderColor: 'rgba(255,255,255,0.35)',
-            }}
+            style={{ width: "45%" }}
+            activeOpacity={0.9}
           >
-            <Text style={{ color: 'white' }}>Edit Account</Text>
+            <LiquidGlassView
+              style={styles.liquid}
+              effect="clear"
+              interactive
+            >
+              <View
+                style={[
+                  styles.inner,
+                  {
+                    backgroundColor:
+                      !isLiquidGlassSupported && Platform.OS === "android"
+                        ? "rgba(255,255,255,0.08)"
+                        : "transparent",
+                  },
+                ]}
+              >
+                {/* <LinearGradient
+          colors={[
+            "rgba(255,255,255,0.35)",
+            "rgba(255,255,255,0.08)",
+            "rgba(255,255,255,0.25)",
+          ]}
+          style={StyleSheet.absoluteFill}
+          pointerEvents="none"
+        /> */}
+
+                <Text style={styles.text}>Edit Account</Text>
+              </View>
+            </LiquidGlassView>
           </TouchableOpacity>
-
-
-
         </View>
 
         {/* <TouchableOpacity
@@ -383,22 +480,28 @@ const MyAccountScreen = ({ navigation }) => {
 
 
             <View>
-              {/* <TouchableOpacity onPress={() => { navigation.goBack() }} style={{ marginBottom: 20 }}>
-              <Image source={require("../assets/images/back.png")} style={styles.iconSmall} />
-            </TouchableOpacity> */}
 
               <Text style={styles.headerTitle}>{isLabel?.acntdbpagename_label}</Text>
             </View>
 
+            <View style={{ flexDirection: 'row', gap: 30 }}>
+              {/* <View style={{borderWidth:1, borderColor:'white'}}> */}
+              <TopStatusBar scrollY={scrollY} onChangeCurren={handleOnChangeCurrency} onChangeLang={handleOnChangeLang} />
+              {/* </View> */}
 
-            <Image
-              source={
-                profileImg
-                  ? { uri: `${profileImg}?t=${Date.now()}` }
-                  : require('../assets/images/profile.png')
-              }
-              style={styles.profileImage}
-            />
+
+
+              <Image
+                source={
+                  profileImg
+                    ? { uri: `${profileImg}?t=${Date.now()}` }
+                    : require('../assets/images/profile.png')
+                }
+                style={styles.profileImage}
+              />
+            </View>
+
+
           </View>
 
           {/* Row 1 */}
@@ -430,7 +533,7 @@ const MyAccountScreen = ({ navigation }) => {
               </View>
 
               {/* ORDER */}
-              <TouchableOpacity onPress={()=>{navigation.navigate("MyOrderScreen")}} style={{ alignItems: "center" }}>
+              <TouchableOpacity onPress={() => { navigation.navigate("MyOrderScreen") }} style={{ alignItems: "center" }}>
                 <GlassContainer style={{ width: 90, height: 100, justifyContent: "center", alignItems: "center" }}>
                   <Image
                     source={require("../assets/images/order.png")}
@@ -452,7 +555,7 @@ const MyAccountScreen = ({ navigation }) => {
 
             <View style={{ flexDirection: "row", justifyContent: "space-between", marginVertical: 10, }}>
 
-              <TouchableOpacity onPress={()=>{navigation.navigate("Wishlist")}} style={{ alignItems: "center" }}>
+              <TouchableOpacity onPress={() => { navigation.navigate("Wishlist") }} style={{ alignItems: "center" }}>
                 <GlassContainer style={{ width: 90, height: 90, justifyContent: "center", alignItems: "center" }}>
                   <Image
                     source={require("../assets/images/wishlist.png")}
@@ -509,29 +612,42 @@ const MyAccountScreen = ({ navigation }) => {
           {/* Row 3 */}
 
           <View style={styles.row}>
-            <TouchableOpacity onPress={()=>{navigation.navigate("Notification")}}>
-            <AccountItem image={require("../assets/images/notification.png")} label="Notification" />
+            <TouchableOpacity onPress={() => { navigation.navigate("Notification") }}>
+              <AccountItem image={require("../assets/images/notification.png")} label="Notification" />
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={()=>{}}>
-            <AccountItem image={require("../assets/images/address.png")} label={isLabel?.acntdbmyaddrs_label} />
+            <TouchableOpacity onPress={() => { }}>
+              <AccountItem image={require("../assets/images/address.png")} label={isLabel?.acntdbmyaddrs_label} />
             </TouchableOpacity>
 
             <AccountItem image={require("../assets/images/wallet.png")} label="Wallet" />
           </View>
 
-          <GlassContainer style={{
-            borderRadius: 5,
-            marginBottom: 12,
-            // padding: 10,
-            flexDirection: 'row',
-            minWidth: '80%',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }} padding={1}>
-            <Text style={styles.supportText}>{isLabel?.acntdbhelp_label}</Text>
-            <Image source={require("../assets/images/support.png")} style={styles.supportIcon} />
-          </GlassContainer>
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() => openWhatsApp()}
+          >
+            <GlassContainer
+              style={{
+                borderRadius: 5,
+                marginBottom: 12,
+                flexDirection: 'row',
+                minWidth: '80%',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+              padding={1}
+            >
+              <Text style={styles.supportText}>
+                {isLabel?.acntdbhelp_label}
+              </Text>
+
+              <Image
+                source={require("../assets/images/support.png")}
+                style={styles.supportIcon}
+              />
+            </GlassContainer>
+          </TouchableOpacity>
 
           <TouchableOpacity onPress={() => onClickOkButton()}>
             <GlassContainer style={{
@@ -561,10 +677,22 @@ const MyAccountScreen = ({ navigation }) => {
           <GlassContainer style={styles.footer}>
             <Text style={styles.footerTitle}>Sell with us</Text>
             <View style={styles.socialRow}>
-              <Image source={require("../assets/images/linkedin.png")} style={styles.socialIcon} />
+              {/* <Image source={require("../assets/images/linkedin.png")} style={styles.socialIcon} />
               <Image source={require("../assets/images/instagram.png")} style={styles.socialIcon} />
               <Image source={require("../assets/images/x.png")} style={styles.socialIcon} />
-              <Image source={require("../assets/images/facebook.png")} style={styles.socialIcon} />
+              <Image source={require("../assets/images/facebook.png")} style={styles.socialIcon} /> */}
+
+              <TouchableOpacity onPress={() => openLink('https://www.tiktok.com/@sparkle_ksa1?_r=1&_t=ZS-941mQj9tRKL')}>
+                <IconComponentTikTok size={26} color={'white'} />
+              </TouchableOpacity>
+
+              <TouchableOpacity onPress={() => openLink('https://instagram.com/sparkle_ph?igshid=MzRlODBiNWFlZA==')}>
+                <IconComponentInstagram size={26} color={'white'} />
+              </TouchableOpacity>
+
+              <TouchableOpacity onPress={() => openLink('https://www.snapchat.com/add/sparkle_ksa1')}>
+                <IconComponentSnapChat size={26} color={'white'} />
+              </TouchableOpacity>
             </View>
 
             <Text style={styles.footerLinks}>
@@ -882,7 +1010,7 @@ const styles = StyleSheet.create({
   },
   socialRow: {
     flexDirection: "row",
-    gap: 18,
+    gap: 32,
     marginVertical: 12,
   },
   socialIcon: {
@@ -902,6 +1030,30 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 2,
     lineHeight: 30
+  },
+  liquid: {
+    borderRadius: 12,
+  },
+
+  inner: {
+    padding: 10,
+    alignItems: "center",
+    borderRadius: 12,
+    overflow: "hidden",
+
+    borderWidth: 0.6,
+    borderColor: "rgba(255,255,255,0.5)",
+
+    /* floating glass */
+    shadowColor: "#fff",
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.25,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+
+  text: {
+    color: "white",
   },
 });
 

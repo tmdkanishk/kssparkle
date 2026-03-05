@@ -378,6 +378,7 @@ const Register = ({ navigation, route }) => {
                                     value={formData.telephone}
                                     onChangeText={(text) => handleInputChange("telephone", text)}
                                     keyboardType="phone-pad"
+                                    editable={false}
                                 />
                                 {telephoneError ? (
                                     <Text style={styles.errorText}>{telephoneError}</Text>

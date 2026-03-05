@@ -392,7 +392,33 @@ export const IconComponentcheckboxsharp = ({ color, size }) => {
     )
 }
 
+export const IconComponentSnapChat = ({ color, size }) => {
+    return (
 
+        <FontAwesome name="snapchat-ghost" size={size ? size : 24} color={color ? color : "black"} />
+    )
+}
+
+export const IconComponentInstagram = ({ color, size }) => {
+    return (
+
+        <FontAwesome name="instagram" size={size ? size : 24} color={color ? color : "black"} />
+    )
+}
+
+export const IconComponentWhatsapp = ({ color, size }) => {
+    return (
+
+        <FontAwesome name="whatsapp" size={size ? size : 24} color={color ? color : "black"} />
+    )
+}
+
+export const IconComponentTikTok = ({ color, size }) => {
+    return (
+
+        <AntDesign name="tik-tok" size={size ? size : 24} color={color ? color : "black"} />
+    )
+}
 
 
 

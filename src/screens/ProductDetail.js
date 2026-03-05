@@ -143,8 +143,8 @@ const ProductDetail = ({ navigation, route }) => {
   const [isSuccessMgs, setSuccessMgs] = useState();
 
   useEffect(() => {
-  fetchProductDetail();
-}, [productId]);
+    fetchProductDetail();
+  }, [productId]);
 
   useEffect(() => {
     const getCustomerId = async () => {
@@ -226,15 +226,16 @@ const ProductDetail = ({ navigation, route }) => {
       const body = {
         product_id: productId,
         code: lang?.code,
-        currency: cur,
+        currency: cur?.code,
         sessionid: sessionId,
         customer_id: customerId,
       };
 
-      console.log("fetch product detail body", body)
+      console.log("fetch product detail body", body, url)
       const response = await axios.post(url, body, { headers: headers });
+      console.log("ftcgfjdfjsv", response)
       if (response.status === HttpStatusCode.Ok) {
-        console.log("product detail response", response.data);
+        console.log("product detail response", response?.data);
         console.log("tebbypromo", response.data.tebbypromo);
         console.log("product detail response images", response?.data?.images);
         console.log("product detail response price", response.data?.price);
@@ -245,6 +246,7 @@ const ProductDetail = ({ navigation, route }) => {
         setRelatedProduct(response.data?.products);
       }
     } catch (error) {
+      console.log("error inside prodyct", error.response)
       setErrorMgs(GlobalText?.extrafield_somethingwrong);
       setErrorModal(true);
     } finally {
@@ -705,20 +707,20 @@ const ProductDetail = ({ navigation, route }) => {
             <Image source={require("../assets/images/back.png")} style={{ width: 18, height: 18, tintColor: "#fff", }} />
           </TouchableOpacity>
           <ProductImageCard headingTitle={productDetail?.heading_title} images={productDetail?.images} />
-          <View style={{ alignItems: 'flex-start', marginLeft:20, marginTop:10 }}>
-                <PriceView
-                  priceHtml={productDetail?.price}
-                  textStyle={{
-                    fontSize: 31,
-                    fontWeight: "700",
-                    color: "white",
-                    marginLeft: 'auto'
-                  }}
-                  width={25}
-                  height={25}
-                />
+          <View style={{ alignItems: 'flex-start', marginLeft: 20, marginTop: 10 }}>
+            <PriceView
+              priceHtml={productDetail?.price}
+              textStyle={{
+                fontSize: 31,
+                fontWeight: "700",
+                color: "white",
+                marginLeft: 'auto'
+              }}
+              width={25}
+              height={25}
+            />
 
-              </View>
+          </View>
           <View style={{ padding: 20 }}>
             {/* <TextContainer /> */}
 
@@ -728,7 +730,7 @@ const ProductDetail = ({ navigation, route }) => {
               tamaraHtml={productDetail?.tamara_promo}
               price={productDetail?.price}
               tamaraText={productDetail?.tamara_text}
-               tabbyText={productDetail?.tabby_text}
+              tabbyText={productDetail?.tabby_text}
             />
 
 
@@ -1172,13 +1174,13 @@ const ProductDetail = ({ navigation, route }) => {
               )}
 
               {attributeGroups.length > 0 ? <View style={{ marginTop: 15 }}>
-                    <GlassButton
-                      title="Product Specification"
-                      onPress={() => setShowSpecs(!showSpecs)}
-                    />
-                  </View> : null}
+                <GlassButton
+                  title="Product Specification"
+                  onPress={() => setShowSpecs(!showSpecs)}
+                />
+              </View> : null}
 
-          
+
               {showSpecs && (
                 <>
                   <View style={{ marginTop: 10, marginHorizontal: 10 }}>

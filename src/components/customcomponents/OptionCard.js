@@ -7,6 +7,7 @@ import {
   View,
 } from "react-native";
 import Colors from "../../constants/Colors";
+import GlassContainer from "./GlassContainer";
 
 const OptionCard = ({ item, selected, onPress }) => {
   const imageSource = item?.image
@@ -14,6 +15,7 @@ const OptionCard = ({ item, selected, onPress }) => {
     : require("../../assets/images/headphonesblack.png");
 
   return (
+    <GlassContainer padding={0.1} borderRadius={10}>
     <TouchableOpacity
       activeOpacity={0.85}
       onPress={onPress}
@@ -29,6 +31,7 @@ const OptionCard = ({ item, selected, onPress }) => {
 
       <Text style={styles.optionLabel}>{item?.name}</Text>
     </TouchableOpacity>
+    </GlassContainer>
   );
 };
 
@@ -45,11 +48,12 @@ const styles = StyleSheet.create({
     padding: 8,
     borderRadius: 12,
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: Colors.gray,
+   
+    // borderColor: Colors.gray,
     backgroundColor: 'rgba(255,255,255,0.08)',
   },
   optionCardSelected: {
+     borderWidth: 1,
     borderColor: Colors.primary,
     backgroundColor: 'rgba(255,255,255,0.15)',
   },

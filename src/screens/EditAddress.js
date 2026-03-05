@@ -22,6 +22,7 @@ import BackgroundWrapper from '../components/customcomponents/BackgroundWrapper'
 import { BlurView } from '@react-native-community/blur'
 import CustomHeader from '../components/customcomponents/CustomHeader'
 import { useLoading } from '../hooks/LoadingProvider'
+import SelectModalField from '../components/customcomponents/SelectModalField'
 
 const EditAddress = ({ navigation, route }) => {
     const { item } = route.params;
@@ -34,6 +35,8 @@ const EditAddress = ({ navigation, route }) => {
     const [isDefaultState, setDefaultState] = useState(null);
     const [isStateList, setStateList] = useState([]);
     const [isStateModal, setStateModal] = useState(false);
+    const [citylist, setCityList] = useState([]);
+    const [isDefaultCity, setDefaultCity] = useState(null);
 
     const [isName, setName] = useState(item?.firstname);
     const [isLastname, setLastname] = useState(item?.lastname);
@@ -179,11 +182,51 @@ const EditAddress = ({ navigation, route }) => {
             if (response.status === HttpStatusCode.Ok) {
                 if (response.data?.zones.length > 0) {
                     console.log("response.data?.zones", response.data?.zones[0]);
-                    setDefaultState(response.data?.zones[0])
+                    setDefaultState(response.data?.zones[0]);
+                    await fetchCity(response.data?.zones[0]?.zone_id);
                 } else {
                     setDefaultState(null);
                 }
                 setStateList(response.data?.zones);
+            }
+
+        } catch (error) {
+            console.log('error:', error.response.data);
+        }
+    }
+
+    const fetchCity = async (zoneid) => {
+        console.log("fetchCity functions calling");
+        try {
+
+            const url = `${BASE_URL}${EndPoint?.address_citylist}`;
+            const lang = await _retrieveData('SELECT_LANG');
+            const cur = await _retrieveData('SELECT_CURRENCY');
+
+            const headers = {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                Key: API_KEY,
+            };
+
+            const body = {
+                code: lang?.code,
+                currency: cur?.code,
+                zone_id: zoneid
+            }
+
+
+            const response = await axios.post(url, body, { headers: headers });
+
+            console.log("zoneid", zoneid, body, url, response?.data)
+            if (response.status === HttpStatusCode.Ok) {
+
+                // console.log("response.data?.city", response.data?.city[0]);
+                if (response.data?.cities.length > 0) {
+                    setDefaultCity(response.data?.cities[0])
+                } else {
+                    setDefaultCity(null);
+                }
+                setCityList(response.data?.cities);
             }
 
         } catch (error) {
@@ -254,10 +297,11 @@ const EditAddress = ({ navigation, route }) => {
                 address_id: item?.address_id,
                 firstname: isName,
                 lastname: isLastname,
-                company: isCompany,
+                company: isCompany | "",
                 address_1: isAddress1,
                 address_2: isAddress2,
-                city: isCity,
+                city: isDefaultCity?.name || "",
+                // city_id: isDefaultCity?.city_id,
                 postcode: isPostalCode,
                 country_id: isDefaultCountry?.country_id || item?.country_id,
                 zone_id: isDefaultState?.zone_id || item?.zone_id,
@@ -320,79 +364,79 @@ const EditAddress = ({ navigation, route }) => {
 
     return (
         <>
-        
-                    <View style={{ flex: 1 }}>
-                        <BackgroundWrapper>
-                            <KeyboardAvoidingView
-                                style={{ flex: 1 }}
-                                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                            >
-                                <View style={[commonStyles.bodyConatiner, { marginTop: Platform.OS === "ios" ? 50 : null, marginLeft: Platform.OS === "ios" ? 10 : null }]}>
-                                    {/* <TitleBarName onClickBackIcon={() => navigation.goBack()} titleName={isLabel?.addrsedit_heading} /> */}
-                                    <CustomHeader pageName={isLabel?.addrsadd_heading} />
-                                    <View style={{ marginBottom: 20 }}></View>
-                                    <ScrollView showsVerticalScrollIndicator={false}>
-                                        <View style={{ gap: 20, width: '100%', paddingHorizontal: 12, marginVertical: 12 }}>
+
+            <View style={{ flex: 1 }}>
+                <BackgroundWrapper>
+                    <KeyboardAvoidingView
+                        style={{ flex: 1 }}
+                        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                    >
+                        <View style={[commonStyles.bodyConatiner, { marginTop: Platform.OS === "ios" ? 50 : null, marginLeft: Platform.OS === "ios" ? 10 : null }]}>
+                            {/* <TitleBarName onClickBackIcon={() => navigation.goBack()} titleName={isLabel?.addrsedit_heading} /> */}
+                            <CustomHeader pageName={isLabel?.addrsadd_heading} />
+                            <View style={{ marginBottom: 20 }}></View>
+                            <ScrollView showsVerticalScrollIndicator={false}>
+                                <View style={{ gap: 20, width: '100%', paddingHorizontal: 12, marginVertical: 12 }}>
 
 
-                                            <InputBox
-                                                label={isLabel?.addrfname_label}
-                                                placeholder={isLabel?.addrfname_label}
-                                                inputStyle={{ w: '100%', h: 50, ph: 20 }}
-                                                InputType={'text'}
-                                                onChangeText={(text) => { setName(text); setNameError(null) }}
-                                                textVlaue={isName}
-                                                isRequired={true}
-                                                borderColor={isNameError ? 'red' : null}
-                                                ErrorMessage={isNameError}
-                                            />
+                                    <InputBox
+                                        label={isLabel?.addrfname_label}
+                                        placeholder={isLabel?.addrfname_label}
+                                        inputStyle={{ w: '100%', h: 50, ph: 20 }}
+                                        InputType={'text'}
+                                        onChangeText={(text) => { setName(text); setNameError(null) }}
+                                        textVlaue={isName}
+                                        isRequired={true}
+                                        borderColor={isNameError ? 'red' : null}
+                                        ErrorMessage={isNameError}
+                                    />
 
-                                            <InputBox
-                                                label={isLabel?.addrlname_label}
-                                                placeholder={isLabel?.addrlname_label}
-                                                inputStyle={{ w: '100%', h: 50, ph: 20 }}
-                                                InputType={'text'}
-                                                onChangeText={(text) => { setLastname(text); setLastnameError(null) }}
-                                                textVlaue={isLastname}
-                                                isRequired={true}
-                                                borderColor={isLastnameError ? 'red' : null}
-                                                ErrorMessage={isLastnameError}
-                                            />
+                                    <InputBox
+                                        label={isLabel?.addrlname_label}
+                                        placeholder={isLabel?.addrlname_label}
+                                        inputStyle={{ w: '100%', h: 50, ph: 20 }}
+                                        InputType={'text'}
+                                        onChangeText={(text) => { setLastname(text); setLastnameError(null) }}
+                                        textVlaue={isLastname}
+                                        isRequired={true}
+                                        borderColor={isLastnameError ? 'red' : null}
+                                        ErrorMessage={isLastnameError}
+                                    />
 
-                                            <InputBox
-                                                label={isLabel?.addrcmpny_label}
-                                                placeholder={isLabel?.addrcmpny_label}
-                                                inputStyle={{ w: '100%', h: 50, ph: 20 }}
-                                                InputType={'text'}
-                                                onChangeText={(text) => { setCompnay(text); setCompanyError(null) }}
-                                                textVlaue={isCompany}
-                                                isRequired={true}
-                                                borderColor={isCompanyError ? 'red' : null}
-                                                ErrorMessage={isCompanyError}
-                                            />
+                                    <InputBox
+                                        label={isLabel?.addrcmpny_label}
+                                        placeholder={isLabel?.addrcmpny_label}
+                                        inputStyle={{ w: '100%', h: 50, ph: 20 }}
+                                        InputType={'text'}
+                                        onChangeText={(text) => { setCompnay(text); setCompanyError(null) }}
+                                        textVlaue={isCompany}
+                                        isRequired={true}
+                                        borderColor={isCompanyError ? 'red' : null}
+                                        ErrorMessage={isCompanyError}
+                                    />
 
-                                            <InputBox
-                                                label={isLabel?.addraddrs1_label}
-                                                placeholder={isLabel?.addraddrs1_label}
-                                                inputStyle={{ w: '100%', h: 50, ph: 20 }}
-                                                InputType={'text'}
-                                                onChangeText={(text) => { setAddress1(text); setAddress1Error(null) }}
-                                                textVlaue={isAddress1}
-                                                isRequired={true}
-                                                borderColor={isAddress1Error ? 'red' : null}
-                                                ErrorMessage={isAddress1Error}
-                                            />
+                                    <InputBox
+                                        label={isLabel?.addraddrs1_label}
+                                        placeholder={isLabel?.addraddrs1_label}
+                                        inputStyle={{ w: '100%', h: 50, ph: 20 }}
+                                        InputType={'text'}
+                                        onChangeText={(text) => { setAddress1(text); setAddress1Error(null) }}
+                                        textVlaue={isAddress1}
+                                        isRequired={true}
+                                        borderColor={isAddress1Error ? 'red' : null}
+                                        ErrorMessage={isAddress1Error}
+                                    />
 
-                                            <InputBox
-                                                label={isLabel?.addraddrs2_label}
-                                                placeholder={isLabel?.addraddrs2_label}
-                                                inputStyle={{ w: '100%', h: 50, ph: 20 }}
-                                                InputType={'text'}
-                                                onChangeText={(text) => setAddress2(text)}
-                                                textVlaue={isAddress2}
-                                            />
+                                    <InputBox
+                                        label={isLabel?.addraddrs2_label}
+                                        placeholder={isLabel?.addraddrs2_label}
+                                        inputStyle={{ w: '100%', h: 50, ph: 20 }}
+                                        InputType={'text'}
+                                        onChangeText={(text) => setAddress2(text)}
+                                        textVlaue={isAddress2}
+                                    />
 
-                                            <InputBox
+                                    {/* <InputBox
                                                 label={isLabel?.addrcity_label}
                                                 placeholder={isLabel?.addrcity_label}
                                                 inputStyle={{ w: '100%', h: 50, ph: 20 }}
@@ -402,422 +446,435 @@ const EditAddress = ({ navigation, route }) => {
                                                 isRequired={true}
                                                 borderColor={isCityError ? 'red' : null}
                                                 ErrorMessage={isCityError}
-                                            />
+                                            /> */}
 
-                                            <InputBox
-                                                label={isLabel?.addrpostcode_label}
-                                                placeholder={isLabel?.addrpostcode_label}
-                                                inputStyle={{ w: '100%', h: 50, ph: 20 }}
-                                                InputType={'numeric'}
-                                                onChangeText={(text) => setPostalCode(text)}
-                                                textVlaue={isPostalCode}
-                                            />
-
-
-                                            <View style={styles.container}>
-                                                <View style={{ flexDirection: 'row' }}>
-                                                    <Text style={[styles.label, { color: 'red', }]}>*</Text>
-                                                    <Text style={[styles.label, { color: Colors.iconColor, }]}>{isLabel?.addrcntry_label}</Text>
-                                                </View>
-
-                                                <TouchableOpacity onPress={() => setCountryModal(true)} style={{
-                                                    borderWidth: 1,
-                                                    borderColor: isCountryError ? 'red' : Colors?.iconColor,
-                                                    height: 56,
-                                                    overflow: 'hidden',
-                                                    width: '100%',
-                                                    backgroundColor: Colors?.inputFeildColor,
-                                                    justifyContent: 'center',
-                                                    paddingLeft: 20,
-                                                    backgroundColor: 'rgba(255,255,255,0.05)'
-
-                                                }}>
-                                                    <Text style={{ color: '#fff' }}>{isDefaultCountry?.name || item?.country}</Text>
-
-                                                </TouchableOpacity>
-
-                                                {isCountryError && (
-                                                    <Text style={{ color: 'red' }}>{isCountryError}</Text>
-                                                )}
-
-                                            </View>
+                                    <InputBox
+                                        label={isLabel?.addrpostcode_label}
+                                        placeholder={isLabel?.addrpostcode_label}
+                                        inputStyle={{ w: '100%', h: 50, ph: 20 }}
+                                        InputType={'numeric'}
+                                        onChangeText={(text) => setPostalCode(text)}
+                                        textVlaue={isPostalCode}
+                                    />
 
 
-                                            <View style={styles.container}>
-                                                <View style={{ flexDirection: 'row' }}>
-                                                    <Text style={{ color: 'red' }}>*</Text>
-                                                    <Text style={[styles.label, { color: Colors.iconColor, }]}>{isLabel?.addrstate_label}</Text>
-                                                </View>
-                                                <TouchableOpacity onPress={() => setStateModal(true)} style={{
-                                                    borderWidth: 1,
-                                                    borderColor: isZoneError ? 'red' : Colors?.iconColor,
-                                                    height: 56,
-                                                    overflow: 'hidden',
-                                                    width: '100%',
-                                                    backgroundColor: Colors?.inputFeildColor,
-                                                    justifyContent: 'center',
-                                                    paddingLeft: 20,
-                                                    backgroundColor: 'rgba(255,255,255,0.05)'
-                                                }}>
-                                                    {
-                                                        isDefaultCountry?.name ? (
-                                                            isDefaultState?.name ?
-                                                                <Text style={{ color: '#fff' }} >{isDefaultState?.name}</Text>
-                                                                :
-                                                                <Text style={{ color: '#fff' }}>{'N/A'}</Text>
-
-                                                        ) : <Text style={{ color: '#fff' }} >{item?.zone}</Text>
-
-                                                    }
-                                                </TouchableOpacity>
-
-                                                {
-                                                    isZoneError && (
-                                                        <Text style={{ color: 'red' }}>{isZoneError}</Text>
-                                                    )
-
-                                                }
-                                            </View>
-
-                                            {
-                                                customFieldList?.length > 0 && (
-                                                    <View style={{ gap: 20, marginTop: 24 }}>
-                                                        {
-                                                            customFieldList?.map((value, index) => {
-                                                                if (value?.type === 'text' && value?.location == 'address') {
-                                                                    return (
-                                                                        <CustomInput
-                                                                            key={index}
-                                                                            label={value?.name}
-                                                                            placeholder={value?.name}
-                                                                            required={value?.required}
-                                                                            onChangeText={(text) => handleChange(value?.custom_field_id, text)}
-                                                                            value={customFormData[value?.custom_field_id] || ''}
-                                                                            showError={customFieldErrors[value?.custom_field_id]}
-                                                                            inputStyle={{ height: 50 }}
-                                                                        />
-                                                                    )
-                                                                }
-                                                                if (value?.type === 'textarea' && value?.location == 'address') {
-                                                                    return (
-                                                                        <CustomTextArea
-                                                                            key={index}
-                                                                            label={value?.name}
-                                                                            placeholder={value?.name}
-                                                                            required={value?.required}
-                                                                            onChangeText={(text) => handleChange(value?.custom_field_id, text)}
-                                                                            value={customFormData[value?.custom_field_id] || ''}
-                                                                            showError={customFieldErrors[value?.custom_field_id]}
-                                                                        />
-                                                                    )
-                                                                }
-
-                                                                if (value?.type === 'checkbox' && value?.location == 'address') {
-                                                                    return (
-                                                                        <CustomCheckbox
-                                                                            key={index}
-                                                                            data={value?.custom_field_value}
-                                                                            label={value?.name}
-                                                                            required={value?.required}
-                                                                            onPress={(id) => handleCheckboxChange(value?.custom_field_id, id)}
-                                                                            selected={customFormData[value?.custom_field_id] || []}
-                                                                            showError={customFieldErrors[value?.custom_field_id]}
-                                                                        />
-                                                                    )
-                                                                }
-
-                                                                if (value?.type === 'radio' && value?.location == 'address') {
-                                                                    return (
-                                                                        <CustomRadio
-                                                                            key={index}
-                                                                            data={value?.custom_field_value}
-                                                                            label={value?.name}
-                                                                            required={value?.required}
-                                                                            onPress={(id) => handleChange(value?.custom_field_id, id)}
-                                                                            selected={customFormData[value?.custom_field_id]}
-                                                                            showError={customFieldErrors[value?.custom_field_id]}
-                                                                        />
-                                                                    )
-                                                                }
-
-                                                                if (value?.type === 'select' && value?.location == 'address') {
-                                                                    return (
-                                                                        <CustomSelect
-                                                                            key={index}
-                                                                            label={value?.name}
-                                                                            options={value?.custom_field_value}
-                                                                            required={value?.required}
-                                                                            onValueChange={(text) => handleChange(value?.custom_field_id, text)}
-                                                                            selectedValue={customFormData[value?.custom_field_id]}
-
-                                                                            showError={customFieldErrors[value?.custom_field_id]}
-                                                                            selectStyle={{ height: 50 }}
-                                                                        />
-                                                                    )
-                                                                }
-
-                                                                if (value?.type === 'date' && value?.location == 'address') {
-                                                                    return (
-                                                                        <CustomDateTime
-                                                                            key={index}
-                                                                            label={value?.name}
-                                                                            value={customFormData[value?.custom_field_id]}
-                                                                            onChange={(text) => handleChange(value?.custom_field_id, text)}
-                                                                            mode="date"
-                                                                            required={value?.required}
-                                                                            showError={customFieldErrors[value?.custom_field_id]}
-                                                                            fieldStyle={{ height: 50 }}
-                                                                        />
-                                                                    )
-                                                                }
-
-                                                                if (value?.type === 'time' && value?.location == 'address') {
-                                                                    return (
-                                                                        <CustomDateTime
-                                                                            key={index}
-                                                                            label={value?.name}
-                                                                            value={customFormData[value?.custom_field_id]}
-                                                                            onChange={(text) => handleChange(value?.custom_field_id, text)}
-                                                                            mode="time"
-                                                                            required={value?.required}
-                                                                            showError={customFieldErrors[value?.custom_field_id]}
-                                                                            fieldStyle={{ height: 50 }}
-                                                                        />
-                                                                    )
-                                                                }
-
-                                                                if (value?.type === 'datetime' && value?.location == 'address') {
-                                                                    return (
-                                                                        <CustomDateTime
-                                                                            key={index}
-                                                                            label={value?.name}
-                                                                            value={customFormData[value?.custom_field_id]}
-                                                                            onChange={(text) => handleChange(value?.custom_field_id, text)}
-                                                                            mode="datetime"
-                                                                            required={value?.required}
-                                                                            showError={customFieldErrors[value?.custom_field_id]}
-                                                                            fieldStyle={{ height: 50 }}
-                                                                        />
-                                                                    )
-                                                                }
-                                                            })
-                                                        }
-
-                                                    </View>
-
-                                                )
-                                            }
-
-                                            <View style={{ gap: 10 }}>
-                                                <Text style={commonStyles.text_lg}>{isLabel?.addrdefaultaddrbtn_label}</Text>
-                                                <View style={{ flexDirection: 'row', gap: 10 }}>
-                                                    <TouchableOpacity onPress={() => setDefault(true)} style={{ width: 20, height: 20, borderRadius: 10, borderWidth: 1, backgroundColor: isDefault ? Colors?.primary : null }} />
-                                                    <Text>{GlobalText?.extrafield_yes_label}</Text>
-                                                    <TouchableOpacity onPress={() => setDefault(false)} style={{ width: 20, height: 20, borderRadius: 10, borderWidth: 1, backgroundColor: !isDefault ? Colors?.primary : null }} />
-                                                    <Text>{GlobalText?.extrafield_no_label}</Text>
-                                                </View>
-                                            </View>
-
-                                            <TouchableOpacity onPress={onUpdateAdress} style={{ width: '100%', height: 50, borderRadius: 12, alignSelf: 'center', justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.primary, marginBottom:20 }}>
-                                                <Text style={commonStyles.textWhite_lg}>{isLabel?.addreditbtn_label}</Text>
-                                            </TouchableOpacity>
-
+                                    <View style={styles.container}>
+                                        <View style={{ flexDirection: 'row' }}>
+                                            <Text style={[styles.label, { color: 'red', }]}>*</Text>
+                                            <Text style={[styles.label, { color: Colors.iconColor, }]}>{isLabel?.addrcntry_label}</Text>
                                         </View>
 
-                                    </ScrollView>
-                                </View>
-                            </KeyboardAvoidingView>
-                        </BackgroundWrapper>
+                                        <TouchableOpacity onPress={() => setCountryModal(true)} style={{
+                                            borderWidth: 1,
+                                            borderColor: isCountryError ? 'red' : Colors?.iconColor,
+                                            height: 56,
+                                            overflow: 'hidden',
+                                            width: '100%',
+                                            backgroundColor: Colors?.inputFeildColor,
+                                            justifyContent: 'center',
+                                            paddingLeft: 20,
+                                            backgroundColor: 'rgba(255,255,255,0.05)'
 
-                        {/* contry list modal */}
-                        <Modal
-                            animationType="fade"
-                            transparent
-                            visible={isCountryModal}
-                            onRequestClose={() => setCountryModal(false)}
-                        >
-                            <View style={{ flex: 1 }}>
+                                        }}>
+                                            <Text style={{ color: '#fff' }}>{isDefaultCountry?.name || item?.country}</Text>
 
-                                {/* 🔥 BLUR BACKGROUND */}
-                                <BlurView
-                                    style={StyleSheet.absoluteFill}
-                                    blurType="dark"
-                                    blurAmount={15}
-                                    reducedTransparencyFallbackColor="rgba(0,0,0,0.6)"
-                                />
+                                        </TouchableOpacity>
 
-                                {/* Optional dark overlay for contrast */}
-                                <View
-                                    style={{
-                                        ...StyleSheet.absoluteFillObject,
-                                        backgroundColor: 'rgba(0,0,0,0.25)',
-                                    }}
-                                />
+                                        {isCountryError && (
+                                            <Text style={{ color: 'red' }}>{isCountryError}</Text>
+                                        )}
 
-                                {/* MODAL CONTENT */}
-                                <View
-                                    style={{
-                                        flex: 1,
-                                        width: '100%',
-                                        justifyContent: 'center',
-                                        alignItems: 'center',
-                                    }}
-                                >
-                                    <View style={{ width: '90%', height: '80%' }}>
-                                        <BackgroundWrapper>
-
-                                            <View
-                                                style={{
-                                                    flexDirection: 'row',
-                                                    justifyContent: 'space-between',
-                                                    alignItems: 'center',
-                                                    margin: 12,
-                                                }}
-                                            >
-                                                <View />
-                                                <TouchableOpacity onPress={() => setCountryModal(false)}>
-                                                    <IconComponentClose color="rgba(255,255,255,0.6)" />
-                                                </TouchableOpacity>
-                                            </View>
-
-                                            <FlatList
-                                                data={countryList}
-                                                keyExtractor={(item, index) => index.toString()}
-                                                renderItem={({ item }) => (
-                                                    <TouchableOpacity onPress={() => onSelectCountry(item)}>
-                                                        <Text
-                                                            style={{
-                                                                borderBottomWidth: 1,
-                                                                paddingBottom: 10,
-                                                                color: 'white',
-                                                                borderBottomColor: 'rgba(255,255,255,0.6)',
-                                                            }}
-                                                        >
-                                                            {item.name}
-                                                        </Text>
-                                                    </TouchableOpacity>
-                                                )}
-                                                contentContainerStyle={{ margin: 10, gap: 20 }}
-                                            />
-
-                                        </BackgroundWrapper>
                                     </View>
-                                </View>
-                            </View>
-                        </Modal>
 
 
-                        {/* State list modal */}
+                                    <View style={styles.container}>
+                                        <View style={{ flexDirection: 'row' }}>
+                                            <Text style={{ color: 'red' }}>*</Text>
+                                            <Text style={[styles.label, { color: Colors.iconColor, }]}>{isLabel?.addrstate_label}</Text>
+                                        </View>
+                                        <TouchableOpacity onPress={() => setStateModal(true)} style={{
+                                            borderWidth: 1,
+                                            borderColor: isZoneError ? 'red' : Colors?.iconColor,
+                                            height: 56,
+                                            overflow: 'hidden',
+                                            width: '100%',
+                                            backgroundColor: Colors?.inputFeildColor,
+                                            justifyContent: 'center',
+                                            paddingLeft: 20,
+                                            backgroundColor: 'rgba(255,255,255,0.05)'
+                                        }}>
+                                            {
+                                                isDefaultCountry?.name ? (
+                                                    isDefaultState?.name ?
+                                                        <Text style={{ color: '#fff' }} >{isDefaultState?.name}</Text>
+                                                        :
+                                                        <Text style={{ color: '#fff' }}>{'N/A'}</Text>
 
-                        <Modal
-                            animationType="fade"
-                            transparent
-                            visible={isStateModal}
-                            onRequestClose={() => setStateModal(false)}
-                        >
-                            <View style={{ flex: 1 }}>
+                                                ) : <Text style={{ color: '#fff' }} >{item?.zone}</Text>
 
-                                {/* 🔥 BLUR BACKGROUND */}
-                                <BlurView
-                                    style={StyleSheet.absoluteFill}
-                                    blurType="dark"
-                                    blurAmount={15}
-                                    reducedTransparencyFallbackColor="rgba(0,0,0,0.6)"
-                                />
+                                            }
+                                        </TouchableOpacity>
 
-                                {/* Optional dark overlay for better contrast */}
-                                <View
-                                    style={{
-                                        ...StyleSheet.absoluteFillObject,
-                                        backgroundColor: 'rgba(0,0,0,0.25)',
-                                    }}
-                                />
+                                        {
+                                            isZoneError && (
+                                                <Text style={{ color: 'red' }}>{isZoneError}</Text>
+                                            )
 
-                                {/* MODAL CONTENT */}
-                                <View
-                                    style={{
-                                        flex: 1,
-                                        width: '100%',
-                                        justifyContent: 'center',
-                                        alignItems: 'center',
-                                    }}
-                                >
-                                    <View style={{ width: '90%', height: '80%' }}>
-                                        <BackgroundWrapper>
+                                        }
+                                    </View>
 
-                                            <View
-                                                style={{
-                                                    flexDirection: 'row',
-                                                    justifyContent: 'space-between',
-                                                    alignItems: 'center',
-                                                    margin: 12,
-                                                }}
-                                            >
-                                                <View />
-                                                <TouchableOpacity onPress={() => setStateModal(false)}>
-                                                    <IconComponentClose color="rgba(255,255,255,0.6)" />
-                                                </TouchableOpacity>
-                                            </View>
+                                    {
+                                        customFieldList?.length > 0 && (
+                                            <View style={{ gap: 20, marginTop: 24 }}>
+                                                {
+                                                    customFieldList?.map((value, index) => {
+                                                        if (value?.type === 'text' && value?.location == 'address') {
+                                                            return (
+                                                                <CustomInput
+                                                                    key={index}
+                                                                    label={value?.name}
+                                                                    placeholder={value?.name}
+                                                                    required={value?.required}
+                                                                    onChangeText={(text) => handleChange(value?.custom_field_id, text)}
+                                                                    value={customFormData[value?.custom_field_id] || ''}
+                                                                    showError={customFieldErrors[value?.custom_field_id]}
+                                                                    inputStyle={{ height: 50 }}
+                                                                />
+                                                            )
+                                                        }
+                                                        if (value?.type === 'textarea' && value?.location == 'address') {
+                                                            return (
+                                                                <CustomTextArea
+                                                                    key={index}
+                                                                    label={value?.name}
+                                                                    placeholder={value?.name}
+                                                                    required={value?.required}
+                                                                    onChangeText={(text) => handleChange(value?.custom_field_id, text)}
+                                                                    value={customFormData[value?.custom_field_id] || ''}
+                                                                    showError={customFieldErrors[value?.custom_field_id]}
+                                                                />
+                                                            )
+                                                        }
 
-                                            <FlatList
-                                                data={isStateList}
-                                                keyExtractor={(item, index) => index.toString()}
-                                                renderItem={({ item }) => (
-                                                    <TouchableOpacity
-                                                        onPress={() => {
-                                                            setDefaultState(item);
-                                                            setStateModal(false);
-                                                        }}
-                                                    >
-                                                        <Text
-                                                            style={{
-                                                                borderBottomWidth: 1,
-                                                                paddingBottom: 10,
-                                                                borderBottomColor: 'rgba(255,255,255,0.6)',
-                                                                color: '#fff',
-                                                            }}
-                                                        >
-                                                            {item.name}
-                                                        </Text>
-                                                    </TouchableOpacity>
-                                                )}
-                                                contentContainerStyle={{ margin: 10, gap: 20 }}
-                                                ListEmptyComponent={
-                                                    <Text style={{ textAlign: 'center', color: '#fff' }}>
-                                                        nema podataka
-                                                    </Text>
+                                                        if (value?.type === 'checkbox' && value?.location == 'address') {
+                                                            return (
+                                                                <CustomCheckbox
+                                                                    key={index}
+                                                                    data={value?.custom_field_value}
+                                                                    label={value?.name}
+                                                                    required={value?.required}
+                                                                    onPress={(id) => handleCheckboxChange(value?.custom_field_id, id)}
+                                                                    selected={customFormData[value?.custom_field_id] || []}
+                                                                    showError={customFieldErrors[value?.custom_field_id]}
+                                                                />
+                                                            )
+                                                        }
+
+                                                        if (value?.type === 'radio' && value?.location == 'address') {
+                                                            return (
+                                                                <CustomRadio
+                                                                    key={index}
+                                                                    data={value?.custom_field_value}
+                                                                    label={value?.name}
+                                                                    required={value?.required}
+                                                                    onPress={(id) => handleChange(value?.custom_field_id, id)}
+                                                                    selected={customFormData[value?.custom_field_id]}
+                                                                    showError={customFieldErrors[value?.custom_field_id]}
+                                                                />
+                                                            )
+                                                        }
+
+                                                        if (value?.type === 'select' && value?.location == 'address') {
+                                                            return (
+                                                                <CustomSelect
+                                                                    key={index}
+                                                                    label={value?.name}
+                                                                    options={value?.custom_field_value}
+                                                                    required={value?.required}
+                                                                    onValueChange={(text) => handleChange(value?.custom_field_id, text)}
+                                                                    selectedValue={customFormData[value?.custom_field_id]}
+
+                                                                    showError={customFieldErrors[value?.custom_field_id]}
+                                                                    selectStyle={{ height: 50 }}
+                                                                />
+                                                            )
+                                                        }
+
+                                                        if (value?.type === 'date' && value?.location == 'address') {
+                                                            return (
+                                                                <CustomDateTime
+                                                                    key={index}
+                                                                    label={value?.name}
+                                                                    value={customFormData[value?.custom_field_id]}
+                                                                    onChange={(text) => handleChange(value?.custom_field_id, text)}
+                                                                    mode="date"
+                                                                    required={value?.required}
+                                                                    showError={customFieldErrors[value?.custom_field_id]}
+                                                                    fieldStyle={{ height: 50 }}
+                                                                />
+                                                            )
+                                                        }
+
+                                                        if (value?.type === 'time' && value?.location == 'address') {
+                                                            return (
+                                                                <CustomDateTime
+                                                                    key={index}
+                                                                    label={value?.name}
+                                                                    value={customFormData[value?.custom_field_id]}
+                                                                    onChange={(text) => handleChange(value?.custom_field_id, text)}
+                                                                    mode="time"
+                                                                    required={value?.required}
+                                                                    showError={customFieldErrors[value?.custom_field_id]}
+                                                                    fieldStyle={{ height: 50 }}
+                                                                />
+                                                            )
+                                                        }
+
+                                                        if (value?.type === 'datetime' && value?.location == 'address') {
+                                                            return (
+                                                                <CustomDateTime
+                                                                    key={index}
+                                                                    label={value?.name}
+                                                                    value={customFormData[value?.custom_field_id]}
+                                                                    onChange={(text) => handleChange(value?.custom_field_id, text)}
+                                                                    mode="datetime"
+                                                                    required={value?.required}
+                                                                    showError={customFieldErrors[value?.custom_field_id]}
+                                                                    fieldStyle={{ height: 50 }}
+                                                                />
+                                                            )
+                                                        }
+                                                    })
                                                 }
-                                            />
 
-                                        </BackgroundWrapper>
+                                            </View>
+
+                                        )
+                                    }
+
+                                    <SelectModalField
+                                        label={isLabel?.addrcity_label}
+                                        required
+                                        value={isDefaultCity}
+                                        data={citylist}
+                                        error={isCityError}
+                                        onSelect={(item) => {
+                                            setDefaultCity(item);
+                                            setCityError(null);
+                                        }}
+                                    />
+
+                                    <View style={{ gap: 10 }}>
+                                        <Text style={commonStyles.text_lg}>{isLabel?.addrdefaultaddrbtn_label}</Text>
+                                        <View style={{ flexDirection: 'row', gap: 10 }}>
+                                            <TouchableOpacity onPress={() => setDefault(true)} style={{ width: 20, height: 20, borderRadius: 10, borderWidth: 1, backgroundColor: isDefault ? Colors?.primary : null }} />
+                                            <Text>{GlobalText?.extrafield_yes_label}</Text>
+                                            <TouchableOpacity onPress={() => setDefault(false)} style={{ width: 20, height: 20, borderRadius: 10, borderWidth: 1, backgroundColor: !isDefault ? Colors?.primary : null }} />
+                                            <Text>{GlobalText?.extrafield_no_label}</Text>
+                                        </View>
                                     </View>
+
+                                    <TouchableOpacity onPress={onUpdateAdress} style={{ width: '100%', height: 50, borderRadius: 12, alignSelf: 'center', justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.primary, marginBottom: 20 }}>
+                                        <Text style={commonStyles.textWhite_lg}>{isLabel?.addreditbtn_label}</Text>
+                                    </TouchableOpacity>
+
                                 </View>
 
-                            </View>
-                        </Modal>
+                            </ScrollView>
+                        </View>
+                    </KeyboardAvoidingView>
+                </BackgroundWrapper>
 
-                        {/* success modal */}
+                {/* contry list modal */}
+                <Modal
+                    animationType="fade"
+                    transparent
+                    visible={isCountryModal}
+                    onRequestClose={() => setCountryModal(false)}
+                >
+                    <View style={{ flex: 1 }}>
 
-                        <SuccessModal
-                            isModal={isSuccessModal}
-                            handleCloseModal={() => {
-                                setSuccessModal(false);
-                                navigation.goBack();
-                            }}
-                            isSuccessMessage={isSuccessMgs}
-                            onClickClose={
-                                () => {
-                                    setSuccessModal(false);
-                                    navigation.goBack();
-                                }
-                            }
-
-
+                        {/* 🔥 BLUR BACKGROUND */}
+                        <BlurView
+                            style={StyleSheet.absoluteFill}
+                            blurType="dark"
+                            blurAmount={15}
+                            reducedTransparencyFallbackColor="rgba(0,0,0,0.6)"
                         />
 
-                        <NotificationAlert />
+                        {/* Optional dark overlay for contrast */}
+                        <View
+                            style={{
+                                ...StyleSheet.absoluteFillObject,
+                                backgroundColor: 'rgba(0,0,0,0.25)',
+                            }}
+                        />
+
+                        {/* MODAL CONTENT */}
+                        <View
+                            style={{
+                                flex: 1,
+                                width: '100%',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                            }}
+                        >
+                            <View style={{ width: '90%', height: '80%' }}>
+                                <BackgroundWrapper>
+
+                                    <View
+                                        style={{
+                                            flexDirection: 'row',
+                                            justifyContent: 'space-between',
+                                            alignItems: 'center',
+                                            margin: 12,
+                                        }}
+                                    >
+                                        <View />
+                                        <TouchableOpacity onPress={() => setCountryModal(false)}>
+                                            <IconComponentClose color="rgba(255,255,255,0.6)" />
+                                        </TouchableOpacity>
+                                    </View>
+
+                                    <FlatList
+                                        data={countryList}
+                                        keyExtractor={(item, index) => index.toString()}
+                                        renderItem={({ item }) => (
+                                            <TouchableOpacity onPress={() => onSelectCountry(item)}>
+                                                <Text
+                                                    style={{
+                                                        borderBottomWidth: 1,
+                                                        paddingBottom: 10,
+                                                        color: 'white',
+                                                        borderBottomColor: 'rgba(255,255,255,0.6)',
+                                                    }}
+                                                >
+                                                    {item.name}
+                                                </Text>
+                                            </TouchableOpacity>
+                                        )}
+                                        contentContainerStyle={{ margin: 10, gap: 20 }}
+                                    />
+
+                                </BackgroundWrapper>
+                            </View>
+                        </View>
                     </View>
-             
+                </Modal>
+
+
+                {/* State list modal */}
+
+                <Modal
+                    animationType="fade"
+                    transparent
+                    visible={isStateModal}
+                    onRequestClose={() => setStateModal(false)}
+                >
+                    <View style={{ flex: 1 }}>
+
+                        {/* 🔥 BLUR BACKGROUND */}
+                        <BlurView
+                            style={StyleSheet.absoluteFill}
+                            blurType="dark"
+                            blurAmount={15}
+                            reducedTransparencyFallbackColor="rgba(0,0,0,0.6)"
+                        />
+
+                        {/* Optional dark overlay for better contrast */}
+                        <View
+                            style={{
+                                ...StyleSheet.absoluteFillObject,
+                                backgroundColor: 'rgba(0,0,0,0.25)',
+                            }}
+                        />
+
+                        {/* MODAL CONTENT */}
+                        <View
+                            style={{
+                                flex: 1,
+                                width: '100%',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                            }}
+                        >
+                            <View style={{ width: '90%', height: '80%' }}>
+                                <BackgroundWrapper>
+
+                                    <View
+                                        style={{
+                                            flexDirection: 'row',
+                                            justifyContent: 'space-between',
+                                            alignItems: 'center',
+                                            margin: 12,
+                                        }}
+                                    >
+                                        <View />
+                                        <TouchableOpacity onPress={() => setStateModal(false)}>
+                                            <IconComponentClose color="rgba(255,255,255,0.6)" />
+                                        </TouchableOpacity>
+                                    </View>
+
+                                    <FlatList
+                                        data={isStateList}
+                                        keyExtractor={(item, index) => index.toString()}
+                                        renderItem={({ item }) => (
+                                            <TouchableOpacity
+                                                onPress={() => {
+                                                    setDefaultState(item);
+                                                    fetchCity(item?.zone_id)
+                                                    setStateModal(false);
+                                                }}
+                                            >
+                                                <Text
+                                                    style={{
+                                                        borderBottomWidth: 1,
+                                                        paddingBottom: 10,
+                                                        borderBottomColor: 'rgba(255,255,255,0.6)',
+                                                        color: '#fff',
+                                                    }}
+                                                >
+                                                    {item.name}
+                                                </Text>
+                                            </TouchableOpacity>
+                                        )}
+                                        contentContainerStyle={{ margin: 10, gap: 20 }}
+                                        ListEmptyComponent={
+                                            <Text style={{ textAlign: 'center', color: '#fff' }}>
+                                                nema podataka
+                                            </Text>
+                                        }
+                                    />
+
+                                </BackgroundWrapper>
+                            </View>
+                        </View>
+
+                    </View>
+                </Modal>
+
+                {/* success modal */}
+
+                <SuccessModal
+                    isModal={isSuccessModal}
+                    handleCloseModal={() => {
+                        setSuccessModal(false);
+                        navigation.goBack();
+                    }}
+                    isSuccessMessage={isSuccessMgs}
+                    onClickClose={
+                        () => {
+                            setSuccessModal(false);
+                            navigation.goBack();
+                        }
+                    }
+
+
+                />
+
+                <NotificationAlert />
+            </View>
+
         </>
     )
 }

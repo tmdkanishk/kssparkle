@@ -62,6 +62,7 @@ import SubCategory from '../screens/SubCategory';
 import TabbyCheckoutScreen from '../screens/TabbyCheckoutScreen';
 import PromoWebViewScreen from '../screens/PromoWebViewScreen';
 import MoyasarPaymentScreen from '../screens/MoyasarPaymentScreen';
+import ProductSearchScreen from '../screens/ProductSearchScreen';
 
 
 
@@ -88,6 +89,7 @@ const AppNavigator = () => {
           <Stack.Screen name="ForgetPassword" component={ForgetPassword} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
           <Stack.Screen name="Product" component={Product} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
           <Stack.Screen name="ProductDetail" component={ProductDetail} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+          <Stack.Screen name="ProductSearchScreen" component={ProductSearchScreen} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
           <Stack.Screen name="ShoppingBag" component={ShoppingBag} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
           <Stack.Screen name="ShippingMethod" component={ShippingMethod} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
           <Stack.Screen name="ChoosePaymentMethod" component={ChoosePaymentMethod} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />

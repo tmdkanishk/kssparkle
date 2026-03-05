@@ -188,6 +188,7 @@ const Wishlist = ({ navigation }) => {
             <CustomActivity />
           </View>) :
           (
+            <>
             <BackgroundWrapper>
 
               <View style={{ marginTop: 50, marginBottom: 20, marginLeft: 10 }}>
@@ -240,6 +241,7 @@ const Wishlist = ({ navigation }) => {
               <NotificationAlert />
 
             </BackgroundWrapper>
+            </>
           )
       }
 

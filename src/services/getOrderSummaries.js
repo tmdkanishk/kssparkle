@@ -17,7 +17,7 @@ export const getOrderSummaries = async (confirm) => {
 
         const body = {
             code: lang?.code,
-            currency: cur,
+            currency: cur?.code,
             sessionid: sessionId,
             customer_id: user ? user : null
         }

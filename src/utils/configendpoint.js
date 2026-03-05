@@ -37,6 +37,7 @@ export const THREE_X_ENDPOINT = {
   address_countrylist: "restapi/address/countrylist",
   address_validateAddressDelete: "restapi/address/validateAddressDelete",
   address_zonelist: "restapi/address/zonelist",
+  address_citylist: "restapi/address/citylist",
   address_validateAddress: "restapi/address/validateAddress",
 
   //change password
@@ -76,8 +77,12 @@ export const THREE_X_ENDPOINT = {
   cart_voucher: "restapi/cart/voucher",
   // cart_coupon: "restapi/cart/coupon",
     cart_coupon: "restapi/coupon",
+    list_coupons: "restapi/coupon/allcoupons",
   cart_shipping: "restapi/cart/shipping",
   cart_estimateshipping: "restapi/cart/estimateshipping",
+
+  //coupon
+
 
   //checkout
   checkout: "restapi/checkout",

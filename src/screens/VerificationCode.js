@@ -238,7 +238,9 @@ const VerificationCode = ({ navigation, route }) => {
             }
             else {
                 if (result?.customer_id) {
+                    console.log("telephone",telephone)
                     await _storeData("CUSTOMER_ID", result?.customer_id)
+                    await _storeData("telephone", telephone)
                       navigation.replace('MyAccountScreen')
                 }
             }

@@ -56,7 +56,7 @@ export const CustomProvider = ({ children }) => {
         try {
             const url = `${BASE_URL}restapi/colorsetting`;
             const lang = await _retrieveData('SELECT_LANG');
-            const currency = await _retrieveData('SELECT_CURRENCY');
+            // const currency = await _retrieveData('SELECT_CURRENCY');
             const sessionId = await _retrieveData('SESSION_ID');
             const headers = {
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -85,8 +85,8 @@ export const CustomProvider = ({ children }) => {
                 setAdminInfo(response.data?.setting);
                 // setPhoneOtpLength(Number(response.data?.otplength));
                 // console.log("response.data?.footerinfos:", response.data?.otplength);
-                await _storeData("SELECT_CURRENCY", response?.data?.currency)
-                await _storeData("SELECT_LANG", { "code": response.data?.code });
+                // await _storeData("SELECT_CURRENCY", response?.data?.currency)
+                // await _storeData("SELECT_LANG", { "code": response.data?.code });
                 await _storeData("SESSION_ID", response.data?.sessionid);
                 await _storeData("SPLACE_WIDTH", response.data?.feature?.splash_logo_width);
                 await _storeData("SPLACE_HEIGHT", response.data?.feature?.splash_logo_height);

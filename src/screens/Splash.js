@@ -74,29 +74,93 @@ const Splash = ({ navigation }) => {
     useEffect(() => {
         let isMounted = true;
 
-        const checkAuth = async () => {
+        const initializeApp = async () => {
             try {
+                checkAutoLogin();
+                getSplaceWidthAndHeight();
+
+                // Splash delay
+                await new Promise(resolve => setTimeout(resolve, 3000));
+
+                const isLanguageAndCurrency = await checkLanguageandCurrency();
                 const customerId = await _retrieveData('CUSTOMER_ID');
                 const skipLogin = await _retrieveData('SKIP_LOGIN');
 
                 if (!isMounted) return;
+
+                // 🔥 Decision Logic
+                if (!isLanguageAndCurrency) {
+                    navigation.replace('ChooseLanguage');
+                    return;
+                }
 
                 if (customerId || skipLogin === 'true') {
                     navigation.replace('Home');
                 } else {
                     navigation.replace('Login');
                 }
+
             } catch (error) {
                 navigation.replace('Login');
             }
         };
 
-        checkAuth();
+        initializeApp();
 
         return () => {
             isMounted = false;
         };
     }, []);
+
+
+    // useEffect(() => {
+    //     let isMounted = true;
+
+    //     const checkAuth = async () => {
+    //         try {
+    //             const customerId = await _retrieveData('CUSTOMER_ID');
+    //             const skipLogin = await _retrieveData('SKIP_LOGIN');
+
+    //             if (!isMounted) return;
+
+    //             if (customerId || skipLogin === 'true') {
+    //                 navigation.replace('Home');
+    //             } else {
+    //                 navigation.replace('Login');
+    //             }
+    //         } catch (error) {
+    //             navigation.replace('Login');
+    //         }
+    //     };
+
+    //     checkAuth();
+
+    //     return () => {
+    //         isMounted = false;
+    //     };
+    // }, []);
+
+
+    // useEffect(() => {
+    //     checkAutoLogin();
+    //     getSplaceWidthAndHeight();
+
+    //     const timer = setTimeout(async () => {
+    //         const isLanguage_and_currency = await checkLanguageandCurrency();
+    //         if (isLanguage_and_currency === true) {
+    //             console.log("true case works")
+    //             navigation.replace('Home');
+    //         } else {
+    //             navigation.replace('ChooseLanguage');
+    //         }
+
+    //     }, 3000);
+    //     return () => {
+    //         clearTimeout(timer);
+    //     };
+    // }, []);
+
+
 
 
 
@@ -130,6 +194,7 @@ const Splash = ({ navigation }) => {
 
     // Get FCM Token
     const getFCMToken = async () => {
+        console.log("FCM Token Function runs")
         try {
             const token = await getMessaging(getApp()).getToken();
             console.log("FCM Token: ", token);
@@ -175,12 +240,11 @@ const Splash = ({ navigation }) => {
     // Request permissions on iOS
     const requestIOSUserPermission = async () => {
         const messaging = getMessaging(getApp());
-
+        console.log("requestIOSUserPermission")
         const authStatus = await messaging.requestPermission();
         const enabled =
             authStatus === AuthorizationStatus.AUTHORIZED ||
             authStatus === AuthorizationStatus.PROVISIONAL;
-
         if (enabled) {
             console.log('Authorization status:', enabled);
             await getFCMToken();// make sure this function is defined
@@ -192,11 +256,11 @@ const Splash = ({ navigation }) => {
     return (
 
         <BackgroundWrapper backgroundColor={"rgba(0,0,0,0.3)"}>
-            <View style={[style.mainContainer, {}]}>
+        <View style={[style.mainContainer, {}]}>
 
-                <Image source={require('../assets/images/sparklelogo.png')} style={style.img} />
+            <Image source={require('../assets/images/sparklelogo.png')} style={style.img} />
 
-            </View>
+        </View>
         </BackgroundWrapper>
     )
 }

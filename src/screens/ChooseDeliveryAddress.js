@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Image, Alert, Animated, useWindowDimensions, KeyboardAvoidingView, TextInput } from "react-native";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import GlassContainer from "../components/customcomponents/GlassContainer";
@@ -16,33 +16,9 @@ import { useLanguageCurrency } from "../hooks/LanguageCurrencyContext";
 import { addBillingAndShippingAddress } from "../services/addBillingAndShippingAddress";
 import { getMyAddresses } from "../services/getMyAddresses";
 import { useLoading } from "../hooks/LoadingProvider";
+import FailedModal from "../components/FailedModal";
 
 const ChooseDeliveryAddress = () => {
-
-    // const defaultAddress = {
-    //     id: 1,
-    //     name: "Customer Name",
-    //     tag: "Home",
-    //     address: "123, MG Road, Mumbai, Maharashtra - 400001",
-    //     mobile: "+91 9876543210",
-    // };
-
-    // const otherAddresses = [
-    //     {
-    //         id: 2,
-    //         name: "Customer Name",
-    //         tag: "Home",
-    //         address: "456, Park Avenue, Pune, Maharashtra - 411001",
-    //         mobile: "+91 9998887777",
-    //     },
-    //     {
-    //         id: 3,
-    //         name: "Customer Name",
-    //         tag: "Home",
-    //         address: "789, Lake View, Bangalore, Karnataka - 560001",
-    //         mobile: "+91 9988776655",
-    //     },
-    // ];
 
 
     const { language, currency, changeLanguage, changeCurrency } = useLanguageCurrency();
@@ -67,6 +43,23 @@ const ChooseDeliveryAddress = () => {
 
     const { setGlobalLoading } = useLoading();
     const [isGiftWrap, setIsGiftWrap] = useState(false);
+    const [giftDetails, setGiftDetails] = useState({
+        fullName: '',
+        phone: '',
+        address: '',
+        city: '',
+        postCode: '',
+        message: ''
+    });
+
+    const [failedModal, setFailedModal] = useState(false);
+    const [failedModalText, setFailedModalText] = useState(null);
+    const [giftErrors, setGiftErrors] = useState({});
+
+    const scrollRef = useRef(null);
+
+
+
 
 
     useFocusEffect(
@@ -116,20 +109,38 @@ const ChooseDeliveryAddress = () => {
 
     const onClickCheckoutContinueBtn = async () => {
         try {
-            setGlobalLoading(true)
-            // setLoading(true);
-            // const shippingAddressId = selectShippingAddress?.address_id
-            // const paymentAddressId = selectBillingAddress?.address_id
-            const result = await addBillingAndShippingAddress(selectedAddress, selectedAddress, EndPoint?.checkout_Shippingandpaymentaddress);
-            console.log("save shipping and billing address :", result);
+            setGlobalLoading(true);
+
+            await addBillingAndShippingAddress(
+                selectedAddress,
+                selectedAddress,
+                EndPoint?.checkout_Shippingandpaymentaddress,
+                isGiftWrap ? giftDetails : null
+            );
+
             navigation.navigate('ShippingMethod');
         } catch (error) {
-            console.log("error", error.response.data);
-            alert(GlobalText?.extrafield_somethingwrong);
+            const backendErrors = error.response?.data?.error;
+
+            if (backendErrors) {
+                setGiftErrors(backendErrors);
+            } else {
+                setFailedModalText(GlobalText?.extrafield_somethingwrong);
+                setFailedModal(true);
+            }
         } finally {
             setGlobalLoading(false);
         }
-    }
+    };
+
+
+    // useEffect(() => {
+    //     if (isGiftWrap) {
+    //         setSelectedAddress(null);
+    //     }
+    // }, [isGiftWrap]);
+
+
 
     const fetchAllMyAddress = async () => {
         try {
@@ -149,7 +160,13 @@ const ChooseDeliveryAddress = () => {
                 setSelectedAddress(defaultAddr.address_id);
             }
 
+            // if (defaultAddr && !isGiftWrap) {
+            //     setSelectedAddress(defaultAddr.address_id);
+            // }
 
+            // if (defaultAddr && !selectedAddress && !isGiftWrap) {
+            //     setSelectedAddress(defaultAddr.address_id);
+            // }
 
             // console.log("defaultAddress", defaultAddress)
             // setDefaultAddress(defaultAddress);
@@ -214,7 +231,7 @@ const ChooseDeliveryAddress = () => {
 
             const body = {
                 code: lang?.code,
-                currency: cur,
+                currency: cur?.code,
                 customer_id: user,
                 sessionid: sessionId,
                 address_id: addressId
@@ -254,14 +271,31 @@ const ChooseDeliveryAddress = () => {
     };
 
 
+    const closeFailedModal = () => {
+        setFailedModal(false);
+        setFailedModalText(null);
+    }
+
+
+
 
 
     return (
+        <>
         <BackgroundWrapper>
-            <View style={{ flex: 1 }}>
+            <KeyboardAvoidingView
+                style={{ flex: 1 }}
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            >
+                {/* <View style={{ flex: 1 }}> */}
                 <ScrollView
-                    contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 20, marginTop: Platform.OS === "ios" ? 60 : 10 }}
                     showsVerticalScrollIndicator={false}
+                    keyboardShouldPersistTaps="handled"
+                    contentContainerStyle={{
+                        paddingHorizontal: 16,
+                        paddingBottom: 20, // important for footer space
+                        marginTop: Platform.OS === "ios" ? 60 : 10
+                    }}
                 >
                     <TouchableOpacity style={{ marginTop: 20, marginLeft: 10 }} onPress={() => navigation.goBack()}>
                         <Image source={require("../assets/images/back.png")} style={{ width: 18, height: 18, tintColor: "#fff", }} />
@@ -278,7 +312,7 @@ const ChooseDeliveryAddress = () => {
                     </View>
 
 
-                    
+
 
 
                     {defaultAddressArray.length > 0 && (
@@ -386,108 +420,196 @@ const ChooseDeliveryAddress = () => {
                         </>
                     )}
 
-                    <KeyboardAvoidingView
+                    {/* <KeyboardAvoidingView
                         style={{ flex: 1 }}
                         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
                     >
-                    <ScrollView
-                        keyboardShouldPersistTaps="handled"
-                        contentContainerStyle={{ padding: 10 }}
-                    >
-                        {/* 🔹 Gift Section */}
-                        <View style={styles.giftSection}>
-                            <TouchableOpacity
-                                style={styles.giftWrapRow}
-                                activeOpacity={0.8}
-                                onPress={() => setIsGiftWrap(prev => !prev)}
-                                hitSlop={20}
-                            >
-                                <View style={styles.radioOuterSmall}>
-                                    {isGiftWrap && <View style={styles.radioInnerSmall} />}
+                        <ScrollView
+                            keyboardShouldPersistTaps="handled"
+                            contentContainerStyle={{ padding: 10 }}
+                        > */}
+                    {/* 🔹 Gift Section */}
+                    <View style={styles.giftSection}>
+                        <TouchableOpacity
+                            style={styles.giftWrapRow}
+                            activeOpacity={0.8}
+                            // onPress={() => setIsGiftWrap(prev => !prev)}
+                            onPress={() => {
+                                setIsGiftWrap(prev => {
+                                    const newValue = !prev;
+
+                                    // if (newValue) {
+                                    //     // If gift wrap is selected → unselect address
+                                    //     setSelectedAddress(null);
+                                    // }
+
+                                    return newValue;
+                                });
+                            }}
+
+                            hitSlop={20}
+                        >
+                            <View style={styles.radioOuterSmall}>
+                                {isGiftWrap && <View style={styles.radioInnerSmall} />}
+                            </View>
+
+                            <Text style={styles.giftWrapText}>Gift Wrap</Text>
+                        </TouchableOpacity>
+
+                        {isGiftWrap && (
+                            <>
+                                <View style={styles.giftHeader}>
+                                    <Text style={styles.giftTitle}>Gift</Text>
+
+                                    <Image
+                                        style={{ width: 30, height: 30 }}
+                                        source={require('../assets/images/gift.png')}
+                                    />
                                 </View>
 
-                                <Text style={styles.giftWrapText}>Gift Wrap</Text>
-                            </TouchableOpacity>
+                                <Text style={{ marginTop: 20, marginBottom: 20, color: "#fff", lineHeight: 25, }}>
+                                    Want to make your order a gift?
 
-                            {isGiftWrap && (
-                                <>
-                                    <View style={styles.giftHeader}>
-                                        <Text style={styles.giftTitle}>Gift</Text>
+                                    Activate this option and let us deliver the product to someone special in a beautiful way.
 
-                                        <Image
-                                            style={{ width: 30, height: 30 }}
-                                            source={require('../assets/images/gift.png')}
-                                        />
-                                    </View>
+                                    This option is optional; if the order is for you, you can proceed without activating it.
+                                </Text>
 
-                                    <Text style={{marginTop:20, marginBottom:20, color:"#fff", lineHeight:25, }}>
-                                        Want to make your order a gift?
 
-                                        Activate this option and let us deliver the product to someone special in a beautiful way.
+                                <Text style={styles.sectionSubtitle}>Recipient’s Details</Text>
 
-                                        This option is optional; if the order is for you, you can proceed without activating it.
+                                <GlassContainer padding={4} borderRadius={10}>
+                                    <TextInput
+                                        placeholder="Full Name"
+                                        placeholderTextColor="#fff"
+                                        value={giftDetails.fullName}
+                                        onChangeText={(text) => {
+                                            setGiftDetails(prev => ({ ...prev, fullName: text }));
+                                            setGiftErrors(prev => ({ ...prev, gift_name: null }));
+                                        }}
+                                        style={styles.input}
+                                    />
+                                </GlassContainer>
+
+                                {giftErrors?.gift_name && (
+                                    <Text style={{ color: 'red', marginTop: 4 }}>
+                                        {GlobalText?.[giftErrors.gift_name] || giftErrors.gift_name}
                                     </Text>
+                                )}
+
+                                <GlassContainer padding={4} borderRadius={10}>
+                                    <TextInput
+                                        placeholder="Phone Number"
+                                        placeholderTextColor="#fff"
+                                        keyboardType="phone-pad"
+                                        value={giftDetails.phone}
+                                        onChangeText={(text) => {
+                                            setGiftDetails(prev => ({ ...prev, phone: text }));
+                                            setGiftErrors(prev => ({ ...prev, gift_phone: null }));
+                                        }}
+
+                                        style={styles.input}
+                                    />
+                                </GlassContainer>
+
+                                {giftErrors?.gift_phone && (
+                                    <Text style={{ color: 'red', marginTop: 4 }}>
+                                        {GlobalText?.[giftErrors.gift_phone] || giftErrors.gift_phone}
+                                    </Text>
+                                )}
 
 
-                                    <Text style={styles.sectionSubtitle}>Recipient’s Details</Text>
+                                <GlassContainer padding={4} borderRadius={6} style={{}}>
+                                    <TextInput
+                                        placeholder="Address"
+                                        placeholderTextColor="#fff"
+                                        style={styles.input}
+                                        value={giftDetails.address}
+                                        onChangeText={(text) => {
+                                            setGiftDetails(prev => ({ ...prev, address: text }));
+                                            setGiftErrors(prev => ({ ...prev, gift_address_1: null }));
+                                        }}
 
-                                    <GlassContainer padding={4} borderRadius={10}>
-                                        <TextInput
-                                            placeholder="Full Name"
-                                            placeholderTextColor="#fff"
-                                            style={styles.input}
-                                        />
-                                    </GlassContainer>
+                                        multiline
+                                    />
+                                </GlassContainer>
 
-                                    <GlassContainer padding={4} borderRadius={10}>
-                                        <TextInput
-                                            placeholder="Phone Number"
-                                            placeholderTextColor="#fff"
-                                            keyboardType="phone-pad"
-                                            style={styles.input}
-                                        />
-                                    </GlassContainer>
+                                {giftErrors?.gift_address_1 && (
+                                    <Text style={{ color: 'red', marginTop: 4 }}>
+                                        {GlobalText?.[giftErrors.gift_address_1] || giftErrors.gift_address_1}
+                                    </Text>
+                                )}
 
+
+                                <GlassContainer padding={4} borderRadius={6}>
+                                    <TextInput
+                                        placeholder="City"
+                                        placeholderTextColor="#fff"
+                                        value={giftDetails.city}
+                                        onChangeText={(text) => {
+                                            setGiftDetails(prev => ({ ...prev, city: text }));
+                                            setGiftErrors(prev => ({ ...prev, gift_city: null }));
+                                        }}
+
+                                        style={styles.input}
+                                    />
+                                </GlassContainer>
+
+                                {giftErrors?.gift_city && (
+                                    <Text style={{ color: 'red', marginTop: 4 }}>
+                                        {GlobalText?.[giftErrors.gift_city] || giftErrors.gift_city}
+                                    </Text>
+                                )}
+
+
+                                <GlassContainer padding={4} borderRadius={6}>
+                                    <TextInput
+                                        placeholder="Post Code"
+                                        placeholderTextColor="#fff"
+                                        value={giftDetails.postCode}
+                                        onChangeText={(text) => {
+                                            setGiftDetails(prev => ({ ...prev, postCode: text }));
+                                            setGiftErrors(prev => ({ ...prev, gift_postcode: null }));
+                                        }}
+
+                                        keyboardType="numeric"
+                                        style={styles.input}
+                                    />
+                                </GlassContainer>
+
+                                {giftErrors?.gift_postcode && (
+                                    <Text style={{ color: 'red', marginTop: 4 }}>
+                                        {GlobalText?.[giftErrors.gift_postcode] || giftErrors.gift_postcode}
+                                    </Text>
+                                )}
+
+
+                                <View style={{}}>
                                     <GlassContainer padding={4} borderRadius={10} style={{ height: 70 }}>
                                         <TextInput
-                                            placeholder="Address"
+                                            placeholder="Custom Message"
                                             placeholderTextColor="#fff"
                                             style={styles.input}
-                                            multiline
+                                            value={giftDetails.message}
+                                            onChangeText={(text) => {
+                                                setGiftDetails(prev => ({ ...prev, message: text }));
+                                                setGiftErrors(prev => ({ ...prev, gift_message: null }));
+                                            }}
                                         />
                                     </GlassContainer>
+                                </View>
 
-                                    <GlassContainer>
-                                         <TextInput
-                                            placeholder="City"
-                                            placeholderTextColor="#fff"
-                                            style={styles.input}
-                                        />
-                                    </GlassContainer>
+                                {giftErrors?.gift_message && (
+                                    <Text style={{ color: 'red', marginTop: 4 }}>
+                                        {GlobalText?.[giftErrors.gift_message] || giftErrors.gift_message}
+                                    </Text>
+                                )}
 
-                                     <GlassContainer>
-                                         <TextInput
-                                            placeholder="Post Code"
-                                            placeholderTextColor="#fff"
-                                            style={styles.input}
-                                        />
-                                    </GlassContainer>
-
-                                    <View style={{ marginTop: 20 }}>
-                                        <GlassContainer padding={4} borderRadius={10} style={{ height: 70 }}>
-                                            <TextInput
-                                                placeholder="Custom Message"
-                                                placeholderTextColor="#fff"
-                                                style={styles.input}
-                                                multiline
-                                            />
-                                        </GlassContainer>
-                                    </View>
-                                </>
-                            )}
-                        </View>
-                    </ScrollView>
-                    </KeyboardAvoidingView>
+                            </>
+                        )}
+                    </View>
+                    {/* </ScrollView>
+                    </KeyboardAvoidingView> */}
 
 
 
@@ -495,26 +617,39 @@ const ChooseDeliveryAddress = () => {
                 </ScrollView>
 
                 {/* Bottom Section */}
-                <View style={styles.footer}>
-                    <View style={styles.footerTopRow}>
-                        <Text style={styles.pointsText}>Earn 157 Mokafaa Points</Text>
-                        <View style={styles.horizontalLine} />
+                    <View style={styles.footer}>
+                        <View style={styles.footerTopRow}>
+                            <Text style={styles.pointsText}>Earn 157 Mokafaa Points</Text>
+                            <View style={styles.horizontalLine} />
+                        </View>
+
+                        <GlassmorphismButton
+                            title="PROCEED"
+                            // disabled={
+                            //     isGiftWrap &&
+                            //     (!giftDetails.fullName || !giftDetails.phone)
+                            // }
+
+                            onPress={() => onClickCheckoutContinueBtn()}
+
+                        />
+
+                        <View style={styles.footerBottomRow}>
+                            <Text style={styles.totalText}>₹16669.25</Text>
+                            <Text style={styles.itemText}>1 Item</Text>
+                        </View>
                     </View>
+                {/* </View> */}
 
-                    <GlassmorphismButton
-                        title="PROCEED"
-                        disabled={!isDefaultAddress && !selectedAddress}
-                        onPress={() => onClickCheckoutContinueBtn()}
-
-                    />
-
-                    <View style={styles.footerBottomRow}>
-                        <Text style={styles.totalText}>₹16669.25</Text>
-                        <Text style={styles.itemText}>1 Item</Text>
-                    </View>
-                </View>
-            </View>
+                <FailedModal
+                    isModal={failedModal}
+                    isSuccessMessage={failedModalText}
+                    onClickClose={closeFailedModal}
+                    handleCloseModal={closeFailedModal}
+                />
+            </KeyboardAvoidingView>
         </BackgroundWrapper>
+        </>
     );
 };
 
