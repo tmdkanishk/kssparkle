@@ -1,1 +1,671 @@
-url https://sparkleksa.com/index.php?route=extension/restapi/accountdashboard/userdetailseditValidation {email: 'Hash@gmail.com', firstname: 'Hhhjh', lastname: 'Hxhxhx I', telephone: '6283659060', image: 'data:image/jpeg;base64,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', customer_id: '2645', code: 'ar', currency: undefined, sessionid: 'a2ae973c72682a9b9ee482921b'}
+
+
+
+									
+			
+<form class="form-horizontal">
+  {% if addresses %}
+  <div class="radio">
+    <label>
+      <input type="radio" name="payment_address" value="existing" checked="checked" />
+      {{ text_address_existing }}</label>
+  </div>
+  <div id="payment-existing">
+    <select name="address_id" class="form-control">
+     {% for address in addresses %}
+      {% if address['address_id'] == address_id %}
+      <option value="{{ address.address_id }}" selected="selected">{{ address.firstname }} {{ address.lastname }}, {{ address.address_1 }}, {{ address.city }}, {{ address.zone }}, {{ address.country }}</option>
+      {% else %}
+      <option value="{{ address.address_id }}">{{ address.firstname }} {{ address.lastname }}, {{ address.address_1 }}, {{ address.city }}, {{ address.zone }}, {{ address.country }}</option>
+      {% endif %}
+      {% endfor %}
+    </select>
+  </div>
+  <div class="radio">
+    <label>
+      <input type="radio" name="payment_address" value="new" />
+      {{ text_address_new }}</label>
+  </div>
+  {% endif %}
+  <br />
+  <div id="payment-new" style="display: {% if addresses %}none{% else %}block{% endif %};">
+    <div class="form-group required">
+      <label class="col-sm-2 control-label" for="input-payment-firstname">{{ entry_firstname }}</label>
+      <div class="col-sm-10">
+        <input type="text" name="firstname" value="" placeholder="{{ entry_firstname }}" id="input-payment-firstname" class="form-control" />
+      </div>
+    </div>
+    <div class="form-group required">
+      <label class="col-sm-2 control-label" for="input-payment-lastname">{{ entry_lastname }}</label>
+      <div class="col-sm-10">
+        <input type="text" name="lastname" value="" placeholder="{{ entry_lastname }}" id="input-payment-lastname" class="form-control" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-sm-2 control-label" for="input-payment-company">{{ entry_company }}</label>
+      <div class="col-sm-10">
+        <input type="text" name="company" value="" placeholder="{{ entry_company }}" id="input-payment-company" class="form-control" />
+      </div>
+    </div>
+    <div class="form-group required">
+      <label class="col-sm-2 control-label" for="input-payment-address-1">{{ entry_address_1 }}</label>
+      <div class="col-sm-10">
+        <input type="text" name="address_1" value="" placeholder="{{ entry_address_1 }}" id="input-payment-address-1" class="form-control" />
+      </div>
+    </div> 
+    	<!-- Latitude / Longitude (same layout, one row) -->
+        <div class="form-group tmdmapcode">
+        <label class="col-sm-2 control-label">{{ entry_mapcode }}</label>
+        <div class="col-sm-12">
+          <div class="row">
+          <div class="col-sm-6">
+            <input type="text" name="payment-latitude" value="{{ payment_latitude }}" 
+              placeholder="{{ entry_latitude }}" id="input-latitude-payment" 
+              class="form-control" readonly />
+          </div>
+          <div class="col-sm-6">
+            <input type="text" name="payment-longitude" value="{{ payment_latitude }}" 
+              placeholder="{{ entry_longitude }}" id="input-longitude-payment" 
+              class="form-control" readonly />
+          </div>
+          </div>
+        </div>
+        </div>
+        <div class="form-group payment-maps">
+          <label class="col-sm-2 control-label"></label>
+            <div class="col-sm-10">
+            <div id="payment-map-canvas"></div>
+          </div>
+        </div>
+    <div class="form-group">
+      <label class="col-sm-2 control-label" for="input-payment-address-2">{{ entry_address_2 }}</label>
+      <div class="col-sm-10">
+        <input type="text" name="address_2" value="" placeholder="{{ entry_address_2 }}" id="input-payment-address-2" class="form-control" />
+      </div>
+    </div>
+  
+    <div class="form-group required">
+      <label class="col-sm-2 control-label" for="input-payment-postcode">{{ entry_postcode }}</label>
+      <div class="col-sm-10">
+        <input type="text" name="postcode" value="" placeholder="{{ entry_postcode }}" id="input-payment-postcode" class="form-control" />
+      </div>
+    </div>
+    <div class="form-group required">
+      <label class="col-sm-2 control-label" for="input-payment-country">{{ entry_country }}</label>
+      <div class="col-sm-10">
+        <select name="country_id" id="input-payment-country" class="form-control">
+          <option value="">{{ text_select }}</option>
+         {% for country in countries %}
+          {% if country.country_id == country_id %}
+          <option value="{{ country.country_id }}" selected="selected">{{ country.name }}</option>
+          {% else %}
+          <option value="{{ country.country_id }}">{{ country.name }}</option>
+          {% endif %}
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+    <div class="form-group required">
+      <label class="col-sm-2 control-label" for="input-payment-zone">{{ entry_zone }}</label>
+      <div class="col-sm-10">
+        <select name="zone_id" id="input-payment-zone" class="form-control">
+          <option value="">{{ text_select }}</option>
+          {% for zone in zones %}
+          {% if zone.zone_id == zone_id %}
+          <option value="{{ zone.zone_id }}" selected="selected">{{ zone.name }}</option>
+          {% else %}
+          <option value="{{ zone.zone_id }}">{{ zone.name }}</option>
+           {% endif %}
+           {% endfor %}
+           {% if zone is defined and zone %}
+          <option value="{{ zone }}" selected="selected">{{ zone }}</option>
+          {% endif %}
+        </select>
+      </div>
+    </div>
+      <div class="form-group required">
+      <label class="col-sm-2 control-label" for="input-payment-city">{{ entry_city }}</label>
+      <div class="col-sm-10">
+        <select name="city" id="input-payment-city" class="form-control">
+          <option value="">{{ text_select }}</option>
+        </select>
+      </div>
+    </div>
+    {% for custom_field in custom_fields %}
+    {% if custom_field.type == 'select' %}
+    <div class="form-group{% if custom_field.required %} required {% endif %} custom-field" data-sort="{{ custom_field.sort_order }}">
+      <label class="col-sm-2 control-label" for="input-payment-custom-field{{ custom_field.custom_field_id }}">{{ custom_field.name }}</label>
+      <div class="col-sm-10">
+        <select name="custom_field[{{ custom_field.location }}][{{ custom_field.custom_field_id }}]" id="input-payment-custom-field{{ custom_field.custom_field_id }}" class="form-control">
+          <option value="">{{ text_select }}</option>
+          {% for custom_field_value in custom_field.custom_field_value %}
+          <option value="{{ custom_field_value.custom_field_value_id }}">{{ custom_field_value.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+    {% endif %}
+    {% if custom_field.type == 'radio' %}
+    <div class="form-group{% if custom_field.required %} required {% endif %} custom-field" data-sort="{{ custom_field.sort_order }}">
+      <label class="col-sm-2 control-label">{{ custom_field.name }}</label>
+      <div class="col-sm-10">
+        <div id="input-payment-custom-field{{ custom_field.custom_field_id }}">
+          {% for custom_field_value in custom_field.custom_field_value %}
+          <div class="radio">
+            <label>
+              <input type="radio" name="custom_field[{{ custom_field.location }}][{{ custom_field.custom_field_id }}]" value="{{ custom_field_value.custom_field_value_id }}" />
+              {{ custom_field_value.name }}</label>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    {% endif %}
+    {% if custom_field.type == 'checkbox' %}
+    <div class="form-group{% if custom_field.required %} required {% endif %} custom-field" data-sort="{{ custom_field.sort_order }}">
+      <label class="col-sm-2 control-label">{{ custom_field.name }}</label>
+      <div class="col-sm-10">
+        <div id="input-payment-custom-field{{ custom_field.custom_field_id }}">
+          {% for custom_field_value in custom_field.custom_field_value %}
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" name="custom_field[{{ custom_field.location }}][{{ custom_field.custom_field_id }}][]" value="{{ custom_field_value.custom_field_value_id }}" />
+              {{ custom_field_value.name }}</label>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    {% endif %}
+    {% if custom_field.type == 'text' %}
+    <div class="form-group{% if custom_field.required %} required {% endif %} custom-field" data-sort="{{ custom_field.sort_order }}">
+      <label class="col-sm-2 control-label" for="input-payment-custom-field{{ custom_field.custom_field_id }}">{{ custom_field.name }}</label>
+      <div class="col-sm-10">
+        <input type="text" name="custom_field[{{ custom_field.location }}][{{ custom_field.custom_field_id }}]" value="{{ custom_field.value }}" placeholder="{{ custom_field.name }}" id="input-payment-custom-field{{ custom_field.custom_field_id }}" class="form-control" />
+      </div>
+    </div>
+    {% endif %}
+    {% if custom_field.type == 'textarea' %}
+    <div class="form-group{% if custom_field.required %} required {% endif %} custom-field" data-sort="{{ custom_field.sort_order }}">
+      <label class="col-sm-2 control-label" for="input-payment-custom-field{{ custom_field.custom_field_id }}">{{ custom_field.name }}</label>
+      <div class="col-sm-10">
+        <textarea name="custom_field[{{ custom_field.location }}][{{ custom_field.custom_field_id }}]" rows="5" placeholder="{{ custom_field.name }}" id="input-payment-custom-field{{ custom_field.custom_field_id }}" class="form-control">{{ custom_field.value }}</textarea>
+      </div>
+    </div>
+    {% endif %}
+    {% if custom_field.type == 'file' %}
+    <div class="form-group{% if custom_field.required %} required {% endif %} custom-field" data-sort="{{ custom_field.sort_order }}">
+      <label class="col-sm-2 control-label">{{ custom_field.name }}</label>
+      <div class="col-sm-10">
+        <button type="button" id="button-payment-custom-field{{ custom_field.custom_field_id }}" data-loading-text="{{ text_loading }}" class="btn btn-default"><i class="fa fa-upload"></i> {{ button_upload }}</button>
+        <input type="hidden" name="custom_field[{{ custom_field.location }}][{{ custom_field.custom_field_id }}]" value="" id="input-payment-custom-field{{ custom_field.custom_field_id }}" />
+      </div>
+    </div>
+    {% endif %}
+    {% if custom_field.type == 'date' %}
+    <div class="form-group{% if custom_field.required %} required {% endif %} custom-field" data-sort="{{ custom_field.sort_order }}">
+      <label class="col-sm-2 control-label" for="input-payment-custom-field{{ custom_field.custom_field_id }}">{{ custom_field.name }}</label>
+      <div class="col-sm-10">
+        <div class="input-group date">
+          <input type="text" name="custom_field[{{ custom_field.location }}][{{ custom_field.custom_field_id }}]" value="{{ custom_field.value }}" placeholder="{{ custom_field.name }}" data-date-format="YYYY-MM-DD" id="input-payment-custom-field{{ custom_field.custom_field_id }}" class="form-control" />
+          <span class="input-group-btn">
+          <button type="button" class="btn btn-default"><i class="fa fa-calendar"></i></button>
+          </span></div>
+      </div>
+    </div>
+    {% endif %}
+    {% if custom_field.type == 'time' %}
+    <div class="form-group{% if custom_field.required %} required {% endif %} custom-field" data-sort="{{ custom_field.sort_order }}">
+      <label class="col-sm-2 control-label" for="input-payment-custom-field{{ custom_field.custom_field_id }}">{{ custom_field.name }}</label>
+      <div class="col-sm-10">
+        <div class="input-group time">
+          <input type="text" name="custom_field[{{ custom_field.location }}][{{ custom_field.custom_field_id }}]" value="{{ custom_field.value }}" placeholder="{{ custom_field.name }}" data-date-format="HH:mm" id="input-payment-custom-field{{ custom_field.custom_field_id }}" class="form-control" />
+          <span class="input-group-btn">
+          <button type="button" class="btn btn-default"><i class="fa fa-calendar"></i></button>
+          </span></div>
+      </div>
+    </div>
+    {% endif %}
+    {% if custom_field.type == 'time' %}
+    <div class="form-group{% if custom_field.required %} required {% endif %} custom-field" data-sort="{{ custom_field.sort_order }}">
+      <label class="col-sm-2 control-label" for="input-payment-custom-field{{ custom_field.custom_field_id }}">{{ custom_field.name }}</label>
+      <div class="col-sm-10">
+        <div class="input-group datetime">
+          <input type="text" name="custom_field[{{ custom_field.location }}][{{ custom_field.custom_field_id }}]" value="{{ custom_field.value }}" placeholder="{{ custom_field.name }}" data-date-format="YYYY-MM-DD HH:mm" id="input-payment-custom-field{{ custom_field.custom_field_id }}" class="form-control" />
+          <span class="input-group-btn">
+          <button type="button" class="btn btn-default"><i class="fa fa-calendar"></i></button>
+          </span></div>
+      </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+  </div>
+  <div class="buttons clearfix">
+    <div class="pull-right">
+      <button type="button" id="button-payment-address" data-loading-text="{{ text_loading }}" class="btn btn-primary"><span>{{ button_continue }}</span></button>
+    </div>
+  </div>
+</form>
+<script type="text/javascript"><!--
+$('input[name=\'payment_address\']').on('change', function() {
+	if (this.value == 'new') {
+		$('#payment-existing').hide();
+		$('#payment-new').show();
+	} else {
+		$('#payment-existing').show();
+		$('#payment-new').hide();
+	}
+});
+//--></script>
+<script type="text/javascript"><!--
+// Sort the custom fields
+$('#collapse-payment-address .form-group[data-sort]').detach().each(function() {
+	if ($(this).attr('data-sort') >= 0 && $(this).attr('data-sort') <= $('#collapse-payment-address .form-group').length-2) {
+		$('#collapse-payment-address .form-group').eq(parseInt($(this).attr('data-sort'))+2).before(this);
+	}
+
+	if ($(this).attr('data-sort') > $('#collapse-payment-address .form-group').length-2) {
+		$('#collapse-payment-address .form-group:last').after(this);
+	}
+
+	if ($(this).attr('data-sort') == $('#collapse-payment-address .form-group').length-2) {
+		$('#collapse-payment-address .form-group:last').after(this);
+	}
+
+	if ($(this).attr('data-sort') < -$('#collapse-payment-address .form-group').length-2) {
+		$('#collapse-payment-address .form-group:first').before(this);
+	}
+});
+//--></script>
+<script type="text/javascript"><!--
+$('#collapse-payment-address button[id^=\'button-payment-custom-field\']').on('click', function() {
+	var element = this;
+
+	$('#form-upload').remove();
+
+	$('body').prepend('<form enctype="multipart/form-data" id="form-upload" style="display: none;"><input type="file" name="file" /></form>');
+
+	$('#form-upload input[name=\'file\']').trigger('click');
+
+	if (typeof timer != 'undefined') {
+    	clearInterval(timer);
+	}
+
+	timer = setInterval(function() {
+		if ($('#form-upload input[name=\'file\']').val() != '') {
+			clearInterval(timer);
+
+			$.ajax({
+				url: 'index.php?route=tool/upload',
+				type: 'post',
+				dataType: 'json',
+				data: new FormData($('#form-upload')[0]),
+				cache: false,
+				contentType: false,
+				processData: false,
+				beforeSend: function() {
+					$(element).button('loading');
+				},
+				complete: function() {
+					$(element).button('reset');
+				},
+				success: function(json) {
+					$(element).parent().find('.text-danger').remove();
+
+					if (json['error']) {
+						$(element).parent().find('input[name^=\'custom_field\']').after('<div class="text-danger">' + json['error'] + '</div>');
+					}
+
+					if (json['success']) {
+						alert(json['success']);
+
+						$(element).parent().find('input[name^=\'custom_field\']').val(json['code']);
+					}
+				},
+				error: function(xhr, ajaxOptions, thrownError) {
+					alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+				}
+			});
+		}
+	}, 500);
+});
+//--></script>
+<script type="text/javascript"><!--
+$('.date').datetimepicker({
+	language: '{{ datepicker }}',
+	pickTime: false
+});
+
+$('.time').datetimepicker({
+	language: '{{ datepicker }}',
+	pickDate: false
+});
+
+$('.datetime').datetimepicker({
+	language: '{{ datepicker }}',
+	pickDate: true,
+	pickTime: true
+});
+//--></script>
+<script type="text/javascript"><!--
+$('select[name=\'country_id\']').on('change', function() {
+	$.ajax({
+		url: 'index.php?route=checkout/checkout/country&country_id=' + this.value,
+		dataType: 'json',
+		beforeSend: function() {
+			$('select[name=\'country_id\']').prop('disabled', true);
+		},
+		complete: function() {
+			$('select[name=\'country_id\']').prop('disabled', false);
+		},
+		success: function(json) {
+			if (json['postcode_required'] == '1') {
+				$('input[name=\'postcode\']').parent().parent().addClass('required');
+			} else {
+				$('input[name=\'postcode\']').parent().parent().removeClass('required');
+			}
+
+			html = '<option value="">{{ text_select }}</option>';
+
+			if (json['zone'] && json['zone'] != '') {
+				for (i = 0; i < json['zone'].length; i++) {
+					html += '<option value="' + json['zone'][i]['zone_id'] + '"';
+
+					if (json['zone'][i]['zone_id'] == '{{ zone_id }}') {
+						html += ' selected="selected"';
+					}
+
+					html += '>' + json['zone'][i]['name'] + '</option>';
+				}
+			} else {
+				html += '<option value="0" selected="selected">{{ text_none }}</option>';
+			}
+
+			$('select[name=\'zone_id\']').html(html);
+		},
+		error: function(xhr, ajaxOptions, thrownError) {
+			alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+		}
+	});
+});
+
+$('select[name=\'country_id\']').trigger('change');
+			// Load cities when zone is chosen
+$('#collapse-payment-address').on('change', 'select[name=\'zone_id\']', function() {
+	var zone_id = this.value;
+	var $citySelect = $('#input-payment-city');
+	if (!zone_id) {
+		$citySelect.html('<option value="">{{ text_select }}</option>');
+		return;
+	}
+	$.ajax({
+		url: 'index.php?route=localisation/city&zone_id=' + zone_id,
+		dataType: 'json',
+		success: function(json) {
+			var html = '<option value="">{{ text_select }}</option>';
+			if (json && json.length) {
+				for (var i = 0; i < json.length; i++) {
+					var name = json[i]['name'];
+					html += '<option value="' + name.replace(/"/g, '&quot;') + '">' + name + '</option>';
+				}
+			}
+			$citySelect.html(html);
+		}
+	});
+});
+</script>
+	{% if key %}
+<script>
+if (typeof google === 'undefined' || typeof google.maps === 'undefined') {
+  var gscript = document.createElement('script');
+  gscript.src = "https://maps.googleapis.com/maps/api/js?libraries=places&key={{ key }}";
+  document.head.appendChild(gscript);
+}
+</script>
+
+<script>
+var paymentMap, paymentMarkers = [];
+var defaultLat = 30.9, defaultLng = 75.8;
+var paymentMapLoaded = false;
+
+function paymentMapInit(lat, lng) {
+  var canvas = document.getElementById('payment-map-canvas');
+  if (!canvas) return;
+
+  var latNum = parseFloat(lat), lngNum = parseFloat(lng);
+  if (isNaN(latNum) || isNaN(lngNum)) { latNum = defaultLat; lngNum = defaultLng; }
+
+  var initialPoint = new google.maps.LatLng(latNum, lngNum);
+  var mapOptions = { zoom: 15, center: initialPoint };
+
+  paymentMap = new google.maps.Map(canvas, mapOptions);
+
+  google.maps.event.addListener(paymentMap, 'click', function(event) {
+    paymentAddMarker(event.latLng);
+    paymentSaveData(event);
+  });
+
+  paymentAddMarker(initialPoint);
+
+  var searchInput = document.getElementById('input-payment-address-1');
+  if (searchInput) {
+    var autocomplete = new google.maps.places.Autocomplete(searchInput, { types: ['geocode'] });
+    google.maps.event.addListener(autocomplete, 'place_changed', function() {
+      var place = autocomplete.getPlace();
+      if (place.geometry && place.geometry.location) {
+        paymentMap.setCenter(place.geometry.location);
+        paymentAddMarker(place.geometry.location);
+        $('#input-latitude-payment').val(place.geometry.location.lat());
+        $('#input-longitude-payment').val(place.geometry.location.lng());
+      }
+    });
+  }
+}
+
+function paymentAddMarker(location) {
+  paymentMarkers.forEach(function(m) { m.setMap(null); });
+  paymentMarkers = [];
+  var marker = new google.maps.Marker({ position: location, map: paymentMap, draggable: true });
+  google.maps.event.addListener(marker, 'dragend', function(event) { paymentSaveData(event); });
+  paymentMarkers.push(marker);
+}
+
+function paymentSaveData(event) {
+  var lat = event.latLng.lat(), lng = event.latLng.lng();
+  $('#input-latitude-payment').val(lat);
+  $('#input-longitude-payment').val(lng);
+
+  var geocoder = new google.maps.Geocoder();
+  geocoder.geocode({ location: { lat: lat, lng: lng } }, function(results, status) {
+    if (status === 'OK' && results[0]) {
+      $('#input-payment-address-1').val(results[0].formatted_address);
+    }
+  });
+}
+
+/* 🔥 init ONLY when map div becomes visible */
+function initpaymentMapWhenVisible() {
+  if (paymentMapLoaded) return;
+  var el = document.getElementById('payment-map-canvas');
+  if (!el) return;
+
+  var rect = el.getBoundingClientRect();
+  if (rect.width > 0 && rect.height > 0) {
+    paymentMapLoaded = true;
+    var whLat = '{{ latitude }}', whLng = '{{ longitude }}';
+    if (whLat && whLng && !isNaN(parseFloat(whLat))) {
+      paymentMapInit(whLat, whLng);
+    } else {
+      paymentMapInit(defaultLat, defaultLng);
+    }
+  }
+}
+
+$(window).on('load', function() {
+  setTimeout(initpaymentMapWhenVisible, 800);
+});
+
+$(document).on('click change', function() {
+  setTimeout(initpaymentMapWhenVisible, 500);
+});
+</script>
+
+<style>
+#payment-map-canvas {
+  height: 300px !important;
+  width: 100%;
+  border: 1px solid #ccc;
+}
+/* == TMD New css code start here == */
+.site-wrapper #checkout-checkout .tmdmapcode > .col-sm-12 {
+    display: block;
+}
+.site-wrapper #checkout-checkout .tmdmapcode > .col-sm-12 .row{
+   margin-left: -10px;
+   margin-right: -10px;
+}
+.site-wrapper #checkout-checkout .tmdmapcode > .col-sm-12 .row > div{
+   padding-left: 10px;
+   padding-right: 10px;
+}
+.site-wrapper #checkout-checkout .tmdmapcode .form-control {
+    width: 100%;
+    min-width: 100%;
+    min-width: 100%;
+}
+.site-wrapper #checkout-checkout .fa {
+	font-size: 22px;
+}
+/* == TMD New css code end here == */
+</style>
+{% endif %}		
+
+
+
+https://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyBq-23EUBHM6cv_I2kb3-SXll4RC3NPcAw
+
+
+import React, { memo, useRef, useState, useEffect } from 'react';
+import { useIsFocused } from '@react-navigation/native';
+import { View, Text, StyleSheet, Platform } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+import LottieView from 'lottie-react-native';
+import {
+  LiquidGlassView,
+  LiquidGlassContainerView,
+  isLiquidGlassSupported,
+} from '@callstack/liquid-glass';
+import { InteractionManager } from 'react-native';
+
+const GlassContainer = ({ title, children, style, padding, borderRadius }) => {
+  
+
+
+  const radius = borderRadius ? borderRadius : 18;
+    const isFocused = useIsFocused(); // Crucial for navigation stability
+  const [layoutReady, setLayoutReady] = useState(false);
+
+    // If navigation is "freezing" the view, this key change forces a native re-mount
+  const navigationKey = Platform.OS === 'ios' ? `glass-${isFocused}` : 'glass-static';
+
+
+
+  return (
+    <View  style={[styles.glowWrapper, style]}>
+
+      {/* --- Liquid Glass Layer (NEW) --- */}
+
+        <LiquidGlassView
+         key={navigationKey} // Forces re-init when screen is focused
+          style={[{ borderRadius: radius, }, !isLiquidGlassSupported && { backgroundColor: 'rgba(255,255,255,0.5)' }]}
+          interactive
+          effect="clear"
+        >
+
+          <View
+            style={[
+              styles.wrapper,
+              {
+                padding: padding ? padding : 14,
+                borderRadius: radius,
+                // Ensure background is transparent so glass can be seen
+              backgroundColor: !isLiquidGlassSupported ? 'rgba(255,255,255,0.08)' : 'transparent',
+
+               
+              },
+            ]}
+          >
+            {title && <Text style={styles.title}>{title}</Text>}
+            <View style={[styles.content, style]}>{children}</View>
+
+          </View>
+        </LiquidGlassView>
+
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  glowWrapper: {
+    borderRadius: 18,
+    marginVertical: 8,
+
+    // iOS shadow (floating depth)
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.25,
+    shadowRadius: 20,
+
+    // Android elevation
+    elevation: 12,
+  },
+  wrapper: {
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.5)',
+    overflow: 'hidden',
+  },
+  title: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#fff',
+    marginBottom: 8,
+  },
+  content: {
+    gap: 4,
+  },
+  edge: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    height: 5,   // thickness of top/bottom highlight
+  },
+
+  edgeVertical: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    width: 5,   // thickness of left/right highlight
+  },
+
+  top: {
+    top: 0,
+  },
+
+  bottom: {
+    bottom: 0,
+  },
+
+  left: {
+    left: 0,
+  },
+
+  right: {
+    right: 0,
+  },
+});
+
+export default memo(GlassContainer);
+
+
+
+

@@ -1,8 +1,9 @@
-import { View, Text, Modal, TouchableOpacity, Image, Touchable } from 'react-native'
+import { View, Text, Modal, TouchableOpacity, Image, Touchable, ImageBackground, Dimensions } from 'react-native'
 import React from 'react'
 import { IconComponentClose } from '../constants/IconComponents'
 import { useCustomContext } from '../hooks/CustomeContext';
 import { useNavigation } from '@react-navigation/native';
+import { BlurView } from '@react-native-community/blur';
 
 
 const NotificationAlert = () => {
@@ -30,7 +31,7 @@ const NotificationAlert = () => {
             console.log("error", error);
         }
     }
-
+    const { width } = Dimensions.get('window');
 
 
     return (
@@ -41,15 +42,40 @@ const NotificationAlert = () => {
             onRequestClose={() => { NotificationSetModal(false); NotificationSetModalData(null) }}>
 
             <View style={{ width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.5)', alignItems: 'center', justifyContent: 'center' }}>
-                <View style={{ width: '80%', height: 'auto', backgroundColor: 'white', padding: 10, borderRadius: 12, gap: 10 }}>
+                                    <BlurView
+                        style={{
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                        }}
+                        blurType="dark"     // light | dark | extraDark
+                        blurAmount={15}     // intensity
+                        reducedTransparencyFallbackColor="rgba(0,0,0,0.6)"
+                    />
+
+                                      <ImageBackground
+                                                source={require('../assets/images/backgroundimage.png')}
+                                                resizeMode="cover"
+                                                style={{
+                                                    width: width * 0.80,   // 👈 THIS FIXES IT
+                                                    borderRadius: 16,
+                                                    overflow: 'hidden',
+                                                }}
+                                            >
+                <View style={{ height: 'auto', padding: 10, borderRadius: 12, gap: 10 }}>
+
+
+
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <Text style={{ textTransform: 'capitalize', fontSize: 20, fontWeight: '600' }}>{`ZaanseBedden`}</Text>
+                        <Text style={{ textTransform: 'capitalize', fontSize: 20, fontWeight: '600' }}>{`ksasparkle`}</Text>
                         <TouchableOpacity onPress={() => NotificationSetModal(false)}>
                             <IconComponentClose size={32} />
                         </TouchableOpacity>
                     </View>
                     <Text style={{ textTransform: 'capitalize', fontSize: 20, fontWeight: '600' }}>{NotificationModalData?.notification?.title}</Text>
-                    <Text style={{ textTransform: 'capitalize', fontSize: 18, fontWeight: '400', flexWrap: 'wrap' }}>{NotificationModalData?.notification?.title}</Text>
+                    <Text style={{ textTransform: 'capitalize', fontSize: 18, fontWeight: '400', flexWrap: 'wrap' }}>{NotificationModalData?.notification?.body}</Text>
                     {NotificationModalData?.notification?.android?.imageUrl &&
                         <View style={{ width: '100%', height: 100 }}>
                             <Image source={{ uri: NotificationModalData?.notification?.android?.imageUrl }} style={{ width: '100%', height: '100%', resizeMode: 'contain', }} />
@@ -63,6 +89,7 @@ const NotificationAlert = () => {
 
 
                 </View>
+</ImageBackground>
             </View>
 
         </Modal>

@@ -35,16 +35,22 @@ const GlassContainer = ({ title, children, style, padding, borderRadius }) => {
 
 
   const radius = borderRadius ? borderRadius : 18;
-    const [layoutReady, setLayoutReady] = useState(false);
-    
+    const isFocused = useIsFocused(); // Crucial for navigation stability
+  const [layoutReady, setLayoutReady] = useState(false);
+
+    // If navigation is "freezing" the view, this key change forces a native re-mount
+  const navigationKey = Platform.OS === 'ios' ? `glass-${isFocused}` : 'glass-static';
+
+
 
   return (
-    <View   onLayout={() => setLayoutReady(true)} style={[styles.glowWrapper, style]}>
+    <View  style={[styles.glowWrapper, style]}>
 
       {/* --- Liquid Glass Layer (NEW) --- */}
-{layoutReady && (
+
         <LiquidGlassView
-          style={[{ borderRadius: radius, }, !isLiquidGlassSupported && { backgroundColor: 'rgba(255,255,255,0.5)' }]}
+         key={navigationKey} // Forces re-init when screen is focused
+          style={[{ borderRadius: radius, }, !isLiquidGlassSupported && { backgroundColor: 'transparent' }]}
           interactive
           effect="clear"
         >
@@ -55,12 +61,10 @@ const GlassContainer = ({ title, children, style, padding, borderRadius }) => {
               {
                 padding: padding ? padding : 14,
                 borderRadius: radius,
-                backgroundColor:
-                  !isLiquidGlassSupported
-                    ? Platform.OS === 'ios'
-                      ? 'transparent'
-                      : 'rgba(255,255,255,0.08)'
-                    : 'transparent',
+                // Ensure background is transparent so glass can be seen
+              backgroundColor: !isLiquidGlassSupported ? 'rgba(255,255,255,0.08)' : 'transparent',
+
+                // backgroundColor: !isLiquidGlassSupported ? Platform.OS === 'ios' ? 'transparent' : 'rgba(255,255,255,0.08)'  : 'transparent',
               },
             ]}
           >
@@ -118,7 +122,6 @@ const GlassContainer = ({ title, children, style, padding, borderRadius }) => {
 
           </View>
         </LiquidGlassView>
-      )}
 
     </View>
   );
@@ -136,7 +139,7 @@ const styles = StyleSheet.create({
     shadowRadius: 20,
 
     // Android elevation
-    elevation: 12,
+    // elevation: 12,
   },
   wrapper: {
     borderWidth: 1,

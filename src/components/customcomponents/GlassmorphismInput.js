@@ -1,5 +1,5 @@
 import React, { memo, useState } from 'react';
-import { View, TextInput, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import { View, TextInput, StyleSheet, TouchableOpacity, Dimensions, I18nManager } from 'react-native';
 import { BlurView } from '@react-native-community/blur';
 import LinearGradient from 'react-native-linear-gradient';
 import { Image } from 'react-native';
@@ -60,6 +60,9 @@ const width = Dimensions.get("window").width;
              value={value}                 // ✅ IMPORTANT
             onChangeText={onChangeText}   // ✅ IMPORTANT
             editable={editable !== false}
+            textAlign={ I18nManager.isRTL ? 'right' : 'left'}
+            
+
 
           />
 
@@ -92,7 +95,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.4,
     shadowRadius: 8,
-    elevation: 8,
+    // elevation: 8,
     width: "100%",
   },
   borderGlow: {
@@ -117,7 +120,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     color: '#FFFFFF',
     fontSize: 16,
-    
+    paddingStart:20
   },
   iconContainer: {
     paddingRight: 15,

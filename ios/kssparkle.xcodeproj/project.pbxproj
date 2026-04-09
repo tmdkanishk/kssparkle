@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
+		8E1F4C2C43B34CDF8AE9A53D /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C7D80EC685FE46969D463CDA /* GoogleService-Info.plist */; };
 		8E4D82866DDD51E03C06EFAA /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 55F534029B432319AF717C4F /* PrivacyInfo.xcprivacy */; };
 		918906F6E33124B0293577F7 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = C54BCEF1AF997C368DF3337E /* ExpoModulesProvider.swift */; };
 		ACBBBEF894D1EEB70078DED9 /* Pods_kssparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5447E61014BCAFB4A4BE550F /* Pods_kssparkle.framework */; };
@@ -17,7 +18,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		13B07F961A680F5B00A75B9A /* kssparkle.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = kssparkle.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		13B07F961A680F5B00A75B9A /* Ksasparkle.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Ksasparkle.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = kssparkle/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = kssparkle/Info.plist; sourceTree = "<group>"; };
 		5447E61014BCAFB4A4BE550F /* Pods_kssparkle.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_kssparkle.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -26,6 +27,7 @@
 		AD5F475E9A1B216C49E40580 /* Pods-kssparkle.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-kssparkle.debug.xcconfig"; path = "Target Support Files/Pods-kssparkle/Pods-kssparkle.debug.xcconfig"; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
 		C54BCEF1AF997C368DF3337E /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-kssparkle/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
+		C7D80EC685FE46969D463CDA /* GoogleService-Info.plist */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "kssparkle/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		CA25D85A6E4A158D8DE22393 /* Pods-kssparkle.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-kssparkle.release.xcconfig"; path = "Target Support Files/Pods-kssparkle/Pods-kssparkle.release.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F11748412D0307B40044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = kssparkle/AppDelegate.swift; sourceTree = "<group>"; };
@@ -54,6 +56,7 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
 				55F534029B432319AF717C4F /* PrivacyInfo.xcprivacy */,
+				C7D80EC685FE46969D463CDA /* GoogleService-Info.plist */,
 			);
 			name = kssparkle;
 			sourceTree = "<group>";
@@ -109,7 +112,7 @@
 		83CBBA001A601CBA00E9B192 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				13B07F961A680F5B00A75B9A /* kssparkle.app */,
+				13B07F961A680F5B00A75B9A /* Ksasparkle.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -154,7 +157,7 @@
 			);
 			name = kssparkle;
 			productName = kssparkle;
-			productReference = 13B07F961A680F5B00A75B9A /* kssparkle.app */;
+			productReference = 13B07F961A680F5B00A75B9A /* Ksasparkle.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -197,6 +200,7 @@
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
 				8E4D82866DDD51E03C06EFAA /* PrivacyInfo.xcprivacy in Resources */,
+				8E1F4C2C43B34CDF8AE9A53D /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -388,7 +392,8 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = kssparkle/kssparkle.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = B6V3ASHDT3;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = BUTS4JS55S;
 				ENABLE_BITCODE = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
@@ -425,7 +430,8 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = kssparkle/kssparkle.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = B6V3ASHDT3;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = BUTS4JS55S;
 				INFOPLIST_FILE = kssparkle/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (

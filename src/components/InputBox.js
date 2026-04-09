@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, I18nManager } from 'react-native'
 import React from 'react'
 import { useCustomContext } from '../hooks/CustomeContext';
 import GlassContainer from './customcomponents/GlassContainer';
@@ -51,6 +51,7 @@ const InputBox = ({
                     onChangeText={onChangeText}
                     multiline={multiline || false}
                     editable={editable !== false}
+                    textAlign={I18nManager.isRTL ? 'right' : 'left'}
                     style={[
                         styles.input,
                         {
@@ -108,6 +109,7 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontSize: 15,
         paddingVertical: 0,
+        paddingStart:10
     },
     error: {
         color: '#ff6b6b',

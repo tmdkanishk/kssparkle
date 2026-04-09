@@ -4,6 +4,7 @@ import GlassContainer from "./GlassContainer";
 import GlassButton from "./GlassButton";
 
 const screenWidth = Dimensions.get("window").width;
+const screenHeight = Dimensions.get("window").height;
 
 const CategoryCard = ({ item, onPress }) => {
   return (
@@ -15,7 +16,7 @@ const CategoryCard = ({ item, onPress }) => {
       <GlassContainer
         style={{
           width: screenWidth * 0.4,
-          height: 220,
+          height: screenHeight * 0.25,
           justifyContent: "center",
           alignItems: "center",
           padding: 0,
@@ -25,24 +26,25 @@ const CategoryCard = ({ item, onPress }) => {
         {/* IMAGE */}
         <View
           style={{
-            width: "100%",
-            height: "65%",
+            width: "90%",
+            height: "75%",
             alignItems: "center",
-            marginBottom: 16,
+            padding:10
+            // marginBottom: 16,
           }}
         >
           <Image
             source={{ uri: item.image }}
             style={{ width: "100%", height: "100%" }}
-            resizeMode="contain"
+            // resizeMode="contain"
           />
         </View>
 
         {/* BUTTON */}
         <GlassButton
           title={item.name}
-          textStyle={{ fontSize: 10, fontWeight: "600" }}
-          style={{ paddingVertical: 8 , width:130}}
+          textStyle={{ fontSize: 8, fontWeight: "600" }}
+          style={{ width:150}}
           innerStyle={{ }}
         />
       </GlassContainer>

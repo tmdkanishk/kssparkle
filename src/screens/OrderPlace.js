@@ -57,6 +57,9 @@ import { buildMoyasarConfig } from "../utils/buildMoyasarConfig";
 import GlassSwipeButton from "../components/customcomponents/GlassSwipeButton";
 import { useFocusEffect } from "@react-navigation/native";
 import { buildApplePayConfig } from "../utils/buildApplePayConfig";
+import { parsePriceHtml } from "../utils/parsePriceHtml";
+import { API_KEY, BASE_URL } from "../utils/config";
+import axios, { HttpStatusCode } from "axios";
 
 const OrderPlace = ({ navigation }) => {
   const { Colors, EndPoint, GlobalText } = useCustomContext();
@@ -126,8 +129,11 @@ const OrderPlace = ({ navigation }) => {
       console.log("result in fetchAllOrderSummary", result);
       // console.log("confirm api response", result?.totalsprice);
       const finalTotal = result?.totals?.[result?.totals?.length - 1]?.text;
+      const { text, image } = parsePriceHtml(finalTotal);
 
-      setTotal(finalTotal);
+      console.log("total price in order Place", text)
+
+      setTotal(text);
 
       setProductInfo(result?.products);
       setTotalsInfo(result?.totals);
@@ -140,6 +146,12 @@ const OrderPlace = ({ navigation }) => {
       setGlobalLoading(false);
     }
   };
+
+  const extractAmount = (value = '') => {
+  const cleaned = value.replace(/,/g, '');
+  const match = cleaned.match(/\d+(\.\d+)?/);
+  return match ? match[0] : '';
+};
 
 
 
@@ -213,12 +225,10 @@ const OrderPlace = ({ navigation }) => {
           break;
 
         case "moyasar3":
-          console.log("hit moyasar3")
+          console.log("hit moyasar3", extractAmount(isTotal))
           const moyasarConfig = buildMoyasarConfig({
-            amount: isTotal
-              ?.replace(/[^0-9.]/g, '')   // remove $, commas etc
-              ?.trim(),
-            orderId: isOtherInfo?.order_id,
+            amount: extractAmount(isTotal),
+            orderId: isOtherInfo?.order_id,     
             publishableKey: "pk_live_Mijc7Htr4NhyQG27DUdp9DgALzzWSN4yhXS5eH8M",
           });
 
@@ -230,12 +240,24 @@ const OrderPlace = ({ navigation }) => {
 
           break;
 
+        case "tamarapay":
+          console.log("tamarapay");
+
+          const res = await getTamaraCheckoutUrl();
+          console.log("res tamara checkout",res);
+
+          if (res?.checkout_url) {
+            navigation.navigate("TamaraPaymentScreen", {
+              checkoutUrl: res.checkout_url,
+            });
+          }
+
+          break;
+
         case "applepay":
           console.log("apple_pay")
-           const appleConfig = buildApplePayConfig({
-            amount: isTotal
-              ?.replace(/[^0-9.]/g, '')   // remove $, commas etc
-              ?.trim(),
+          const appleConfig = buildApplePayConfig({
+            amount: extractAmount(isTotal),
             orderId: isOtherInfo?.order_id,
             publishableKey: "pk_live_Mijc7Htr4NhyQG27DUdp9DgALzzWSN4yhXS5eH8M",
           });
@@ -308,21 +330,23 @@ const OrderPlace = ({ navigation }) => {
   const createCheckoutSession = async () => {
     try {
 
+      console.log("createCheckoutSession working", isTotal)
+
       // total is coming from state (setTotal)
-      const amount = isTotal
-        ?.replace(/[^0-9.]/g, '')   // remove $, commas etc
-        ?.trim();
+      const amount = extractAmount(isTotal);
 
       const cur = await _retrieveData('SELECT_CURRENCY');
 
-      const currency = cur?.code || "SAR";
+      console.log("tabby payload currency", cur)
+
+      const currency = cur?.code;
 
       const payload = {
         merchant_code: "sa",
         lang: "en",
         payment: {
           amount: amount,
-          currency: "SAR",
+          currency: currency,
           buyer: {
             email: email,
             phone: telephone,
@@ -636,6 +660,40 @@ const OrderPlace = ({ navigation }) => {
 
   };
 
+  const getTamaraCheckoutUrl = async () => {
+    try {
+      const url = `${BASE_URL}${EndPoint?.tamara_endPoint}`;
+      const lang = await _retrieveData("SELECT_LANG");
+      const cur = await _retrieveData("SELECT_CURRENCY");
+      const customerId = await _retrieveData("CUSTOMER_ID");
+      const sessionId = await _retrieveData('SESSION_ID');
+      const headers = {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Key: API_KEY,
+      };
+
+
+      const body = {
+        order_id: isOtherInfo?.order_id,
+        code: lang?.code,
+        currency: cur?.code,
+        sessionid: sessionId,
+        customer_id: customerId,
+      };
+      const response = await axios.post(url, body, { headers: headers });
+
+      if (response.status === HttpStatusCode.Ok) {
+        console.log("getTamaraCheckoutUrl", response?.data);
+        return response?.data
+      }
+    } catch (error) {
+      console.log("error", error.response)
+    } finally {
+
+    }
+  };
+
+
   return (
 
     <>
@@ -825,7 +883,11 @@ const OrderPlace = ({ navigation }) => {
                           >
                             <View style={{ width: '70%' }}>
                               <Text style={commonStyles.text}>
-                                {item?.title}:
+                                <PriceView
+                                    priceHtml={item?.title}
+                                    textStyle={{ fontWeight: '700' }}
+                                  />
+                                {/* {item?.title}: */}
                               </Text>
                             </View>
                             <View style={{ alignItems: "flex-end" }}>
@@ -846,7 +908,6 @@ const OrderPlace = ({ navigation }) => {
                     <GlassContainer
                       style={{
                         padding: 10,
-                        // borderWidth: 1,
                         borderColor: Colors.lightGray,
                         borderRadius: 8,
                       }}
@@ -862,15 +923,28 @@ const OrderPlace = ({ navigation }) => {
                           {isLabel?.placeorderpayinfo_heading}
                         </Text>
                       </View>
+
                       <View style={{ gap: 5, paddingVertical: 12 }}>
                         <Text style={commonStyles.text}>
                           {isLabel?.placeorderpaymethod_label}
                         </Text>
-                        <Text style={commonStyles.smallHeading}>
-                          {isOtherInfo?.payment_method?.title}
-                        </Text>
+
+                        {/* Conditional Rendering for Tamara Badge */}
+                        {isOtherInfo?.payment_method?.code === 'tamarapay' ? (
+                          <PriceView
+                            priceHtml={isOtherInfo?.payment_method?.title}
+                            textStyle={commonStyles.smallHeading} // Keep the summary style
+                            width={70}
+                            height={28}
+                          />
+                        ) : (
+                          <Text style={commonStyles.smallHeading}>
+                            {isOtherInfo?.payment_method?.title}
+                          </Text>
+                        )}
                       </View>
                     </GlassContainer>
+
 
                     <GlassContainer
                       style={{

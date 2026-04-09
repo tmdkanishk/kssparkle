@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Image, Alert, Animated, useWindowDimensions, KeyboardAvoidingView, TextInput } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Image, Alert, Animated, useWindowDimensions, KeyboardAvoidingView, TextInput, I18nManager } from "react-native";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import GlassContainer from "../components/customcomponents/GlassContainer";
 import GlassButton from "../components/customcomponents/GlassButton";
@@ -17,6 +17,11 @@ import { addBillingAndShippingAddress } from "../services/addBillingAndShippingA
 import { getMyAddresses } from "../services/getMyAddresses";
 import { useLoading } from "../hooks/LoadingProvider";
 import FailedModal from "../components/FailedModal";
+import LocationPicker from "../components/LocationPicker";
+import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
+import MapView, { Marker } from "react-native-maps";
+import * as Location from 'expo-location';
+import { IconComponentLocation } from "../constants/IconComponents";
 
 const ChooseDeliveryAddress = () => {
 
@@ -46,6 +51,8 @@ const ChooseDeliveryAddress = () => {
     const [giftDetails, setGiftDetails] = useState({
         fullName: '',
         phone: '',
+        latitude: 24.7136, // Riyadh Default
+        longitude: 46.6753,
         address: '',
         city: '',
         postCode: '',
@@ -55,12 +62,83 @@ const ChooseDeliveryAddress = () => {
     const [failedModal, setFailedModal] = useState(false);
     const [failedModalText, setFailedModalText] = useState(null);
     const [giftErrors, setGiftErrors] = useState({});
+    const [latitude, setLatitude] = useState(23.8859);
+    const [longitude, setLongitude] = useState(45.0792);
+    const [isAddress1, setAddress1] = useState();
 
     const scrollRef = useRef(null);
 
 
 
+    const googleRef = useRef(null);
+    const mapRef = useRef(null);
 
+    const getCurrentLocation = async () => {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+            alert('Permission to access location was denied');
+            return;
+        }
+
+        let location = await Location.getCurrentPositionAsync({});
+        const { latitude, longitude } = location.coords;
+
+        // Update state
+        setGiftDetails(prev => ({
+            ...prev,
+            latitude: latitude,
+            longitude: longitude
+        }));
+
+        // Animate map to user
+        mapRef.current?.animateToRegion({
+            latitude,
+            longitude,
+            latitudeDelta: 0.005,
+            longitudeDelta: 0.005,
+        }, 1000);
+    }
+
+    // useEffect(() => {
+    //     // If we have coords but no address text in the search bar yet
+    //     if (giftDetails?.latitude && giftDetails?.longitude && !giftDetails?.address) {
+    //         fetchAddress(giftDetails.latitude, giftDetails.longitude);
+    //     }
+    // }, []); // Runs once on load
+
+
+    useEffect(() => {
+        if (giftDetails?.latitude && giftDetails?.longitude) {
+            fetchAddress(giftDetails?.latitude, giftDetails?.longitude);
+        }
+    }, [giftDetails?.latitude, giftDetails?.longitude]);
+
+    const fetchAddress = async (lat, lng) => {
+        try {
+            const apiKey = "AIzaSyBq-23EUBHM6cv_I2kb3-SXll4RC3NPcAw"
+            const url =
+                `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${apiKey}`;
+
+            const response = await axios.get(url);
+
+            if (
+                response.data.status === "OK" &&
+                response.data.results.length > 0
+            ) {
+                const formattedAddress = response.data.results[0].formatted_address;
+
+                setGiftDetails(prev => ({ ...prev, address: formattedAddress }));
+
+                setGiftErrors(prev => ({ ...prev, gift_address_1: null }));
+
+                googleRef.current?.setAddressText(formattedAddress);
+
+            }
+
+        } catch (error) {
+            console.log("Geocode error", error);
+        }
+    };
 
     useFocusEffect(
         useCallback(() => {
@@ -193,15 +271,15 @@ const ChooseDeliveryAddress = () => {
             };
 
             const body = {
-                code: 'en-gb',
+                code: lang?.code,
                 currency: cur?.code,
-                customer_id: user ? user[0]?.customer_id : null,
+                customer_id: user ? user : null,
                 sessionid: sessionId
             }
 
             const response = await axios.post(url, body, { headers: headers });
 
-            console.log("fetchCheckOutText response :", response?.data);
+            console.log("fetchCheckOutText response :", response?.data, url);
 
             if (response.status === HttpStatusCode.Ok) {
                 setLabel(response.data?.text);
@@ -282,145 +360,143 @@ const ChooseDeliveryAddress = () => {
 
     return (
         <>
-        <BackgroundWrapper>
-            <KeyboardAvoidingView
-                style={{ flex: 1 }}
-                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            >
-                {/* <View style={{ flex: 1 }}> */}
-                <ScrollView
-                    showsVerticalScrollIndicator={false}
-                    keyboardShouldPersistTaps="handled"
-                    contentContainerStyle={{
-                        paddingHorizontal: 16,
-                        paddingBottom: 20, // important for footer space
-                        marginTop: Platform.OS === "ios" ? 60 : 10
-                    }}
+            <BackgroundWrapper>
+                <KeyboardAvoidingView
+                    style={{ flex: 1 }}
+                    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                 >
-                    <TouchableOpacity style={{ marginTop: 20, marginLeft: 10 }} onPress={() => navigation.goBack()}>
-                        <Image source={require("../assets/images/back.png")} style={{ width: 18, height: 18, tintColor: "#fff", }} />
-                    </TouchableOpacity>
-                    {/* Header */}
-                    <View style={styles.header}>
-                        {/* <TouchableOpacity onPress={() => navigation.goBack()}>
+                    {/* <View style={{ flex: 1 }}> */}
+                    <ScrollView
+                        showsVerticalScrollIndicator={false}
+                        keyboardShouldPersistTaps="handled"
+                        contentContainerStyle={{
+                            paddingHorizontal: 16,
+                            paddingBottom: 20, // important for footer space
+                            marginTop: Platform.OS === "ios" ? 60 : 10
+                        }}
+                    >
+                        <TouchableOpacity style={{ marginTop: 20, marginLeft: 10 }} onPress={() => navigation.goBack()}>
+                            <Image source={require("../assets/images/back.png")} style={{ width: 18, height: 18, tintColor: "#fff", }} />
+                        </TouchableOpacity>
+                        {/* Header */}
+                        <View style={styles.header}>
+                            {/* <TouchableOpacity onPress={() => navigation.goBack()}>
                         <Ionicons name="arrow-back" size={24} color="#fff" />
                     </TouchableOpacity> */}
-                        <Text style={styles.title}>Choose Delivery Address</Text>
-                        <TouchableOpacity onPress={() => { navigation.navigate('AddNewAddress') }} style={styles.addNewBtn}>
-                            <Text style={styles.addNewText}>Add New</Text>
-                        </TouchableOpacity>
-                    </View>
+                            <Text style={styles.title}>{isLabel?.usedifershipaddress_label}</Text>
+                            <TouchableOpacity onPress={() => { navigation.navigate('AddNewAddress') }} style={styles.addNewBtn}>
+                                <Text style={styles.addNewText}>{isLabel?.addreswanttoaddnewaddrs_label}</Text>
+                            </TouchableOpacity>
+                        </View>
 
 
 
 
 
-                    {defaultAddressArray.length > 0 && (
-                        <>
-                            <Text style={styles.sectionTitle}>Default Address</Text>
+                        {defaultAddressArray.length > 0 && (
+                            <>
+                                <Text style={styles.sectionTitle}>{isLabel?.defaultaddress}</Text>
 
-                            {defaultAddressArray.map(item => (
-                                <GlassContainer
-                                    key={item.address_id}
-                                    style={styles.addressCard}
-                                >
-                                    <View style={styles.addressRow}>
-                                        <TouchableOpacity
-                                            onPress={() => setSelectedAddress(item.address_id)}
-                                            style={styles.radioCircle}
-                                        >
-                                            {selectedAddress === item.address_id && (
-                                                <View style={styles.radioInner} />
-                                            )}
-                                        </TouchableOpacity>
+                                {defaultAddressArray.map(item => (
+                                    <GlassContainer
+                                        key={item.address_id}
+                                        style={styles.addressCard}
+                                    >
+                                        <View style={styles.addressRow}>
+                                            <TouchableOpacity
+                                                onPress={() => setSelectedAddress(item.address_id)}
+                                                style={styles.radioCircle}
+                                            >
+                                                {selectedAddress === item.address_id && (
+                                                    <View style={styles.radioInner} />
+                                                )}
+                                            </TouchableOpacity>
 
-                                        <Text style={styles.name}>
-                                            {item.firstname} {item.lastname}
+                                            <Text style={styles.name}>
+                                                {item.firstname} {item.lastname}
+                                            </Text>
+
+                                            <View style={styles.tagBox}>
+                                                <Text style={styles.tagText}>{isLabel?.default}</Text>
+                                            </View>
+                                        </View>
+
+                                        <Text style={styles.addressText}>
+                                            {item.address_1} {item.address_2}, {item.city}
                                         </Text>
 
-                                        <View style={styles.tagBox}>
-                                            <Text style={styles.tagText}>Default</Text>
-                                        </View>
-                                    </View>
-
-                                    <Text style={styles.addressText}>
-                                        {item.address_1} {item.address_2}, {item.city}
-                                    </Text>
-
-                                    <View style={styles.btnRow}>
-                                        {/* <TouchableOpacity onPress={()=>deleteConfirmationAlert(item?.address_id)} style={styles.boxBtn}>
+                                        <View style={styles.btnRow}>
+                                            {/* <TouchableOpacity onPress={()=>deleteConfirmationAlert(item?.address_id)} style={styles.boxBtn}>
                                             <Text style={styles.boxBtnText}>Remove</Text>
                                         </TouchableOpacity> */}
 
-                                        <TouchableOpacity
-                                            onPress={() =>
-                                                navigation.navigate('EditAddress', { item })
-                                            }
-                                            style={styles.boxBtn}
-                                        >
-                                            <Text style={styles.boxBtnText}>Edit</Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                </GlassContainer>
-                            ))}
-                        </>
-                    )}
+                                            <TouchableOpacity
+                                                onPress={() =>
+                                                    navigation.navigate('EditAddress', { item })
+                                                }
+                                                style={styles.boxBtn}
+                                            >
+                                                <Text style={styles.boxBtnText}>{isLabel?.addresschangebtn_label}</Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                    </GlassContainer>
+                                ))}
+                            </>
+                        )}
 
 
-                    {otherAddresses.length > 0 && (
-                        <>
-                            <Text style={[styles.sectionTitle, { marginTop: 24 }]}>
-                                Other Addresses
-                            </Text>
+                        {otherAddresses.length > 0 && (
+                            <>
+                                <Text style={[styles.sectionTitle, { marginTop: 24 }]}> {isLabel?.otheraddresses} </Text>
 
-                            {otherAddresses.map(item => (
-                                <GlassContainer
-                                    key={item.address_id}
-                                    style={styles.addressCard}
-                                >
-                                    <View style={styles.addressRow}>
-                                        <TouchableOpacity
-                                            onPress={() => setSelectedAddress(item.address_id)}
-                                            style={styles.radioCircle}
-                                        >
-                                            {selectedAddress === item.address_id && (
-                                                <View style={styles.radioInner} />
-                                            )}
-                                        </TouchableOpacity>
+                                {otherAddresses.map(item => (
+                                    <GlassContainer
+                                        key={item.address_id}
+                                        style={styles.addressCard}
+                                    >
+                                        <View style={styles.addressRow}>
+                                            <TouchableOpacity
+                                                onPress={() => setSelectedAddress(item.address_id)}
+                                                style={styles.radioCircle}
+                                            >
+                                                {selectedAddress === item.address_id && (
+                                                    <View style={styles.radioInner} />
+                                                )}
+                                            </TouchableOpacity>
 
-                                        <Text style={styles.name}>
-                                            {item.firstname} {item.lastname}
+                                            <Text style={styles.name}>
+                                                {item.firstname} {item.lastname}
+                                            </Text>
+
+                                            {/* <View style={styles.tagBox}>
+                                                <Text style={styles.tagText}>Address</Text>
+                                            </View> */}
+                                        </View>
+
+                                        <Text style={styles.addressText}>
+                                            {item.address_1} {item.address_2}, {item.city}
                                         </Text>
 
-                                        <View style={styles.tagBox}>
-                                            <Text style={styles.tagText}>Address</Text>
+                                        <View style={styles.btnRow}>
+                                            <TouchableOpacity onPress={() => deleteConfirmationAlert(item?.address_id)} style={styles.boxBtn}>
+                                                <Text style={styles.boxBtnText}>{isLabel?.remove}</Text>
+                                            </TouchableOpacity>
+
+                                            <TouchableOpacity
+                                                onPress={() =>
+                                                    navigation.navigate('EditAddress', { item })
+                                                }
+                                                style={styles.boxBtn}
+                                            >
+                                                <Text style={styles.boxBtnText}>{isLabel?.addresschangebtn_label}</Text>
+                                            </TouchableOpacity>
                                         </View>
-                                    </View>
+                                    </GlassContainer>
+                                ))}
+                            </>
+                        )}
 
-                                    <Text style={styles.addressText}>
-                                        {item.address_1} {item.address_2}, {item.city}
-                                    </Text>
-
-                                    <View style={styles.btnRow}>
-                                        <TouchableOpacity onPress={() => deleteConfirmationAlert(item?.address_id)} style={styles.boxBtn}>
-                                            <Text style={styles.boxBtnText}>Remove</Text>
-                                        </TouchableOpacity>
-
-                                        <TouchableOpacity
-                                            onPress={() =>
-                                                navigation.navigate('EditAddress', { item })
-                                            }
-                                            style={styles.boxBtn}
-                                        >
-                                            <Text style={styles.boxBtnText}>Edit</Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                </GlassContainer>
-                            ))}
-                        </>
-                    )}
-
-                    {/* <KeyboardAvoidingView
+                        {/* <KeyboardAvoidingView
                         style={{ flex: 1 }}
                         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
                     >
@@ -428,203 +504,353 @@ const ChooseDeliveryAddress = () => {
                             keyboardShouldPersistTaps="handled"
                             contentContainerStyle={{ padding: 10 }}
                         > */}
-                    {/* 🔹 Gift Section */}
-                    <View style={styles.giftSection}>
-                        <TouchableOpacity
-                            style={styles.giftWrapRow}
-                            activeOpacity={0.8}
-                            // onPress={() => setIsGiftWrap(prev => !prev)}
-                            onPress={() => {
-                                setIsGiftWrap(prev => {
-                                    const newValue = !prev;
+                        {/* 🔹 Gift Section */}
+                        <View style={styles.giftSection}>
+                            <TouchableOpacity
+                                style={styles.giftWrapRow}
+                                activeOpacity={0.8}
+                                // onPress={() => setIsGiftWrap(prev => !prev)}
+                                onPress={() => {
+                                    setIsGiftWrap(prev => {
+                                        const newValue = !prev;
 
-                                    // if (newValue) {
-                                    //     // If gift wrap is selected → unselect address
-                                    //     setSelectedAddress(null);
-                                    // }
+                                        // if (newValue) {
+                                        //     // If gift wrap is selected → unselect address
+                                        //     setSelectedAddress(null);
+                                        // }
 
-                                    return newValue;
-                                });
-                            }}
+                                        return newValue;
+                                    });
+                                }}
 
-                            hitSlop={20}
-                        >
-                            <View style={styles.radioOuterSmall}>
-                                {isGiftWrap && <View style={styles.radioInnerSmall} />}
-                            </View>
-
-                            <Text style={styles.giftWrapText}>Gift Wrap</Text>
-                        </TouchableOpacity>
-
-                        {isGiftWrap && (
-                            <>
-                                <View style={styles.giftHeader}>
-                                    <Text style={styles.giftTitle}>Gift</Text>
-
-                                    <Image
-                                        style={{ width: 30, height: 30 }}
-                                        source={require('../assets/images/gift.png')}
-                                    />
+                                hitSlop={20}
+                            >
+                                <View style={styles.radioOuterSmall}>
+                                    {isGiftWrap && <View style={styles.radioInnerSmall} />}
                                 </View>
 
-                                <Text style={{ marginTop: 20, marginBottom: 20, color: "#fff", lineHeight: 25, }}>
-                                    Want to make your order a gift?
+                                <Text style={styles.giftWrapText}>{isLabel?.giftwrap}</Text>
+                            </TouchableOpacity>
 
-                                    Activate this option and let us deliver the product to someone special in a beautiful way.
+                            {isGiftWrap && (
+                                <>
+                                    <View style={styles.giftHeader}>
+                                        <Text style={styles.giftTitle}>{isLabel?.gift}</Text>
 
-                                    This option is optional; if the order is for you, you can proceed without activating it.
-                                </Text>
+                                        <Image
+                                            style={{ width: 30, height: 30 }}
+                                            source={require('../assets/images/gift.png')}
+                                        />
+                                    </View>
 
-
-                                <Text style={styles.sectionSubtitle}>Recipient’s Details</Text>
-
-                                <GlassContainer padding={4} borderRadius={10}>
-                                    <TextInput
-                                        placeholder="Full Name"
-                                        placeholderTextColor="#fff"
-                                        value={giftDetails.fullName}
-                                        onChangeText={(text) => {
-                                            setGiftDetails(prev => ({ ...prev, fullName: text }));
-                                            setGiftErrors(prev => ({ ...prev, gift_name: null }));
-                                        }}
-                                        style={styles.input}
-                                    />
-                                </GlassContainer>
-
-                                {giftErrors?.gift_name && (
-                                    <Text style={{ color: 'red', marginTop: 4 }}>
-                                        {GlobalText?.[giftErrors.gift_name] || giftErrors.gift_name}
-                                    </Text>
-                                )}
-
-                                <GlassContainer padding={4} borderRadius={10}>
-                                    <TextInput
-                                        placeholder="Phone Number"
-                                        placeholderTextColor="#fff"
-                                        keyboardType="phone-pad"
-                                        value={giftDetails.phone}
-                                        onChangeText={(text) => {
-                                            setGiftDetails(prev => ({ ...prev, phone: text }));
-                                            setGiftErrors(prev => ({ ...prev, gift_phone: null }));
-                                        }}
-
-                                        style={styles.input}
-                                    />
-                                </GlassContainer>
-
-                                {giftErrors?.gift_phone && (
-                                    <Text style={{ color: 'red', marginTop: 4 }}>
-                                        {GlobalText?.[giftErrors.gift_phone] || giftErrors.gift_phone}
-                                    </Text>
-                                )}
+                                    <Text style={{ marginTop: 20, marginBottom: 20, color: "#fff", lineHeight: 25, }}>{isLabel?.info}</Text>
 
 
-                                <GlassContainer padding={4} borderRadius={6} style={{}}>
-                                    <TextInput
-                                        placeholder="Address"
-                                        placeholderTextColor="#fff"
-                                        style={styles.input}
-                                        value={giftDetails.address}
-                                        onChangeText={(text) => {
+                                    <Text style={styles.sectionSubtitle}>{isLabel?.recipientdetails}</Text>
+
+                                    <GlassContainer padding={4} borderRadius={10}>
+                                        <TextInput
+                                            placeholder={isLabel?.fullname}
+                                            placeholderTextColor="#fff"
+                                            value={giftDetails.fullName}
+                                            onChangeText={(text) => {
+                                                setGiftDetails(prev => ({ ...prev, fullName: text }));
+                                                setGiftErrors(prev => ({ ...prev, gift_name: null }));
+                                            }}
+                                            style={styles.input}
+                                        />
+                                    </GlassContainer>
+
+                                    {giftErrors?.gift_name && (
+                                        <Text style={{ color: 'red', marginTop: 4 }}>
+                                            {GlobalText?.[giftErrors.gift_name] || giftErrors.gift_name}
+                                        </Text>
+                                    )}
+
+                                    <GlassContainer padding={4} borderRadius={10}>
+                                        <TextInput
+                                            placeholder={isLabel?.phonenumber}
+                                            placeholderTextColor="#fff"
+                                            keyboardType="phone-pad"
+                                            value={giftDetails.phone}
+                                            onChangeText={(text) => {
+                                                setGiftDetails(prev => ({ ...prev, phone: text }));
+                                                setGiftErrors(prev => ({ ...prev, gift_phone: null }));
+                                            }}
+
+                                            style={styles.input}
+                                        />
+                                    </GlassContainer>
+
+                                    {giftErrors?.gift_phone && (
+                                        <Text style={{ color: 'red', marginTop: 4 }}>
+                                            {GlobalText?.[giftErrors.gift_phone] || giftErrors.gift_phone}
+                                        </Text>
+                                    )}
+
+                                    {/* 
+                                    <GlassContainer padding={4} borderRadius={6} style={{}}>
+                                        <TextInput
+                                            placeholder="Address"
+                                            placeholderTextColor="#fff"
+                                            style={styles.input}
+                                            value={giftDetails.address}
+                                            onChangeText={(text) => {
+                                                setGiftDetails(prev => ({ ...prev, address: text }));
+                                                setGiftErrors(prev => ({ ...prev, gift_address_1: null }));
+                                            }}
+
+                                            multiline
+                                        />
+                                    </GlassContainer> */}
+                                    <View style={{ height: 200, marginVertical: 10, borderRadius: 10, overflow: 'hidden' }}>
+
+                                        <MapView
+                                            ref={mapRef}
+                                            style={{ flex: 1, height: 200, marginVertical: 10 }}
+                                            onPress={(e) => {
+                                                const { latitude, longitude } = e.nativeEvent.coordinate;
+                                                setGiftDetails(prev => ({
+                                                    ...prev,
+                                                    latitude: latitude,
+                                                    longitude: longitude
+                                                }));
+                                            }}
+
+                                            initialRegion={{
+                                                latitude: Number(giftDetails?.latitude) || 24.7136,
+                                                longitude: Number(giftDetails?.longitude) || 46.6753,
+                                                latitudeDelta: 15.0,
+                                                longitudeDelta: 15.0,
+                                            }}
+
+                                        >
+                                            <Marker
+                                                coordinate={{
+                                                    latitude: Number(giftDetails?.latitude) || 24.7136,
+                                                    longitude: Number(giftDetails?.longitude) || 46.6753,
+                                                }}
+                                            />
+
+                                        </MapView>
+
+                                        <TouchableOpacity
+                                            onPress={getCurrentLocation}
+                                            style={{
+                                                position: 'absolute',
+                                                bottom: 20,
+                                                right: 10,
+                                                backgroundColor: 'white',
+                                                padding: 8,
+                                                borderRadius: 20,
+                                                flexDirection: 'row',
+                                                alignItems: 'center',
+                                                elevation: 3,
+                                                shadowColor: '#000',
+                                                shadowOffset: { width: 0, height: 2 },
+                                                shadowOpacity: 0.25,
+                                                shadowRadius: 3.84,
+                                            }}
+                                        >
+                                            <IconComponentLocation color={'grey'} size={25} />
+                                            <Text style={{ marginLeft: 5, color: 'grey', fontSize: 12, fontWeight: '600' }}>
+                                                {isLabel?.locateme}
+                                            </Text>
+                                        </TouchableOpacity>
+
+
+
+
+
+                                    </View>
+
+                                    <GlassContainer padding={4} borderRadius={10}>
+                                        <TextInput
+                                            placeholder={isLabel?.longitude}
+                                            placeholderTextColor="#fff"
+                                            keyboardType="numeric"
+                                            value={giftDetails.latitude ? String(giftDetails.latitude) : ''}
+                                            onChangeText={(text) => {
+                                                setGiftDetails(prev => ({ ...prev, latitude: text }));
+                                                setGiftErrors(prev => ({ ...prev, gift_latitude: null }));
+                                            }}
+                                            editable={false}
+
+                                            style={styles.input}
+                                        />
+                                    </GlassContainer>
+
+                                    <GlassContainer padding={4} borderRadius={10}>
+                                        <TextInput
+                                            placeholder={isLabel?.latitude}
+                                            placeholderTextColor="#fff"
+                                            keyboardType="numeric"
+                                            value={giftDetails.longitude ? String(giftDetails.longitude) : ''}
+                                            onChangeText={(text) => {
+                                                setGiftDetails(prev => ({ ...prev, longitude: text }));
+                                                setGiftErrors(prev => ({ ...prev, gift_longitude: null }));
+                                            }}
+                                            editable={false}
+
+                                            style={styles.input}
+                                        />
+                                    </GlassContainer>
+
+
+                                    <GlassContainer borderRadius={10} padding={0.1}>
+                                        <GooglePlacesAutocomplete
+                                            ref={googleRef}
+                                            placeholder={isLabel?.addraddrs1_label}
+                                            fetchDetails={true}
+                                            onPress={(data, details = null) => {
+                                                const lat = details.geometry.location.lat;
+                                                const lng = details.geometry.location.lng;
+
+                                                setGiftDetails(prev => ({
+                                                    ...prev,
+                                                    latitude: lat,
+                                                    longitude: lng,
+                                                    address: data.description
+                                                }));
+
+                                                setGiftErrors(prev => ({ ...prev, gift_address_1: null }));
+                                            }}
+
+                                            query={{
+                                                key: "AIzaSyBq-23EUBHM6cv_I2kb3-SXll4RC3NPcAw",
+                                                language: "en",
+                                            }}
+                                            textInputProps={{
+                                                onChangeText: (text) => {
+                                                    setGiftDetails(prev => ({ ...prev, address: text }));
+                                                    setGiftErrors(prev => ({ ...prev, gift_address_1: null }));
+                                                }
+                                            }}
+
+                                            styles={{
+                                                textInput: {
+                                                    height: 45,
+                                                    // borderWidth: 1,
+                                                    // borderColor: error ? "red" : "#ccc",
+                                                    paddingHorizontal: 10,
+                                                    borderRadius: 8,
+                                                    backgroundColor: 'transparent',
+                                                    color: '#fff'
+                                                }
+                                            }}
+                                        />
+
+
+                                    </GlassContainer>
+
+
+                                    {/* <LocationPicker
+                                    latitude={latitude}
+                                    longitude={longitude}
+                                    setLatitude={setLatitude}
+                                    setLongitude={setLongitude}
+                                    address={giftDetails.address}
+                                    setAddress={(text) => {
                                             setGiftDetails(prev => ({ ...prev, address: text }));
                                             setGiftErrors(prev => ({ ...prev, gift_address_1: null }));
                                         }}
+                                    // error={isAddress1Error}
+                                    // setError={setAddress1Error}
+                                    label={isLabel?.addraddrs1_label}
+                                    apiKey={"AIzaSyBq-23EUBHM6cv_I2kb3-SXll4RC3NPcAw"}
+                                /> */}
 
-                                        multiline
-                                    />
-                                </GlassContainer>
-
-                                {giftErrors?.gift_address_1 && (
-                                    <Text style={{ color: 'red', marginTop: 4 }}>
-                                        {GlobalText?.[giftErrors.gift_address_1] || giftErrors.gift_address_1}
-                                    </Text>
-                                )}
-
-
-                                <GlassContainer padding={4} borderRadius={6}>
-                                    <TextInput
-                                        placeholder="City"
-                                        placeholderTextColor="#fff"
-                                        value={giftDetails.city}
-                                        onChangeText={(text) => {
-                                            setGiftDetails(prev => ({ ...prev, city: text }));
-                                            setGiftErrors(prev => ({ ...prev, gift_city: null }));
-                                        }}
-
-                                        style={styles.input}
-                                    />
-                                </GlassContainer>
-
-                                {giftErrors?.gift_city && (
-                                    <Text style={{ color: 'red', marginTop: 4 }}>
-                                        {GlobalText?.[giftErrors.gift_city] || giftErrors.gift_city}
-                                    </Text>
-                                )}
+                                    {giftErrors?.gift_address_1 && (
+                                        <Text style={{ color: 'red', marginTop: 4 }}>
+                                            {GlobalText?.[giftErrors.gift_address_1] || giftErrors.gift_address_1}
+                                        </Text>
+                                    )}
 
 
-                                <GlassContainer padding={4} borderRadius={6}>
-                                    <TextInput
-                                        placeholder="Post Code"
-                                        placeholderTextColor="#fff"
-                                        value={giftDetails.postCode}
-                                        onChangeText={(text) => {
-                                            setGiftDetails(prev => ({ ...prev, postCode: text }));
-                                            setGiftErrors(prev => ({ ...prev, gift_postcode: null }));
-                                        }}
-
-                                        keyboardType="numeric"
-                                        style={styles.input}
-                                    />
-                                </GlassContainer>
-
-                                {giftErrors?.gift_postcode && (
-                                    <Text style={{ color: 'red', marginTop: 4 }}>
-                                        {GlobalText?.[giftErrors.gift_postcode] || giftErrors.gift_postcode}
-                                    </Text>
-                                )}
-
-
-                                <View style={{}}>
-                                    <GlassContainer padding={4} borderRadius={10} style={{ height: 70 }}>
+                                    <GlassContainer padding={4} borderRadius={6}>
                                         <TextInput
-                                            placeholder="Custom Message"
+                                            placeholder={isLabel?.addrescity_label}
                                             placeholderTextColor="#fff"
-                                            style={styles.input}
-                                            value={giftDetails.message}
+                                            value={giftDetails.city}
                                             onChangeText={(text) => {
-                                                setGiftDetails(prev => ({ ...prev, message: text }));
-                                                setGiftErrors(prev => ({ ...prev, gift_message: null }));
+                                                setGiftDetails(prev => ({ ...prev, city: text }));
+                                                setGiftErrors(prev => ({ ...prev, gift_city: null }));
                                             }}
+
+                                            style={styles.input}
                                         />
                                     </GlassContainer>
-                                </View>
 
-                                {giftErrors?.gift_message && (
-                                    <Text style={{ color: 'red', marginTop: 4 }}>
-                                        {GlobalText?.[giftErrors.gift_message] || giftErrors.gift_message}
-                                    </Text>
-                                )}
+                                    {giftErrors?.gift_city && (
+                                        <Text style={{ color: 'red', marginTop: 4 }}>
+                                            {GlobalText?.[giftErrors.gift_city] || giftErrors.gift_city}
+                                        </Text>
+                                    )}
 
-                            </>
-                        )}
-                    </View>
-                    {/* </ScrollView>
+
+                                    <GlassContainer padding={4} borderRadius={6}>
+                                        <TextInput
+                                            placeholder={isLabel?.addrespostcode_label}
+                                            placeholderTextColor="#fff"
+                                            value={giftDetails.postCode}
+                                            onChangeText={(text) => {
+                                                setGiftDetails(prev => ({ ...prev, postCode: text }));
+                                                setGiftErrors(prev => ({ ...prev, gift_postcode: null }));
+                                            }}
+
+                                            keyboardType="numeric"
+                                            style={styles.input}
+                                        />
+                                    </GlassContainer>
+
+                                    {giftErrors?.gift_postcode && (
+                                        <Text style={{ color: 'red', marginTop: 4 }}>
+                                            {GlobalText?.[giftErrors.gift_postcode] || giftErrors.gift_postcode}
+                                        </Text>
+                                    )}
+
+
+                                    <View style={{}}>
+                                        <GlassContainer padding={4} borderRadius={10} style={{ height: 70 }}>
+                                            <TextInput
+                                                placeholder={isLabel?.custommessage}
+                                                placeholderTextColor="#fff"
+                                                style={styles.input}
+                                                value={giftDetails.message}
+                                                onChangeText={(text) => {
+                                                    setGiftDetails(prev => ({ ...prev, message: text }));
+                                                    setGiftErrors(prev => ({ ...prev, gift_message: null }));
+                                                }}
+                                            />
+                                        </GlassContainer>
+                                    </View>
+
+                                    {giftErrors?.gift_message && (
+                                        <Text style={{ color: 'red', marginTop: 4 }}>
+                                            {GlobalText?.[giftErrors.gift_message] || giftErrors.gift_message}
+                                        </Text>
+                                    )}
+
+                                </>
+                            )}
+                        </View>
+                        {/* </ScrollView>
                     </KeyboardAvoidingView> */}
 
 
 
 
-                </ScrollView>
+                    </ScrollView>
 
-                {/* Bottom Section */}
+                    {/* Bottom Section */}
                     <View style={styles.footer}>
-                        <View style={styles.footerTopRow}>
+                        {/* <View style={styles.footerTopRow}>
                             <Text style={styles.pointsText}>Earn 157 Mokafaa Points</Text>
                             <View style={styles.horizontalLine} />
-                        </View>
+                        </View> */}
 
                         <GlassmorphismButton
-                            title="PROCEED"
+                            title={isLabel?.proceedbtn}
                             // disabled={
                             //     isGiftWrap &&
                             //     (!giftDetails.fullName || !giftDetails.phone)
@@ -634,21 +860,21 @@ const ChooseDeliveryAddress = () => {
 
                         />
 
-                        <View style={styles.footerBottomRow}>
+                        {/* <View style={styles.footerBottomRow}>
                             <Text style={styles.totalText}>₹16669.25</Text>
                             <Text style={styles.itemText}>1 Item</Text>
-                        </View>
+                        </View> */}
                     </View>
-                {/* </View> */}
+                    {/* </View> */}
 
-                <FailedModal
-                    isModal={failedModal}
-                    isSuccessMessage={failedModalText}
-                    onClickClose={closeFailedModal}
-                    handleCloseModal={closeFailedModal}
-                />
-            </KeyboardAvoidingView>
-        </BackgroundWrapper>
+                    <FailedModal
+                        isModal={failedModal}
+                        isSuccessMessage={failedModalText}
+                        onClickClose={closeFailedModal}
+                        handleCloseModal={closeFailedModal}
+                    />
+                </KeyboardAvoidingView>
+            </BackgroundWrapper>
         </>
     );
 };
@@ -876,6 +1102,9 @@ const styles = StyleSheet.create({
         // borderColor:'white',
         padding: 10,
         color: "#fff",
+        paddingStart: 20,
+        textAlign: I18nManager.isRTL ? 'right' : 'left',
+
         // fontSize: 14,
         // paddingHorizontal: 8,
         // paddingVertical: Platform.OS === "android" ? 4 : 4,

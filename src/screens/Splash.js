@@ -8,11 +8,14 @@ import { saveFCMToken } from '../services/saveFCMToken';
 import { checkAutoLogin } from '../utils/helpers';
 import { getAnalytics } from '@react-native-firebase/analytics';
 import BackgroundWrapper from '../components/customcomponents/BackgroundWrapper';
+import Video from 'react-native-video';
+import { setAppReady } from '../utils/appState';
 
 const Splash = ({ navigation }) => {
 
     console.log("SPLASH SCREEN LOADED")
     // const { Colors, Features, EndPoint, GlobalText } = useCustomContext();
+      const { Colors, EndPoint, GlobalText } = useCustomContext();
 
     const [isWidth, setWidth] = useState(200);
     const [isHeight, setHeight] = useState(200);
@@ -40,6 +43,34 @@ const Splash = ({ navigation }) => {
                         }
                     }
                 }); */
+
+                
+        // getMessaging(getApp()).onMessage(async (remoteMessage) => {
+        //     console.log("remote Message foreground 2", remoteMessage);
+        //     Alert.alert(
+        //         remoteMessage.notification.title,
+        //         remoteMessage.notification.body,
+        //         [
+        //             { text: "CANCEL", onPress: () => console.log('cancel pressed!') },
+        //             {
+        //                 text: 'OK', onPress: () => {
+        //                     if (remoteMessage?.data?.screen) {
+        //                         if (remoteMessage?.data?.screen === 'Product') {
+        //                             navigation.replace(remoteMessage?.data?.screen, { productId: remoteMessage?.data?.id });
+        //                         } else if (remoteMessage?.data?.screen === 'OrderView') {
+        //                             navigation.replace(remoteMessage?.data?.screen, { orderId: remoteMessage?.data?.id });
+        //                         } else if (remoteMessage?.data?.screen === 'AllCategoryView') {
+        //                             navigation.replace(remoteMessage?.data?.screen, { path: remoteMessage?.data?.id });
+        //                         }
+        //                         else {
+        //                             navigation.replace(remoteMessage?.data?.screen);
+        //                         }
+        //                     }
+        //                 }
+        //             }
+        //         ]
+        //     );
+        // });
 
 
         async function checkInitialNotification() {
@@ -80,13 +111,16 @@ const Splash = ({ navigation }) => {
                 getSplaceWidthAndHeight();
 
                 // Splash delay
-                await new Promise(resolve => setTimeout(resolve, 3000));
+                await new Promise(resolve => setTimeout(resolve, 3190));
 
                 const isLanguageAndCurrency = await checkLanguageandCurrency();
                 const customerId = await _retrieveData('CUSTOMER_ID');
                 const skipLogin = await _retrieveData('SKIP_LOGIN');
 
                 if (!isMounted) return;
+
+                // 🔥 MARK APP READY HERE (before navigation)
+                 setAppReady(true);
 
                 // 🔥 Decision Logic
                 if (!isLanguageAndCurrency) {
@@ -257,6 +291,14 @@ const Splash = ({ navigation }) => {
 
         <BackgroundWrapper backgroundColor={"rgba(0,0,0,0.3)"}>
         <View style={[style.mainContainer, {}]}>
+        {/* <Video
+          source={require("../assets/splash_transparent_white.gif")}
+          style={{  width: 300, height: 300, backgroundColor:'green'}}
+          resizeMode="contain"
+          repeat
+          muted
+          isLooping={true}
+        /> */}
 
             <Image source={require('../assets/images/sparklelogo.png')} style={style.img} />
 

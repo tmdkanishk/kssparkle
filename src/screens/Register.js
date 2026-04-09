@@ -128,8 +128,8 @@ const Register = ({ navigation, route }) => {
             try {
                 setScreenLoading(true);
                 const url = `${BASE_URL}${EndPoint?.register_registerdetail}`;
-                // const lang = await _retrieveData('SELECT_LANG');
-                // const cur = await _retrieveData('SELECT_CURRENCY');
+                const lang = await _retrieveData('SELECT_LANG');
+                const cur = await _retrieveData('SELECT_CURRENCY');
                 console.log(url)
                 const sessionId = await _retrieveData('SESSION_ID');
 
@@ -139,8 +139,8 @@ const Register = ({ navigation, route }) => {
                     Key: API_KEY,
                 };
                 const body = {
-                    // code: lang?.code,
-                    // currency: cur?.code,
+                    code: lang?.code,
+                    currency: cur?.code,
                     sessionId: sessionId
                 }
                 console.log(body)
@@ -423,7 +423,7 @@ const Register = ({ navigation, route }) => {
 
                             <View style={{ marginTop: 24 }}>
                                 <GlassmorphismButton
-                                    title="Sign Up"
+                                    title={isText?.regpage_continuebtn_label}
                                     onPress={() => onRegister()}
                                 />
                             </View>

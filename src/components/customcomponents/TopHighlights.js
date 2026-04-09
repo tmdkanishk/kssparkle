@@ -2,9 +2,9 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import GlassContainer from './GlassContainer'; // 👈 import your existing one
 
-const TopHighlights = ({ details = [] }) => {
+const TopHighlights = ({ details = [], title }) => {
   return (
-    <GlassContainer title="Top highlights">
+    <GlassContainer title={title}>
       <View style={{ padding: 20 }}>
 
         {/* Key-Value Highlights */}

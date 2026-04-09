@@ -29,6 +29,7 @@ import { useLoading } from "../hooks/LoadingProvider";
 import FailedModal from "../components/FailedModal";
 import PriceView from "../components/customcomponents/PriceView";
 import { getAllCouponCode } from "../services/getAllCouponCode";
+import BoxWithShadow from "../test";
 
 
 const ShoppingBag = ({ navigation }) => {
@@ -128,7 +129,7 @@ const ShoppingBag = ({ navigation }) => {
             console.log("fetchCartData", url, body)
 
             const response = await axios.post(url, body, { headers: headers });
-            // console.log("response", response.data);
+            console.log("response fetchCartData", response.data);
             if (response.status === HttpStatusCode.Ok) {
                 setShowCouponOption(response.data?.applycoupon_status);
                 setShowGiftOption(response.data?.applyvoucher_status);
@@ -190,7 +191,7 @@ const ShoppingBag = ({ navigation }) => {
         }
     }
     const fetchCouponCodeList = async () => {
-         try {
+        try {
             setGlobalLoading(true);
             const response = await getAllCouponCode(EndPoint?.list_coupons);
             console.log("fetchCouponCodeList response : ", response);
@@ -200,9 +201,9 @@ const ShoppingBag = ({ navigation }) => {
             //     setCouponError(null);
             //     fetchCartData();
             // }
-              if (response?.coupons) {
-      setCouponList(response.coupons);
-    }
+            if (response?.coupons) {
+                setCouponList(response.coupons);
+            }
         } catch (error) {
             console.log("fetchCouponCodeList error : ", error.response.data);
             // if (error.response.data?.error) {
@@ -223,7 +224,7 @@ const ShoppingBag = ({ navigation }) => {
             const response = await appyCoupon(coupon, EndPoint?.cart_coupon);
             console.log("applyCouponCode response : ", response);
             if (response?.success) {
-                console.log("applyCouponCode" ,response?.success)
+                console.log("applyCouponCode", response?.success)
                 setCouponSuccess(response?.success);
                 setCouponError(null);
                 fetchCartData();
@@ -339,220 +340,227 @@ const ShoppingBag = ({ navigation }) => {
     }
 
     return (
-          <>
-        <BackgroundWrapper>
-            <KeyboardAvoidingView
-                style={{ flex: 1 }}
-                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            >
-                <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 20, gap: 16, marginTop: Platform.OS === "ios" ? 40 : 0, opacity: screenLoader ? 0.5 : 1 }}>
-                    {/* Header */}
-                    <Header onLogoPress={() => { navigation.navigate("Home") }} />
+        <>
+            <BackgroundWrapper>
+                <KeyboardAvoidingView
+                    style={{ flex: 1 }}
+                    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                >
+                    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 20, gap: 16, marginTop: Platform.OS === "ios" ? 40 : 0, opacity: screenLoader ? 0.5 : 1 }}>
+                        {/* Header */}
+                        <Header onLogoPress={() => { navigation.navigate("Home") }} />
 
-                    {/* Selected Info */}
-                    <View style={{ paddingTop: 20, paddingBottom: 10, paddingHorizontal: 10 }}>
-                        <TouchableOpacity style={{ marginBottom: 15 }} onPress={() => navigation.goBack()}>
-                            <Image source={require("../assets/images/back.png")} style={{ width: 18, height: 18, tintColor: "#fff", }} />
-                        </TouchableOpacity>
+                            {/* <BoxWithShadow /> */}
 
-                        <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", }}>
-                            <Text style={{ color: "#fff", fontSize: 22, fontWeight: "700" }}>{isLabel?.cartshoping_heading}</Text>
+                        {/* Selected Info */}
+                        <View style={{ paddingTop: 20, paddingBottom: 10, paddingHorizontal: 10 }}>
+                            <TouchableOpacity style={{ marginBottom: 15 }} onPress={() => navigation.goBack()}>
+                                <Image source={require("../assets/images/back.png")} style={{ width: 18, height: 18, tintColor: "#fff", }} />
+                            </TouchableOpacity>
 
-                            {/* <Text style={{
+                            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", }}>
+                                <Text style={{ color: "#fff", fontSize: 22, fontWeight: "700" }}>{isLabel?.cartshoping_heading}</Text>
+
+                                {/* <Text style={{
                             color: "#fff", fontSize: 22, fontWeight: "700", textAlign: isRTLText(isLabel?.cartshoping_heading) ? 'right' : 'left',
                             writingDirection: isRTLText(isLabel?.cartshoping_heading) ? 'rtl' : 'ltr',
                         }}>{isLabel?.cartshoping_heading}</Text> */}
-                        <GlassContainer padding={10} borderRadius={0.1} style={{
-                                // borderWidth: 1,
-                                // borderColor: "#fff",
-                                // borderRadius: 8,
-                                // paddingVertical: 6,
-                                // paddingHorizontal: 12,
-                            }}>
+                                {/* <GlassContainer padding={10} borderRadius={0.1} style={{
 
-                            <TouchableOpacity>
-                                <Text style={{
-                                    color: "#fff",
-                                    fontSize: 12,
-                                    fontWeight: "600",
-                                }}>ENTER PIN CODE</Text>
-                            </TouchableOpacity>
-                            </GlassContainer>
-                        </View>
+                                }}>
 
-                        <Text style={{
-                            color: "#fff",
-                            fontSize: 14,
-                            marginTop: 6,
-                        }}>Check delivery time & services</Text>
+                                    <TouchableOpacity>
+                                        <Text style={{
+                                            color: "#fff",
+                                            fontSize: 12,
+                                            fontWeight: "600",
+                                        }}>{isLabel?.estimateshippostcde_label}</Text>
+                                    </TouchableOpacity>
+                                </GlassContainer> */}
+                            </View>
 
-                        {/* Selected Items Section */}
-                        <View style={{
-                            flexDirection: "row",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                            marginTop: 20,
-                        }}>
+                            <Text style={{
+                                color: "#fff",
+                                fontSize: 14,
+                                marginTop: 6,
+                            }}>{isLabel?.cartestimateshiping_label}</Text>
+
+                            {/* Selected Items Section */}
                             <View style={{
                                 flexDirection: "row",
+                                justifyContent: "space-between",
                                 alignItems: "center",
-                                gap: 10
+                                marginTop: 20,
                             }}>
-                                <Pressable hitSlop={40} onPress={toggleSelectAll} style={{}}>
-                                    {cartItem?.length === isCartProducts?.length && isCartProducts?.length > 0 ? <IconComponentcheckboxsharp color={'#fff'} size={20} /> : <IconComponentSquare color={'#fff'} size={20} />}
-                                </Pressable>
+                                <View style={{
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                    gap: 10
+                                }}>
+                                    <Pressable hitSlop={40} onPress={toggleSelectAll} style={{}}>
+                                        {cartItem?.length === isCartProducts?.length && isCartProducts?.length > 0 ? <IconComponentcheckboxsharp color={'#fff'} size={20} /> : <IconComponentSquare color={'#fff'} size={20} />}
+                                    </Pressable>
 
-                                <Text style={{
-                                    color: "#fff",
-                                    fontSize: 14,
-                                    fontWeight: "600",
-                                }}>{cartItem?.length}/{isCartProducts?.length} ITEMS SELECTED</Text>
-                            </View>
+                                    <Text style={{
+                                        color: "#fff",
+                                        fontSize: 14,
+                                        fontWeight: "600",
+                                    }}>{cartItem?.length}/{isCartProducts?.length} {isLabel?.itemselect}</Text>
+                                </View>
 
-                            <View style={{
-                                flexDirection: "row",
-                                alignItems: "center",
-                                gap: 14,
-                            }}>
+                                <View style={{
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                    gap: 14,
+                                }}>
 
-                                <TouchableOpacity onPress={shareAllProduct}>
-                                    <IconComponentShare color={'#fff'} size={24} />
-                                </TouchableOpacity>
-                                <TouchableOpacity onPress={removeAllProduct}>
-                                    <IconComponentTrash color={'#fff'} size={24} />
-                                </TouchableOpacity>
-                                <TouchableOpacity onPress={addAllWishList}>
-                                    <IconComponentHeart color={'#fff'} size={24} />
-                                </TouchableOpacity>
+                                    <TouchableOpacity onPress={shareAllProduct}>
+                                        <IconComponentShare color={'#fff'} size={24} />
+                                    </TouchableOpacity>
+                                    <TouchableOpacity onPress={removeAllProduct}>
+                                        <IconComponentTrash color={'#fff'} size={24} />
+                                    </TouchableOpacity>
+                                    <TouchableOpacity onPress={addAllWishList}>
+                                        <IconComponentHeart color={'#fff'} size={24} />
+                                    </TouchableOpacity>
+                                </View>
                             </View>
                         </View>
-                    </View>
 
-                    {/* Product Card */}
+                        {/* Product Card */}
 
-                    {
-                        isCartProducts?.length ?
-                            (isCartProducts?.map((item, index) => (
-                                <ShoppingBagProductCard item={item} key={index} toggleCart={(item) => toggleCart(item)} cartItems={cartItem} />
-                            ))) : null
-                    }
+                        {
+                            isCartProducts?.length ?
+                                (isCartProducts?.map((item, index) => (
+                                    <ShoppingBagProductCard item={item} key={index} toggleCart={(item) => toggleCart(item)} cartItems={cartItem} outOfStockText={isLabel?.text_outofstock} leftText={isLabel?.lefttoapply} returnDayText={isLabel?.dayreturn}/>
+                                ))) : null
+                        }
 
-                    {/* Available Offers */}
-                    <TouchableOpacity onPress={() => setShowOffersOnly(prev => !prev)}>
+                        {/* Available Offers */}
+                        <TouchableOpacity onPress={() => setShowOffersOnly(prev => !prev)}>
 
-                        <GlassContainer>
-                            <View style={styles.offerRow}>
-                                {/* <Icon name="tag-outline" size={18} color="#fff" /> */}
-                                <Image
-                                    source={require("../assets/images/discount.png")} // white tick image
-                                    style={{
-                                        width: 18,
-                                        height: 18,
-                                        marginRight: 8,
-                                    }}
-                                />
-                                <Text style={styles.offerTitle}>Available Offers</Text>
-                            </View>
-                            <Text style={styles.offerText}>
+                            <GlassContainer>
+                                <View style={styles.offerRow}>
+                                    {/* <Icon name="tag-outline" size={18} color="#fff" /> */}
+                                    <Image
+                                        source={require("../assets/images/discount.png")} // white tick image
+                                        style={{
+                                            width: 18,
+                                            height: 18,
+                                            marginRight: 8,
+                                        }}
+                                    />
+                                    <Text style={styles.offerTitle}>{isLabel?.cartchosediscnt_label}</Text>
+                                </View>
+                                {/* <Text style={styles.offerText}>
                                 10% Instant Discount on HDFC Bank Credit Card, Credit Card EMI & Debit Card EMI on a min spend of ₹3,500.
+                            </Text> */}
+                                <Text style={styles.showMore}>▼ {isLabel?.showmore}</Text>
+                            </GlassContainer>
+
+                        </TouchableOpacity>
+
+                        {showOffersOnly && (
+                            <>
+                                {/* coupon section */}
+                                <CustomCouponSection
+                                    coupons={couponList}
+                                    onClickApply={(coupon) => applyCouponCode(coupon)}
+                                    error={isCouponError}
+                                    success={isCouponSuccess}
+                                    heading={isLabel?.cartcupon_label}
+                                    isValidText={isLabel?.validtill}
+                                />
+
+                                {/* voucher section */}
+                                <CustomVoucherSection
+                                    onVoucherApply={(voucher) => applyVoucherCode(voucher)}
+                                    error={isGiftError}
+                                    success={isVoucherSuccess}
+                                    voucherHeading={isLabel?.cartgiftvoucher_heading}
+                                    voucherInputHeading={isLabel?.cartgiftvoucher_label}
+                                    voucherApplyButtonLabel={isLabel?.cartgiftvoucherbtn_label}
+                                />
+                            </>
+                        )}
+
+
+
+
+                        {/* Price Details */}
+                        <GlassContainer>
+                            <Text style={styles.sectionTitle}>
+                                {isLabel?.cartpricedetail_label} ({isCartProducts?.length || 0} {isLabel?.cartqty_label})
                             </Text>
-                            <Text style={styles.showMore}>▼ Show more</Text>
+
+                            {isTotal?.map((item, index) => {
+                                const isFinal = index === isTotal.length - 1;
+
+                                return (
+                                    <View
+                                        key={index}
+                                        style={[
+                                            styles.priceLine,
+                                            isFinal && { marginTop: 8 }
+                                        ]}
+                                    >
+                                        <Text style={isFinal ? styles.totalLabel : styles.label}>
+                                            <PriceView
+                                    priceHtml={item?.title}
+                                    textStyle={{ fontWeight: '700' }}
+                                  />
+                                            {/* {item.title} */}
+                                        </Text>
+
+                                        <Text style={isFinal ? styles.totalValue : styles.value}>
+                                            {item.text && (
+                                                <PriceView
+                                                    priceHtml={item.text}
+                                                    textStyle={{ fontWeight: '700' }}
+                                                />
+                                            )}
+                                            {/* {item.text} */}
+                                        </Text>
+                                    </View>
+                                );
+                            })}
                         </GlassContainer>
 
-                    </TouchableOpacity>
 
-                    {showOffersOnly && (
-                        <>
-                            {/* coupon section */}
-                            <CustomCouponSection
-                            coupons={couponList}
-                                onClickApply={(coupon) => applyCouponCode(coupon)}
-                                error={isCouponError}
-                                success={isCouponSuccess}
-                            />
-
-                            {/* voucher section */}
-                            <CustomVoucherSection
-                                onVoucherApply={(voucher) => applyVoucherCode(voucher)}
-                                error={isGiftError}
-                                success={isVoucherSuccess}
-                            />
-                        </>
-                    )}
-
-
-
-
-                    {/* Price Details */}
-                    <GlassContainer>
-                        <Text style={styles.sectionTitle}>
-                            PRICE DETAILS ({isCartProducts?.length || 0} Items)
-                        </Text>
-
-                        {isTotal?.map((item, index) => {
-                            const isFinal = index === isTotal.length - 1;
-
-                            return (
-                                <View
-                                    key={index}
-                                    style={[
-                                        styles.priceLine,
-                                        isFinal && { marginTop: 8 }
-                                    ]}
-                                >
-                                    <Text style={isFinal ? styles.totalLabel : styles.label}>
-                                        {item.title}
-                                    </Text>
-
-                                    <Text style={isFinal ? styles.totalValue : styles.value}>
-                                        {item.text && (
-                                            <PriceView
-                                                priceHtml={item.text}
-                                                textStyle={{ fontWeight: '700' }}
-                                            />
-                                        )}
-                                        {/* {item.text} */}
-                                    </Text>
-                                </View>
-                            );
-                        })}
-                    </GlassContainer>
-
-
-                    {/* Bottom Section */}
-                    {/* <Text style={styles.pointsText}>Earn 157 Mokafaa Points</Text>
+                        {/* Bottom Section */}
+                        {/* <Text style={styles.pointsText}>Earn 157 Mokafaa Points</Text>
                 <GlassmorphismButton onPress={() => { navigation.navigate("ShippingMethod") }} title="PROCEED" /> */}
 
-                    <View style={styles.footer}>
-                        <MokaffaPoints />
+                        <View style={styles.footer}>
+                            {/* <MokaffaPoints /> */}
 
-                        <GlassmorphismButton title="PROCEED" onPress={() => checkUserLogin()} />
+                            <GlassmorphismButton title={isLabel?.cartcheckoutbtn_label} onPress={() => checkUserLogin()} />
 
-                        <View style={styles.footerBottomRow}>
-                            <Text style={styles.totalText}>₹16669.25</Text>
-                            <Text style={styles.itemText}>1 Item</Text>
+                            {/* <View style={styles.footerBottomRow}>
+                                <Text style={styles.totalText}>₹16669.25</Text>
+                                <Text style={styles.itemText}>1 Item</Text>
+                            </View> */}
                         </View>
-                    </View>
-                </ScrollView>
-            </KeyboardAvoidingView>
+                    </ScrollView>
+                </KeyboardAvoidingView>
 
 
-            <FailedModal
-                isSuccessMessage={isErrorMgs}
-                handleCloseModal={() => { setErrorModal(false); setErrorMgs() }}
-                isModal={isErrorModal}
-                onClickClose={() => { setErrorModal(false); setErrorMgs() }}
-            />
+                <FailedModal
+                    isSuccessMessage={isErrorMgs}
+                    handleCloseModal={() => { setErrorModal(false); setErrorMgs() }}
+                    isModal={isErrorModal}
+                    onClickClose={() => { setErrorModal(false); setErrorMgs() }}
+                />
 
-            <SuccessModal
-                handleCloseModal={() => setSuccess('')}
-                isModal={success ? true : false}
-                isSuccessMessage={success}
-                onClickClose={() => setSuccess('')}
-            />
+                <SuccessModal
+                    handleCloseModal={() => setSuccess('')}
+                    isModal={success ? true : false}
+                    isSuccessMessage={success}
+                    onClickClose={() => setSuccess('')}
+                />
 
-        </BackgroundWrapper>
-      </>
+            </BackgroundWrapper>
+        </>
     );
 };
 
@@ -727,3 +735,7 @@ const styles = StyleSheet.create({
 });
 
 export default ShoppingBag;
+
+// eas device:create
+
+// eas device:list

@@ -12,7 +12,7 @@ import { editProductQty } from '../../services/editProductQty'
 import { useLoading } from '../../hooks/LoadingProvider'
 import PriceView from './PriceView'
 
-const ShoppingBagProductCard = ({ item, toggleCart, cartItems }) => {
+const ShoppingBagProductCard = ({ item, toggleCart, cartItems, outOfStockText, leftText, returnDayText }) => {
     // console.log("cart item:", item);
     const screenWidth = Dimensions.get('window').width;
     const { setGlobalLoading } = useLoading();
@@ -116,10 +116,10 @@ const ShoppingBagProductCard = ({ item, toggleCart, cartItems }) => {
 
 
                 <View style={styles.row}>
-                    <Text style={styles.stockText}>{item?.available_stock} left</Text>
+                    <Text style={styles.stockText}>{item?.available_stock} {leftText}</Text>
 
                     {!item?.stock && (
-                        <Text style={{ color: "#ff4d4d" }}>Out of stock</Text>
+                        <Text style={{ color: "#ff4d4d" }}>{outOfStockText}</Text>
                     )}
                 </View>
 
@@ -147,7 +147,7 @@ const ShoppingBagProductCard = ({ item, toggleCart, cartItems }) => {
                             style={{ width: 14, height: 14 }}
                         />
                     </View>
-                    <Text style={styles.returnText}>7 days return available</Text>
+                    <Text style={styles.returnText}>{returnDayText}</Text>
                 </View>
             </View>
         </GlassContainer>

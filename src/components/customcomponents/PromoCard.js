@@ -8,7 +8,7 @@ import { useNavigation } from "@react-navigation/native";
 import { LiquidGlassView } from "@callstack/liquid-glass";
 
 const width = Dimensions.get('window')
-const PromoCard = ({ onSearchPress }) => {
+const PromoCard = ({ onSearchPress, textInfo, specialInfo, specialInfo_2,  specialInfo_3,  specialInfo_4, specialInfo_5 }) => {
   const navigation = useNavigation();
   return (
     <LinearGradient
@@ -34,7 +34,7 @@ const PromoCard = ({ onSearchPress }) => {
       {/* ✅ Header inside card */}
       <Header
         noBackground={true}
-        paddingHorizontal={width * 0.05}
+        paddingHorizontal={Platform.OS === "ios" ? width * 0.05 : width}
         onSearchPress={onSearchPress}
       // onProfilePress={()=>{navigation.navigate("MyAccountScreen")}}
       />
@@ -43,14 +43,14 @@ const PromoCard = ({ onSearchPress }) => {
       {/* ✅ Sale Text Row */}
       <View style={styles.textRow}>
         <View>
-          <Text style={styles.mainTitle}>Our special</Text>
-          <Text style={[styles.mainTitle, { fontSize: 24 }]}>and strongest</Text>
-          <Text style={[styles.mainTitle, { fontSize: 24 }]}>Offers</Text>
+          <Text style={styles.mainTitle}>{specialInfo}</Text>
+          <Text style={[styles.mainTitle, { fontSize: 24 }]}>{specialInfo_2}</Text>
+          <Text style={[styles.mainTitle, { fontSize: 24 }]}>{specialInfo_3}</Text>
         </View>
 
         <View style={{ alignItems: "flex-end", flexDirection: 'row', marginRight: Platform.OS === "ios" ? 15 : 0 }}>
-          <Text style={styles.subTitle}>Up to</Text>
-          <Text style={styles.percent}>70%</Text>
+          <Text style={styles.subTitle}>{specialInfo_4}</Text>
+          <Text style={styles.percent}>{specialInfo_5}</Text>
         </View>
       </View>
 
@@ -79,11 +79,7 @@ const PromoCard = ({ onSearchPress }) => {
         }}
       >
         <TouchableOpacity onPress={() => navigation.navigate("Category")}>
-          <Text style={styles.infoText}>
-            We carefully select the best and offer it at a lower price. Not everything
-            is discounted, but every offer is worthwhile. Enter with confidence, and
-            leave satisfied.
-          </Text>
+          <Text style={styles.infoText}>{textInfo} </Text>
         </TouchableOpacity>
       </LiquidGlassView>
       {/* </TouchableOpacity> */}

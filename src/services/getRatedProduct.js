@@ -2,9 +2,9 @@ import axios, { HttpStatusCode } from 'axios';
 import { API_KEY, BASE_URL } from '../utils/config';
 import { _retrieveData } from '../utils/storage';
 
-export const getRatedProduct = async (page, productdetails_ReviewRateinglist) => {
+export const getRatedProduct = async (page, productdetails_OrderReviews) => {
     try {
-        const url = `${BASE_URL}${productdetails_ReviewRateinglist}`;
+        const url = `${BASE_URL}${productdetails_OrderReviews}`;
         const lang = await _retrieveData('SELECT_LANG');
         const cur = await _retrieveData('SELECT_CURRENCY');
         const sessionId = await _retrieveData('SESSION_ID');
@@ -19,7 +19,7 @@ export const getRatedProduct = async (page, productdetails_ReviewRateinglist) =>
             code: lang?.code,
             currency: cur?.code,
             sessionid: sessionId,
-            customer_id: user ? user[0]?.customer_id : null,
+            customer_id: user ? user: null,
             page: page
         }
         const response = await axios.post(url, body, { headers: headers });

@@ -1,4 +1,4 @@
-import { View, Text, Pressable, Image, TextInput, FlatList, Modal, ScrollView, BackHandler, Keyboard } from 'react-native'
+import { View, Text, Pressable, Image, TextInput, FlatList, Modal, ScrollView, BackHandler, Keyboard, I18nManager } from 'react-native'
 import React, { memo, useEffect, useRef, useState } from 'react'
 import { IconComponentArrowBackSharp, IconComponentSearch } from '../constants/IconComponents';
 import { useNavigation } from '@react-navigation/native';
@@ -15,6 +15,17 @@ const CustomSearchBar = ({ setActiveSeachingScreen }) => {
     const [result, setResults] = useState([]);
     const debounceRef = useRef(null);
     const inputRef = useRef(null);
+    const [language, setlanguage] = useState();
+    
+      useEffect(() => {
+        const loadLanguage = async () => {
+          const lang = await _retrieveData('SELECT_LANG');
+    
+          setlanguage(lang?.code)
+        };
+    
+        loadLanguage();
+      }, []);
 
     useEffect(() => {
         inputRef.current?.focus();
@@ -62,6 +73,8 @@ const CustomSearchBar = ({ setActiveSeachingScreen }) => {
             console.log('Search error', error);
         }
     };
+
+
 
 
 
@@ -113,8 +126,8 @@ const CustomSearchBar = ({ setActiveSeachingScreen }) => {
                 <View style={{ borderWidth: 1, borderRadius: 10, width: '90%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', }}>
                     <TextInput
                         ref={inputRef}
-                        style={[{ textAlign: 'left', width: '80%', paddingLeft: 20 , color: '#FFFFFF',  }]}
-                        placeholder='Search Products...'
+                        style={[{  textAlign: I18nManager.isRTL ? 'right' : 'left',  width: '80%', paddingStart: 20 , color: '#FFFFFF',  }]}
+                        placeholder= {language === "en-gb" ? 'Search Products...' : "ابحث عن المنتجات..."}
                         onChangeText={(text) => setQuery(text)}
                         returnKeyType="search"
                         onSubmitEditing={() => onSearch()}
@@ -132,7 +145,7 @@ const CustomSearchBar = ({ setActiveSeachingScreen }) => {
                 data={result}
                 showsVerticalScrollIndicator={false}
                 renderItem={renderItem}
-                ListEmptyComponent={<Text style={[{ marginTop: 30, color: '#FFFFFF' }]}>{query ? 'Not Found!' : 'Empty!'}</Text>}
+                ListEmptyComponent={<Text style={[{ marginTop: 30, color: '#FFFFFF' }]}>{query ? (language === "en-gb" ? 'Not Found!' : "غير موجود!") :  (language === "en-gb" ? 'Empty!' : "فارغ!")}</Text>}
                 contentContainerStyle={{ gap: 10, paddingBottom: 100, paddingTop: 20 }}
             />
 

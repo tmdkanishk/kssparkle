@@ -28,6 +28,7 @@ import { useLanguageCurrency } from "../hooks/LanguageCurrencyContext";
 import { _retrieveData } from "../utils/storage";
 import { useLoading } from "../hooks/LoadingProvider";
 import FailedModal from "../components/FailedModal";
+import PriceView from "../components/customcomponents/PriceView";
 // import { ArrowLeft, ArrowRight, Gift } from "lucide-react-native";
 
 const ShippingMethod = ({ navigation }) => {
@@ -234,113 +235,161 @@ const ShippingMethod = ({ navigation }) => {
     `;
 
     return (
-                    <>
-        <BackgroundWrapper>
+        <>
+            <BackgroundWrapper>
 
-            <ScrollView
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={[styles.container, { marginTop: Platform.OS === "ios" ? 60 : 10 }]}
-                scrollEnabled={scrollEnabled}
-            >
-                <TouchableOpacity style={{ marginBottom: 10 }} onPress={() => navigation.goBack()}>
-                    <Image source={require("../assets/images/back.png")} style={{ width: 18, height: 18, tintColor: "#fff", }} />
-                </TouchableOpacity>
-                {/* 🔹 Header */}
-                {isShippingMethodList?.length > 0 && (
-                    <>
-                        <View style={styles.headerRow}>
-                            <Text style={styles.headerTitle}>Choose Shipping Method</Text>
-                        </View>
-
-                        <View style={{ marginTop: 20 }}>
-                            {isShippingMethodList.map((method) => (
-                                <TouchableOpacity
-                                    key={method.id}
-                                    activeOpacity={0.8}
-                                    onPress={() => {
-                                        setSelectedMethod(method.code);
-                                        setShippingMethodCode(method.code);
-                                    }}
-                                >
-                                    <GlassContainer style={styles.shippingCard}>
-                                        <Text style={styles.shippingTitle}>{method.title}</Text>
-
-                                        <View
-                                            style={[
-                                                styles.radioOuter,
-                                                selectedMethod === method.code && styles.radioOuterActive,
-                                            ]}
-                                        >
-                                            {selectedMethod === method.code && <View style={styles.radioInner} />}
-                                        </View>
-                                    </GlassContainer>
-                                </TouchableOpacity>
-                            ))}
-                        </View>
-                    </>
-                )}
-
-
-
-                {isPaymentMethodList?.length > 0 && (
-                    <>
-                        <View style={{ flexDirection: "row", alignItems: "center", gap: 10, marginTop: 30 }}>
-                            <Text style={[styles.title, { marginBottom: 10 }]}>Choose Payment Method</Text>
-                        </View>
-
-                        {isPaymentMethodList.map((item) => (
-                            <GlassContainer
-                                key={item?.code}
-                                style={[
-                                    styles.paymentOption,
-                                    selected === item?.code && {
-                                        // borderColor: '#00E5FF',
-                                        // // glow effect
-                                        // shadowColor: '#00E5FF',
-                                        // shadowOffset: { width: 0, height: 0 },
-                                        // shadowOpacity: 1,
-                                        // shadowRadius: 25,   // 👈 increase glow spread (iOS)
-
-                                        // elevation: 15,      // 👈 increase glow spread (Android)
-                                    }
-                                ]}
-                            >
-                                <TouchableOpacity
-                                    style={styles.paymentRow}
-                                    activeOpacity={0.8}
-                                    onPress={() => {
-                                        setSelected(item?.code);
-                                        setPaymentMethodCode(item?.code);
-                                    }}
-                                >
-                                    <View style={styles.iconRow}>
-                                        <Image
-                                            source={require('../assets/images/creditcard.png')}
-                                            style={styles.paymentIcon}
-                                        />
-                                        <Text style={styles.paymentText}>{item?.title}</Text>
-                                    </View>
-
-                                    <View style={styles.radioCircle}>
-                                        {selected === item?.code && <View style={styles.radioInner} />}
-                                    </View>
-                                </TouchableOpacity>
-                            </GlassContainer>
-                        ))}
-                    </>
-                )}
-
-
-                <KeyboardAvoidingView
-                    style={{ flex: 1 }}
-                    behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+                <ScrollView
+                    showsVerticalScrollIndicator={false}
+                    contentContainerStyle={[styles.container, { marginTop: Platform.OS === "ios" ? 60 : 10 }]}
+                    scrollEnabled={scrollEnabled}
                 >
-                    <ScrollView
-                        keyboardShouldPersistTaps="handled"
-                        contentContainerStyle={{ paddingBottom: 40 }}
+                    <TouchableOpacity style={{ marginBottom: 10 }} onPress={() => navigation.goBack()}>
+                        <Image source={require("../assets/images/back.png")} style={{ width: 18, height: 18, tintColor: "#fff", }} />
+                    </TouchableOpacity>
+                    {/* 🔹 Header */}
+                    {isShippingMethodList?.length > 0 && (
+                        <>
+                            <View style={styles.headerRow}>
+                                <Text style={styles.headerTitle}>{isLabel?.selctshipmethod_label}</Text>
+                            </View>
+
+                            <View style={{ marginTop: 20 }}>
+                                {isShippingMethodList.map((method) => (
+                                    <TouchableOpacity
+                                        key={method.id}
+                                        activeOpacity={0.8}
+                                        onPress={() => {
+                                            setSelectedMethod(method.code);
+                                            setShippingMethodCode(method.code);
+                                        }}
+                                    >
+                                        <GlassContainer style={styles.shippingCard}>
+                                            <Text style={styles.shippingTitle}>{method.title}</Text>
+
+                                            <View
+                                                style={[
+                                                    styles.radioOuter,
+                                                    selectedMethod === method.code && styles.radioOuterActive,
+                                                ]}
+                                            >
+                                                {selectedMethod === method.code && <View style={styles.radioInner} />}
+                                            </View>
+                                        </GlassContainer>
+                                    </TouchableOpacity>
+                                ))}
+                            </View>
+                        </>
+                    )}
+
+
+
+                    {isPaymentMethodList?.length > 0 && (
+                        <>
+                            <View style={{ flexDirection: "row", alignItems: "center", gap: 10, marginTop: 30 }}>
+                                <Text style={[styles.title, { marginBottom: 10 }]}>{isLabel?.selctpaymethod_label}</Text>
+                            </View>
+
+                            {isPaymentMethodList.map((item) => (
+                                <GlassContainer
+                                    key={item?.code}
+                                    style={[
+                                        styles.paymentOption,
+                                        selected === item?.code && {
+                                            // borderColor: '#00E5FF',
+                                            // // glow effect
+                                            // shadowColor: '#00E5FF',
+                                            // shadowOffset: { width: 0, height: 0 },
+                                            // shadowOpacity: 1,
+                                            // shadowRadius: 25,   // 👈 increase glow spread (iOS)
+
+                                            // elevation: 15,      // 👈 increase glow spread (Android)
+                                        }
+                                    ]}
+                                >
+                                    <TouchableOpacity
+                                        style={styles.paymentRow}
+                                        activeOpacity={0.8}
+                                        onPress={() => {
+                                            setSelected(item?.code);
+                                            setPaymentMethodCode(item?.code);
+                                        }}
+                                    >
+                                        <View style={styles.iconRow}>
+                                            {item?.code === 'tamarapay' ? (
+                                                <>
+                                                    <Image
+                                                        source={require('../assets/images/tamara_logo.png')}
+                                                        style={{ width: 45, height: 25, }}
+                                                        resizeMode="contain"
+                                                    />
+
+                                                    <PriceView
+                                                        priceHtml={item?.title}
+                                                        textStyle={styles.paymentText}
+                                                        width={60} // Adjust width to fit the Tamara badge
+                                                        height={25}
+                                                    />
+                                                </>
+
+                                            ) : item?.code === 'tabby_installments' ? (
+                                                <>
+                                                    <Image
+                                                        source={require('../assets/images/tabby_logo.png')} // 👈 add this asset
+                                                        style={{ width: 45, height: 25 }}
+                                                        resizeMode="contain"
+                                                    />
+
+                                                    <View>
+                                                        <Text style={styles.paymentText}>
+                                                            {item?.title}
+                                                        </Text>
+
+                                                        {/* Installment Info */}
+                                                        {/* {item?.price && item?.installments_count && (
+                                                            <Text style={{ color: '#aaa', fontSize: 12 }}>
+                                                                {`Pay ${item.installments_count} × ${(
+                                                                    Number(item.price) / item.installments_count
+                                                                ).toFixed(2)} ${item.currency}`}
+                                                            </Text>
+                                                        )} */}
+                                                    </View>
+                                                </>
+                                            ) :
+
+                                                (
+                                                    <>
+                                                        <Image
+                                                            source={require('../assets/images/creditcard.png')}
+                                                            style={styles.paymentIcon}
+                                                        />
+                                                        <Text style={styles.paymentText}>{item?.title}</Text>
+                                                    </>
+                                                )
+
+                                            }
+                                        </View>
+
+
+                                        <View style={styles.radioCircle}>
+                                            {selected === item?.code && <View style={styles.radioInner} />}
+                                        </View>
+                                    </TouchableOpacity>
+                                </GlassContainer>
+                            ))}
+                        </>
+                    )}
+
+
+                    <KeyboardAvoidingView
+                        style={{ flex: 1 }}
+                        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
                     >
-                        {/* 🔹 Gift Section */}
-                        {/* <View style={styles.giftSection}>
+                        <ScrollView
+                            keyboardShouldPersistTaps="handled"
+                            contentContainerStyle={{ paddingBottom: 40 }}
+                        >
+                            {/* 🔹 Gift Section */}
+                            {/* <View style={styles.giftSection}>
                             <TouchableOpacity
                                 style={styles.giftWrapRow}
                                 activeOpacity={0.8}
@@ -405,54 +454,54 @@ const ShippingMethod = ({ navigation }) => {
                                 </>
                             )}
                         </View> */}
-                    </ScrollView>
-                </KeyboardAvoidingView>
+                        </ScrollView>
+                    </KeyboardAvoidingView>
 
 
 
 
-            </ScrollView>
+                </ScrollView>
 
-            {/* 🔹 Footer */}
-            <View style={styles.footer}>
+                {/* 🔹 Footer */}
+                <View style={styles.footer}>
 
-                <MokaffaPoints />
+                    {/* <MokaffaPoints /> */}
 
 
-                {/* <GlassmorphismButton title="SLIDE TO ORDER" onPress={()=>navigation.navigate("ChooseDeliveryAddress")}/> */}
-                {/* <GlassSwipeButton
+                    {/* <GlassmorphismButton title="SLIDE TO ORDER" onPress={()=>navigation.navigate("ChooseDeliveryAddress")}/> */}
+                    {/* <GlassSwipeButton
                     title="SLIDE TO ORDER"
                     onSwipeStart={() => setScrollEnabled(false)}
                     onSwipeEnd={() => setScrollEnabled(true)}
                     onSwipeSuccess={() => onClickContinueOrder()}
                 /> */}
 
-                <GlassSwipeButton
-                    key={swipeKey}
-                    title="SLIDE TO ORDER"
-                    onSwipeStart={() => setScrollEnabled(false)}
-                    onSwipeEnd={() => setScrollEnabled(true)}
-                    onSwipeSuccess={() => onClickContinueOrder()}
+                    <GlassSwipeButton
+                        key={swipeKey}
+                        title={isLabel?.chkoutshipmethodcontinuebtn_label}
+                        onSwipeStart={() => setScrollEnabled(false)}
+                        onSwipeEnd={() => setScrollEnabled(true)}
+                        onSwipeSuccess={() => onClickContinueOrder()}
+                    />
+
+
+
+
+                    {/* <View style={styles.footerBottomRow}>
+                        <Text style={styles.totalText}>₹16669.25</Text>
+                        <Text style={styles.itemText}>1 Item</Text>
+                    </View> */}
+                </View>
+
+                <FailedModal
+                    isSuccessMessage={isErrorMgs}
+                    handleCloseModal={() => { setErrorModal(false); setErrorMgs() }}
+                    isModal={isErrorModal}
+                    onClickClose={() => { setErrorModal(false); setErrorMgs() }}
                 />
 
-
-
-
-                <View style={styles.footerBottomRow}>
-                    <Text style={styles.totalText}>₹16669.25</Text>
-                    <Text style={styles.itemText}>1 Item</Text>
-                </View>
-            </View>
-
-            <FailedModal
-                isSuccessMessage={isErrorMgs}
-                handleCloseModal={() => { setErrorModal(false); setErrorMgs() }}
-                isModal={isErrorModal}
-                onClickClose={() => { setErrorModal(false); setErrorMgs() }}
-            />
-  
-        </BackgroundWrapper>
-                  </>
+            </BackgroundWrapper>
+        </>
     );
 };
 

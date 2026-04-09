@@ -7,7 +7,7 @@ export const gatCategoryList = async (page, category) => {
         const url = `${BASE_URL}${category}`;
         const lang = await _retrieveData('SELECT_LANG');
         const cur = await _retrieveData('SELECT_CURRENCY');
-         const user = await _retrieveData('USER');
+         const user = await _retrieveData('CUSTOMER_ID');
         const sessionId = await _retrieveData('SESSION_ID');
 
         const headers = {
@@ -16,10 +16,10 @@ export const gatCategoryList = async (page, category) => {
         };
 
         const body = {
-            // code: lang?.code,
-            // currency: cur?.code,
+            code: lang?.code,
+            currency: cur?.code,
             sessionid: sessionId,
-            // customer_id: user ? user[0]?.customer_id : null,
+            customer_id: user ? user: null,
             // page:page
         }
 

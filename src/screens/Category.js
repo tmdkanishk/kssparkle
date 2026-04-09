@@ -18,7 +18,7 @@ import { gatCategoryList } from "../services/gatCategoryList";
 import { useCustomContext } from "../hooks/CustomeContext";
 import CategoryCard from "../components/customcomponents/CategoryCard";
 import CustomSearchBar from "./CustomSearchBar";
-import { isLiquidGlassSupported, LiquidGlassView } from "@callstack/liquid-glass";
+import { isLiquidGlassSupported, LiquidGlassContainerView, LiquidGlassView } from "@callstack/liquid-glass";
 
 
 const categories = [
@@ -67,6 +67,7 @@ const Category = ({ navigation }) => {
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
   const [activeSeachingScreen, setActiveSeachingScreen] = useState(false);
+  const [isLabel, setLabel] = useState()
 
   const handleCategoryPress = useCallback(
     (item) => {
@@ -94,6 +95,9 @@ const Category = ({ navigation }) => {
     setLoading(true);
     try {
       const result = await gatCategoryList(pageNumber, EndPoint?.category);
+      setLabel(result?.text);
+
+      console.log("get cATOGIES RESULT", result)
 
       setCategories(prev => {
         if (pageNumber === 1) return result?.category || [];
@@ -160,6 +164,7 @@ const Category = ({ navigation }) => {
 
   return (
     <BackgroundWrapper>
+       <LiquidGlassContainerView style={{ flex: 1 }}>
       <FlatList
         data={categories}
         keyExtractor={(item) => item.category_id}
@@ -189,7 +194,7 @@ const Category = ({ navigation }) => {
                 style={{ width: 18, height: 18, tintColor: "#fff" }}
               />
               <View style={styles.headerRow}>
-                <Text style={styles.headerTitle}>Categories</Text>
+                <Text style={styles.headerTitle}>{isLabel?.category}</Text>
               </View>
             </TouchableOpacity>
 
@@ -200,6 +205,7 @@ const Category = ({ navigation }) => {
             <TouchableOpacity
               activeOpacity={0.8}
               style={{ width: "100%", alignItems: "center", marginBottom: 20 }}
+              onPress={()=>{navigation.navigate('SpecialProducts')}}
             >
               <GlassContainer
                 style={{
@@ -256,11 +262,12 @@ const Category = ({ navigation }) => {
         ListFooterComponent={
           loading ? (
             <Text style={{ color: "#fff", textAlign: "center", padding: 10 }}>
-              Loading...
+             {isLabel?.loading}
             </Text>
           ) : null
         }
       />
+      </LiquidGlassContainerView>
     </BackgroundWrapper>
 
   );

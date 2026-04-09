@@ -16,6 +16,7 @@ export const THREE_X_ENDPOINT = {
   //Review
   productdetails_Reviewlabels: "restapi/productdetails/Reviewlabels",
   productdetails_writeReview: "restapi/productdetails/writeReview",
+  productdetails_OrderReviews: "restapi/productdetails/OrderReviews",
 
   //Contact
   contactus: "restapi/contactus",
@@ -76,8 +77,8 @@ export const THREE_X_ENDPOINT = {
   cart_edit: "restapi/cart/edit",
   cart_voucher: "restapi/cart/voucher",
   // cart_coupon: "restapi/cart/coupon",
-    cart_coupon: "restapi/coupon",
-    list_coupons: "restapi/coupon/allcoupons",
+  cart_coupon: "restapi/coupon",
+  list_coupons: "restapi/coupon/allcoupons",
   cart_shipping: "restapi/cart/shipping",
   cart_estimateshipping: "restapi/cart/estimateshipping",
 
@@ -132,7 +133,7 @@ export const THREE_X_ENDPOINT = {
   login_logindetail: "restapi/login/verficationpage",
 
   //verification code
-  verifcation_detail:"restapi/login/submitotppage",
+  verifcation_detail: "restapi/login/submitotppage",
   otp_check: "restapi/login/otpaction",
 
   //register
@@ -196,9 +197,22 @@ export const THREE_X_ENDPOINT = {
   awis_form: "restapi/awis/form",
 
   // custom field
-  address_customFields: "restapi/address/customFields"
+  address_customFields: "restapi/address/customFields",
 
+  //tracking details
 
+  tracking_info: "restapi/order/ordertrackinginfo",
+
+  //global popup endpoint
+
+  global_popup: "restapi/globalpopup",
+
+  //review modal poinr
+
+  review_modal : "restapi/order/reviewModalText",
+
+  //tamara enpoint
+   tamara_endPoint : "/restapi/order/createTamaraCheckout"
 
 };
 

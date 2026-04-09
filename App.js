@@ -8,8 +8,9 @@ import { WishlistProvider } from './src/hooks/WishlistContext';
 import { LoadingProvider } from './src/hooks/LoadingProvider';
 import { UserProvider } from './src/hooks/UserContext';
 import BackgroundWrapper from './src/components/customcomponents/BackgroundWrapper';
+import { BackgroundReadyProvider } from './src/hooks/BackgroundReadyContext';
+// import TamaraSdk from 'react-native-tamara-sdk';
 // import { Tabby } from 'tabby-react-native-sdk';
-import { I18nManager } from 'react-native';
 
 
 
@@ -54,14 +55,22 @@ export default function App() {
   //   )
   // }
 
+  //   useEffect(() => {
+  //   TamaraSdk.initSdk(
+  //     "AUTH_TOKEN",
+  //     "API_URL",
+  //     "NOTIFICATION_WEBHOOK_URL",
+  //     "PUBLISH_KEY",
+  //     "NOTIFICATION_TOKEN",
+  //     true // sandbox
+  //   );
+  // }, []);
+
+
+
 
 
   const [ready, setReady] = useState(false);
-
-
-  I18nManager.allowRTL(true);
-  I18nManager.forceRTL(true); // This actually triggers the change
-  console.log("Current RTL Status:", I18nManager.isRTL);
 
 
   useEffect(() => {
@@ -94,6 +103,7 @@ export default function App() {
 
   return (
     // <BackgroundWrapper>
+
     <LoadingProvider>
       <CustomProvider>
         <LanguageCurrencyProvider>
@@ -107,6 +117,7 @@ export default function App() {
         </LanguageCurrencyProvider>
       </CustomProvider>
     </LoadingProvider>
+
     // </BackgroundWrapper>
 
 

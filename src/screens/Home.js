@@ -41,6 +41,11 @@ import GlassTestContainer from '../components/customcomponents/GlassTestComponen
 import GlassContainer from '../components/customcomponents/GlassContainer';
 import BoxWithShadow from '../test';
 import AddressCard from '../components/AddressCard';
+import GlobalPopup from '../components/GlobalPopup';
+import { useLoading } from '../hooks/LoadingProvider';
+import { getGlobalPopupData } from '../services/getGlobalPopupData';
+import { shouldShowPopup } from '../utils/shouldShowPopup';
+import { getSessionHasShownPopup, getSessionHidePopup, setSessionHasShownPopup } from '../utils/popupSession';
 
 
 
@@ -67,6 +72,7 @@ const Home = ({ navigation }) => {
     const [selectedItem, setSelectedItem] = useState(null);
     const [activeSeachingScreen, setActiveSeachingScreen] = useState(false);
     const [loadingMore, setLoadingMore] = useState(false);
+    const [isLabel, setLabel] = useState();
     const BG = require('../assets/images/backgroundimage.png');
     const products = [
         {
@@ -84,6 +90,63 @@ const Home = ({ navigation }) => {
             image: require("../assets/images/mac.png"),
         },
     ];
+    const [popupVisible, setPopupVisible] = useState(false);
+    const [popupData, setPopupData] = useState(null);
+    const { setGlobalLoading } = useLoading();
+
+    const hasShownPopup = useRef(false);
+    const popupTimerRef = useRef(null);
+
+useFocusEffect(
+  React.useCallback(() => {
+    console.log("🏠 Home focused");
+
+    // ❌ Don't show if user disabled it
+    if (getSessionHidePopup()) {
+      console.log("🚫 Popup disabled for session");
+      return;
+    }
+
+    // ❌ Don't show again if already shown
+    if (getSessionHasShownPopup()) {
+      console.log("⚠️ Popup already shown this session");
+      return;
+    }
+
+    const loadPopup = async () => {
+      try {
+        console.log("📡 Calling popup API...");
+
+        const result = await getGlobalPopupData(EndPoint?.global_popup);
+        const shouldShow = await shouldShowPopup(result);
+
+        console.log("🤔 Should show popup?", shouldShow);
+
+        if (result && shouldShow) {
+          console.log("🔥 SHOWING POPUP");
+
+          setTimeout(() => {
+            setPopupData(result);
+            setPopupVisible(true);
+
+            // ✅ mark as shown globally (persists across screens)
+            setSessionHasShownPopup(true);
+
+          }, 500);
+        } else {
+          console.log("❌ Conditions failed");
+        }
+
+      } catch (e) {
+        console.log("💥 ERROR:", e);
+      }
+    };
+
+    loadPopup();
+
+  }, [])
+);
+
 
     // useFocusEffect(
     //     useCallback(() => {
@@ -118,6 +181,8 @@ const Home = ({ navigation }) => {
                 setLoading(true);
             }
             const data = await getModuleData('home', 'content_top', EndPoint?.layout);
+            console.log("Home Data", data);
+            setLabel(data)
             console.log("fetchHomeModuleData", data?.modules)
             console.log("products on home screen", data?.modules?.products)
             setModuleData(data?.modules);
@@ -244,7 +309,7 @@ const Home = ({ navigation }) => {
         <View style={{ marginTop: Platform.OS === "ios" ? 20 : 0 }}>
             <Animated.View style={{ opacity: hideAnimation }}>
                 <Pressable style={{ width: Platform.OS === "ios" ? '100%' : "100%", paddingHorizontal: Platform.OS === "ios" ? 5 : 20 }}>
-                    <PromoCard onSearchPress={toggleSearch} />
+                    <PromoCard specialInfo={isLabel?.text?.specialinfo} specialInfo_2={isLabel?.text?.specialinfo_2} specialInfo_3={isLabel?.text?.specialinfo_3} specialInfo_4={isLabel?.text?.specialinfo_4} specialInfo_5={isLabel?.text?.specialinfo_5} textInfo={isLabel?.text?.textinfo} onSearchPress={toggleSearch} />
                 </Pressable>
             </Animated.View>
 
@@ -267,25 +332,25 @@ const Home = ({ navigation }) => {
 
             {/* <BoxWithShadow /> */}
 
-            <View style={{ flexDirection: 'row', marginBottom: 10, marginTop: 10 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start' }}>
 
-                <View>
-                    <GlassContainer borderRadius={10} padding={10} style={{ paddingHorizontal: 30, alignItems: 'center', justifyContent: 'center', }}>
+                {/* <View>
+                    <GlassContainer borderRadius={10} padding={0.1} style={{ paddingHorizontal: 30, alignItems: 'center', justifyContent: 'center', paddingVertical:10}}>
                         <TouchableOpacity onPress={onClickBrand}>
-                            <Text style={{ color: 'white', textAlign: 'center' }}>Brands</Text>
+                            <Text style={{ color: 'white', textAlign: 'center' }}>{isLabel?.text?.brands}</Text>
                         </TouchableOpacity>
                     </GlassContainer>
 
-                </View>
+                </View> */}
 
 
-                <View>
-                    <GlassContainer borderRadius={10} padding={10} style={{ paddingHorizontal: 30, alignItems: 'center', justifyContent: 'center', }}>
+                {/* <View>
+                    <GlassContainer borderRadius={10} padding={0.1} style={{ paddingHorizontal: 30, alignItems: 'center', justifyContent: 'center', paddingVertical: 10 }}>
                         <TouchableOpacity onPress={() => navigation.navigate('Category')}>
-                            <Text style={{ color: 'white', textAlign: 'center' }}>Category</Text>
+                            <Text style={{ color: 'white', textAlign: 'center' }}>{isLabel?.text?.categories}</Text>
                         </TouchableOpacity>
                     </GlassContainer>
-                </View>
+                </View> */}
 
 
             </View>
@@ -297,7 +362,7 @@ const Home = ({ navigation }) => {
 
             {/* <GlassTestContainer /> */}
 
-            {/* {
+            {
                 isModuleData?.length > 0 ? (
                     isModuleData?.map((item, index) => {
                         if (item?.type === 'categorystory') {
@@ -329,7 +394,7 @@ const Home = ({ navigation }) => {
                     )
                 ) : null
 
-            } */}
+            }
         </View>
     )
 
@@ -365,6 +430,9 @@ const Home = ({ navigation }) => {
                     <CustomActivity />
                 ) : (
                     <View style={{ paddingHorizontal: 12 }}>
+
+                        {/* <BoxWithShadow /> */}
+                      
                         <CustomProductList header={
                             <HomeHeader />
                         } moduleProducts={moduleProducts} scrollY={scrollY} />
@@ -401,9 +469,13 @@ const Home = ({ navigation }) => {
                 items={selectedItem}
                 productId={selectedItem?.product_id}
             />
+            <GlobalPopup
+                visible={popupVisible}
+                data={popupData}
+                onClose={() => setPopupVisible(false)}
+            />
 
-
-
+            <NotificationAlert />
         </>
 
     )

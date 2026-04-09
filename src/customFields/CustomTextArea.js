@@ -1,4 +1,4 @@
-import { View, TextInput, Text, StyleSheet } from "react-native";
+import { View, TextInput, Text, StyleSheet, I18nManager } from "react-native";
 import React, { useState } from 'react'
 import { useCustomContext } from '../hooks/CustomeContext';
 
@@ -41,6 +41,8 @@ const CustomTextArea = ({
             borderColor: showError ? "red" : Colors?.iconColor || "#ccc",
             color: "#000",
             height: numberOfLines * 24, // control height dynamically
+            textAlign: I18nManager.isRTL ? 'right' : 'left',
+            paddingStart:10
           },
           inputStyle,
         ]}

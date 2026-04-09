@@ -72,6 +72,7 @@ const MyOrderScreen = ({ navigation }) => {
             }
             setLoadingMore(true)
             const result = await getOrderHistoryAndText(page, EndPoint?.order_orderhistory);
+            console.log("my order result", result)
             setLabel(result?.text);
             setOrderHistoryData((prevData) => {
                 const existingIds = new Set(prevData.map(item => item.order_id));
@@ -143,7 +144,7 @@ const MyOrderScreen = ({ navigation }) => {
 
             {/* ORDER ID */}
             <Text style={styles.orderId}>
-                Order ID {item.order_id}
+                {isLabel?.orderhstryorderid_label} {item.order_id}
             </Text>
 
             <View style={styles.productRow}>
@@ -209,8 +210,14 @@ const MyOrderScreen = ({ navigation }) => {
                 </TouchableOpacity> */}
 
                 <TouchableOpacity onPress={() => { navigation.navigate("OrderView", { orderId: item?.order_id }) }} style={styles.actionButton}>
-                    <Text style={styles.actionText}>Details</Text>
+                    <Text style={styles.actionText}>{isLabel?.orderhstryorderdetailbtn_label}</Text>
                 </TouchableOpacity>
+
+                {item?.tracking === "1" ? <TouchableOpacity onPress={() => { navigation.navigate("TrackingDetails", {orderId: item?.order_id})}} style={styles.actionButton}>
+                    <Text style={styles.actionText}>{"Track"}</Text>
+                </TouchableOpacity> : <></>}
+
+                
 
                 <View style={styles.actionButton}>
                     <Text style={styles.actionText}>{item?.status}</Text>
@@ -222,38 +229,38 @@ const MyOrderScreen = ({ navigation }) => {
 
     return (
         <>
-        <BackgroundWrapper>
-            <FlatList
-                data={orderHistoryData}
-                keyExtractor={(item) => item.order_id.toString()}
-                renderItem={renderOrderItem}
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={{ paddingBottom: 80 }}
-                onEndReached={handleLoadMore}
-                onEndReachedThreshold={0.6}
-                ListFooterComponent={renderFooter}
+            <BackgroundWrapper>
+                <FlatList
+                    data={orderHistoryData}
+                    keyExtractor={(item) => item.order_id.toString()}
+                    renderItem={renderOrderItem}
+                    showsVerticalScrollIndicator={false}
+                    contentContainerStyle={{ paddingBottom: 80 }}
+                    onEndReached={handleLoadMore}
+                    onEndReachedThreshold={0.6}
+                    ListFooterComponent={renderFooter}
 
-                ListHeaderComponent={
-                    <>
-                        {/* HEADER */}
-                        <View style={styles.header}>
-                            <TouchableOpacity onPress={() => navigation.goBack()}>
-                                <Image
-                                    source={require("../assets/images/back.png")}
-                                    style={styles.backIcon}
-                                />
-                            </TouchableOpacity>
-                            <Text style={styles.headerTitle}>My Order</Text>
-                            <View style={{ width: 24 }} />
-                        </View>
+                    ListHeaderComponent={
+                        <>
+                            {/* HEADER */}
+                            <View style={styles.header}>
+                                <TouchableOpacity onPress={() => navigation.goBack()}>
+                                    <Image
+                                        source={require("../assets/images/back.png")}
+                                        style={styles.backIcon}
+                                    />
+                                </TouchableOpacity>
+                                <Text style={styles.headerTitle}>{isLabel?.orderhstrypagename_label}</Text>
+                                <View style={{ width: 24 }} />
+                            </View>
 
-                        {/* <View style={{ marginTop: 50, marginLeft:5 }}>
+                            {/* <View style={{ marginTop: 50, marginLeft:5 }}>
                             <CustomHeader pageName={"My Order"} />
                         </View> */}
 
 
-                        {/* FILTERS */}
-                        {/* <View style={styles.filters}>
+                            {/* FILTERS */}
+                            {/* <View style={styles.filters}>
 
                             <GlassContainer
                                 style={{ flexDirection: "row" }}
@@ -279,12 +286,12 @@ const MyOrderScreen = ({ navigation }) => {
 
                         </View> */}
 
-                        {/* SECTION TITLE */}
-                        {/* <Text style={styles.sectionTitle}>Completed</Text> */}
-                    </>
-                }
-            />
-        </BackgroundWrapper>
+                            {/* SECTION TITLE */}
+                            {/* <Text style={styles.sectionTitle}>Completed</Text> */}
+                        </>
+                    }
+                />
+            </BackgroundWrapper>
         </>
     );
 };

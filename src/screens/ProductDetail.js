@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, Image, TouchableOpacity, Platform } from 'react-native'
+import { View, Text, ScrollView, Image, TouchableOpacity, Platform, TextInput } from 'react-native'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import BackgroundWrapper from '../components/customcomponents/BackgroundWrapper'
 import PromoCard from '../components/customcomponents/PromoCard'
@@ -141,6 +141,7 @@ const ProductDetail = ({ navigation, route }) => {
   const [price, setPrice] = useState('');
   const [isSuccessModal, setSuccessModal] = useState(false);
   const [isSuccessMgs, setSuccessMgs] = useState();
+  const [selectedTextOptions, setSelectedTextOptions] = useState({});
 
   useEffect(() => {
     fetchProductDetail();
@@ -239,6 +240,7 @@ const ProductDetail = ({ navigation, route }) => {
         console.log("tebbypromo", response.data.tebbypromo);
         console.log("product detail response images", response?.data?.images);
         console.log("product detail response price", response.data?.price);
+        console.log("response data description", response?.data?.description)
         setPrice(response.data?.price)
         setProductDetail(response.data);
         setAttributeGroups(response.data.attribute_groups)
@@ -426,7 +428,8 @@ const ProductDetail = ({ navigation, route }) => {
   const onClickBuyButtonWithOptionProductDetailCopy = async (
     selectedRadioOptions,
     selectedCheckboxOptions,
-    selectedSelectOptions
+    selectedSelectOptions,
+    selectedTextOptions
   ) => {
     try {
 
@@ -437,6 +440,7 @@ const ProductDetail = ({ navigation, route }) => {
         selectedRadioOptions,
         selectedCheckboxOptions,
         selectedSelectOptions,
+        selectedTextOptions,
         EndPoint?.cart_add
       );
 
@@ -569,6 +573,13 @@ const ProductDetail = ({ navigation, route }) => {
     setselectedSelectOptions((prev) => ({
       ...prev,
       [`option[${productOptionId}]`]: productOptionValueId,
+    }));
+  };
+
+  const handleTextOptionChange = (productOptionId, value) => {
+    setSelectedTextOptions((prev) => ({
+      ...prev,
+      [`option[${productOptionId}]`]: value,
     }));
   };
 
@@ -707,20 +718,49 @@ const ProductDetail = ({ navigation, route }) => {
             <Image source={require("../assets/images/back.png")} style={{ width: 18, height: 18, tintColor: "#fff", }} />
           </TouchableOpacity>
           <ProductImageCard headingTitle={productDetail?.heading_title} images={productDetail?.images} />
-          <View style={{ alignItems: 'flex-start', marginLeft: 20, marginTop: 10 }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: "space-between",
+              marginLeft: 20,
+              marginTop: 10,
+              marginRight: 25
+            }}
+          >
             <PriceView
               priceHtml={productDetail?.price}
               textStyle={{
                 fontSize: 31,
                 fontWeight: "700",
                 color: "white",
-                marginLeft: 'auto'
               }}
               width={25}
               height={25}
             />
-
+            {/* 
+            {productDetail?.manufacturers_data?.image && (
+              <TouchableOpacity
+                style={{ marginLeft: 15 }} // spacing between price & image
+                onPress={() =>
+                  navigation.navigate('Products', {
+                    id: productDetail?.manufacturers_data?.manufacturer_id,
+                    titleName:
+                      productDetail?.manufacturers_data?.manufacturer_name ||
+                      productDetail?.manufacturers_data?.name,
+                  })
+                }
+              >
+                <Image
+                  style={{ width: 50, height: 50 }}
+                  source={{ uri: productDetail?.manufacturers_data?.image }}
+                />
+              </TouchableOpacity>
+            )} */}
           </View>
+
+
+
           <View style={{ padding: 20 }}>
             {/* <TextContainer /> */}
 
@@ -731,6 +771,7 @@ const ProductDetail = ({ navigation, route }) => {
               price={productDetail?.price}
               tamaraText={productDetail?.tamara_text}
               tabbyText={productDetail?.tabby_text}
+              textNoFee={productDetail?.text_nofee}
             />
 
 
@@ -1080,7 +1121,7 @@ const ProductDetail = ({ navigation, route }) => {
                   {isSelectError &&
                     !selectedSelectOptions[`option[${option.product_option_id}]`] && (
                       <Text style={{ color: 'red' }}>
-                        Please select {option.product_option_id}
+                        {productDetail?.please_select} {option.product_option_id}
                       </Text>
                     )}
                 </View>
@@ -1088,15 +1129,93 @@ const ProductDetail = ({ navigation, route }) => {
             })}
 
 
+            {productDetail?.options?.map((item, index) => {
+  const isTextInput =
+    item?.type === "text" || item?.type === "textarea";
+
+  if (!isTextInput) return null;
+
+  return (
+    <View key={index}>
+      {/* Title */}
+      <Text
+        style={[
+          commonStyles.heading,
+          // { color: Colors.headingColor, marginTop: 12 },
+        ]}
+      >
+        {item?.name}
+      </Text>
+
+      {/* Input */}
+      <TextInput
+        placeholder="Enter here..."
+        placeholderTextColor="#999"
+        multiline={item?.type === "textarea"}
+        value={
+          selectedTextOptions[`option[${item?.product_option_id}]`] || ""
+        }
+        onChangeText={(text) =>
+          handleTextOptionChange(item?.product_option_id, text)
+        }
+        style={{
+          borderWidth: 1,
+          borderColor:
+            isSelectError &&
+            !selectedTextOptions[
+              `option[${item?.product_option_id}]`
+            ]?.trim()
+              ? "red"
+              : Colors.gray,
+          borderRadius: 8,
+          padding: 10,
+          height: item?.type === "textarea" ? 80 : 45,
+          color: "#fff",
+          marginTop: 10,
+          textAlignVertical:
+            item?.type === "textarea" ? "top" : "center",
+        }}
+      />
+
+      {/* Error */}
+      {isSelectError &&
+        !selectedTextOptions[
+          `option[${item?.product_option_id}]`
+        ]?.trim() && (
+          <Text style={{ color: "red" }}>
+            {productDetail?.please_select} {item?.name}
+          </Text>
+        )}
+    </View>
+  );
+})}
+
+
             <View
               style={{
                 marginLeft: 10,
-                // backgroundColor: 'blue',
-                marginBottom: 20, // ensures no bottom gap
+                marginBottom: 20,
                 marginTop: 20
               }}
             >
-              {/* Text section */}
+
+              {descriptionData && (
+                <Text
+                  style={{
+                    color: '#fff',
+                    fontSize: 14,
+                    textAlign: 'left',
+                    lineHeight: 22,
+                    fontWeight: '500',
+                    flexShrink: 1,
+
+                  }}
+                >
+                  {productDetail?.prodpage_descriptiontab_text}
+                </Text>
+              )}
+
+
               <Text
                 style={{
                   color: '#fff',
@@ -1105,32 +1224,32 @@ const ProductDetail = ({ navigation, route }) => {
                   lineHeight: 22,
                   fontWeight: '500',
                   flexShrink: 1,
-                  // backgroundColor: 'rgba(255,0,0,0.3)', // debug color
-                }}
-              >
-                {/* <ProductDescriptionWebView html={"<p>kanishk</p>"} /> */}
-                {productDetail?.prodpage_descriptiontab_text}
-              </Text>
-
-
-
-
-              <Text
-                style={{
-                  color: '#fff',
-                  fontSize: 14,
-                  textAlign: 'left',
-                  lineHeight: 22,
-                  fontWeight: '500',
-                  flexShrink: 1,
-                  // backgroundColor: 'rgba(255,0,0,0.3)', // debug color
                 }}
               >
 
-                {/* <ProductDescriptionWebView html={descriptionData} /> */}
-                <HtmlViewComponent descriptionData={descriptionData} />
-                {/* {descriptionData} */}
+                <HtmlViewComponent descriptionData={descriptionData} readLessText={productDetail?.readless} readMoreText={productDetail?.readmore} />
+
               </Text>
+
+
+              {productDetail?.manufacturers_data?.image && (
+                <TouchableOpacity
+                  style={{ marginTop: 10 }} // spacing between price & image
+                  onPress={() =>
+                    navigation.navigate('Products', {
+                      id: productDetail?.manufacturers_data?.manufacturer_id,
+                      titleName:
+                        productDetail?.manufacturers_data?.manufacturer_name ||
+                        productDetail?.manufacturers_data?.name,
+                    })
+                  }
+                >
+                  <Image
+                    style={{ width: 50, height: 50 }}
+                    source={{ uri: productDetail?.manufacturers_data?.image }}
+                  />
+                </TouchableOpacity>
+              )}
 
 
               {/* <View style={{ alignItems: 'flex-start' }}>
@@ -1161,21 +1280,21 @@ const ProductDetail = ({ navigation, route }) => {
               /> */}
             </View>
 
-            <Text style={{ color: '#fff', fontSize: 22, textAlign: 'center', lineHeight: 22, fontWeight: '500', flexShrink: 1, }}>Product Details</Text>
+            <Text style={{ color: '#fff', fontSize: 22, textAlign: 'center', lineHeight: 22, fontWeight: '500', flexShrink: 1, }}>{productDetail?.productdetails}</Text>
 
             <View style={{ marginTop: 10, marginHorizontal: 5, }}>
 
               <GlassButton
-                title="Top Highlights"
+                title={productDetail?.tophighlights}
                 onPress={() => setShowHighlights(!showHighlights)}
               />
               {showHighlights && (
-                <TopHighlights details={productDetail?.productsdetail} />
+                <TopHighlights details={productDetail?.productsdetail} title={productDetail?.tophighlights} />
               )}
 
               {attributeGroups.length > 0 ? <View style={{ marginTop: 15 }}>
                 <GlassButton
-                  title="Product Specification"
+                  title={productDetail?.prodpage_specificationtab_text}
                   onPress={() => setShowSpecs(!showSpecs)}
                 />
               </View> : null}
@@ -1234,7 +1353,7 @@ const ProductDetail = ({ navigation, route }) => {
                     ))}
 
                     {/* Add Info */}
-                    <TouchableOpacity>
+                    {/* <TouchableOpacity>
                       <Text
                         style={{
                           color: '#fff',
@@ -1245,7 +1364,7 @@ const ProductDetail = ({ navigation, route }) => {
                       >
                         Add Information
                       </Text>
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
 
                   </View>
                 </>
@@ -1271,7 +1390,16 @@ const ProductDetail = ({ navigation, route }) => {
               <CustomerReviewSection relatedProducts={productDetail?.relatedproducts || []} scrollY={scrollY}
                 rating={productDetail?.rating || 0}
                 totalReviews={productDetail?.reviews || 0}
+                totalReviewsText={productDetail?.prodpage_productallreview_text}
                 reviews={productDetail?.reviews_detail || []}
+                customerHeading={productDetail?.text_customersay}
+                customerImages={productDetail?.text_images}
+                customerMedia={productDetail?.text_customer_media}
+                customerVideos={productDetail?.text_videos}
+                globalRatings={productDetail?.text_globalrattings}
+                OutOfFiveText={productDetail?.outof5}
+                realatedProductsHeading={productDetail?.prodpage_relatedprodt_heading}
+                customerReview={productDetail?.customerreviews}
               />
 
             </View>
@@ -1291,7 +1419,8 @@ const ProductDetail = ({ navigation, route }) => {
                 onClickBuyButtonWithOptionProductDetailCopy(
                   selectedRadioOptions,
                   selectedCheckboxOptions,
-                  selectedSelectOptions
+                  selectedSelectOptions,
+                  selectedTextOptions
                 )
               : () => onClickBuyBtn(productDetail?.product_id)}
             title={productDetail?.prodpage_addtocartbtn_text}

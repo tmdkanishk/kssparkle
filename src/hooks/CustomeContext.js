@@ -6,7 +6,7 @@ import { _retrieveData, _storeData } from '../utils/storage';
 import { getActiveEndPoint } from '../utils/configendpoint';
 import { getMessaging } from '@react-native-firebase/messaging';
 import { getApp } from '@react-native-firebase/app';
-// import NotificationAlert from '../components/NotificationAlert';
+import NotificationAlert from '../components/NotificationAlert';
 
 
 // Create a context
@@ -30,14 +30,16 @@ export const CustomProvider = ({ children }) => {
     const [isAdminInfo, setAdminInfo] = useState(null);
     const [isLogin, setLogin] = useState(false);
 
+
+
     useEffect(() => {
         checkUserLogin();
         fetchColors();
-/*         getMessaging(getApp()).onMessage(async (remoteMessage) => {
+         getMessaging(getApp()).onMessage(async (remoteMessage) => {
             console.log("remote Message on open app", remoteMessage);
             setModalData(remoteMessage);
             setModal(true);
-        }); */
+        });
     }, [isAppLanguage]);
 
     const checkUserLogin = async () => {

@@ -6,22 +6,22 @@ import { IconComponentDownArrow, IconComponentUpArrow } from '../../constants/Ic
 // http://192.168.0.135/customclient/2025/oct/sparkleksa/index.php?route=extension/restapi/coupon
 // http://192.168.0.135/customclient/2025/oct/sparkleksa/index.php?route=extension/restapi/coupon/allcoupons
 
-const CustomCouponSection = ({ title, placeholderText, error, success, onClickApply, coupons = [], }) => {
+const CustomCouponSection = ({ title, placeholderText, error, success, onClickApply, coupons = [], heading, isValidText }) => {
     const [show, setShow] = useState(false);
     const [couponCode, setCouponCode] = useState('');
 
     console.log("success", success)
     return (
         <View>
-            <GlassContainer>
+            {/* <GlassContainer>
                 <Pressable onPress={() => setShow(!show)} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                     <Text style={{ color: '#fff' }}>Use Coupon Code</Text>
                     {show ? <IconComponentUpArrow color={'#fff'} /> : <IconComponentDownArrow color={'#fff'} />}
                 </Pressable>
 
-            </GlassContainer>
-            {show && <View>
-                <Text style={styles.text}>Enter your coupon here</Text>
+            </GlassContainer> */}
+         <View>
+                {/* <Text style={styles.text}>Enter your coupon here</Text>
                 <GlassContainer padding={6}>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', }}>
                         <TextInput
@@ -35,12 +35,12 @@ const CustomCouponSection = ({ title, placeholderText, error, success, onClickAp
                             <Text style={styles.text}>Apply</Text>
                         </TouchableOpacity>
                     </View>
-                </GlassContainer>
+                </GlassContainer> */}
 
                 {coupons?.length > 0 && (
-                    <View style={{ marginTop: 15 }}>
+                    <View style={{ marginTop: 5 }}>
                         <Text style={{ color: '#fff', marginBottom: 8 }}>
-                            Available Coupons
+                           {heading}
                         </Text>
 
                         {coupons.map((item) => (
@@ -60,7 +60,7 @@ const CustomCouponSection = ({ title, placeholderText, error, success, onClickAp
                                     {item.code}
                                 </Text>
 
-                                <Text style={{ color: '#ccc', fontSize: 12 }}>
+                                <Text style={{ color: '#fff', fontSize: 12 }}>
                                     {item.name}
                                 </Text>
 
@@ -70,8 +70,8 @@ const CustomCouponSection = ({ title, placeholderText, error, success, onClickAp
                                         : `₹${item.discount} OFF`}
                                 </Text>
 
-                                <Text style={{ color: '#aaa', fontSize: 11 }}>
-                                    Valid till: {item.date_end}
+                                <Text style={{ color: '#fff', fontSize: 11 }}>
+                                    {isValidText}: {item.date_end}
                                 </Text>
                             </TouchableOpacity>
                             </GlassContainer>
@@ -87,7 +87,7 @@ const CustomCouponSection = ({ title, placeholderText, error, success, onClickAp
                 {
                     error && <Text style={styles.errorText}>{error}</Text>
                 }
-            </View>}
+            </View>
         </View>
     )
 }
@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
         color: 'red'
     },
     successText: {
-        color: 'green'
+        color: '#0f0'
     }
 
 })

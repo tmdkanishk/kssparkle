@@ -9,7 +9,7 @@ const COLLAPSED_HEIGHT = LINE_HEIGHT * 3;
 
 
 
-const HtmlViewComponent = ({ descriptionData }) => {
+const HtmlViewComponent = ({ descriptionData, readLessText, readMoreText }) => {
   const [expanded, setExpanded] = useState(false);
   const [showReadMore, setShowReadMore] = useState(false);
   const [measured, setMeasured] = useState(false);
@@ -173,7 +173,7 @@ const HtmlViewComponent = ({ descriptionData }) => {
             fontWeight: '600',
           }}
         >
-          {expanded ? 'Read Less' : 'Read More'}
+          {expanded ? {readLessText} : {readMoreText}}
         </Text>
       )}
 

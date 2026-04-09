@@ -50,7 +50,7 @@ const rating = 4;
 const CustomerReviewSection = ({ scrollY,
     rating = 0,
     totalReviews = 0,
-    reviews = [], relatedProducts = [] }) => {
+    reviews = [], relatedProducts = [], customerHeading, customerImages, customerVideos, globalRatings, customerMedia, OutOfFiveText, realatedProductsHeading, customerReview, totalReviewsText }) => {
     const [showRelatedProducts, setShowRelatedProducts] = useState(false);
     const [buttonY, setButtonY] = useState(0);
     const [playingVideo, setPlayingVideo] = useState(null);
@@ -104,14 +104,14 @@ const CustomerReviewSection = ({ scrollY,
     return (
         <View style={{}}>
             {/* ⭐ Customer Reviews */}
-            <GlassContainer title="Customer Reviews">
+            <GlassContainer title={customerReview}>
                 <View style={styles.ratingRow}>
                     <StarRating rating={rating} size={20} />
-                    <Text style={styles.ratingText}>{rating} out of 5</Text>
+                    <Text style={styles.ratingText}>{rating} {OutOfFiveText}</Text>
                 </View>
 
                 <Text style={styles.subText}>
-                    {totalReviews} global ratings
+                   {totalReviewsText} : {totalReviews} {globalRatings}
                 </Text>
             </GlassContainer>
 
@@ -119,7 +119,7 @@ const CustomerReviewSection = ({ scrollY,
 
             {/* 🗣️ Customer Say */}
             <View style={{}}>
-                {reviews.length > 0 ? <Text style={styles.sectionHeader}>Customer Say</Text> : null}
+                {reviews.length > 0 ? <Text style={styles.sectionHeader}>{customerHeading}</Text> : null}
 
 
                 {reviews.map((item, index) => (
@@ -223,7 +223,7 @@ const CustomerReviewSection = ({ scrollY,
                     style={{ marginTop: 10 }}
                 >
                     <GlassButton
-                        title="Related Products"
+                        title={realatedProductsHeading}
                         onPress={() => setShowRelatedProducts(!showRelatedProducts)}
                     />
                 </View> : null}
@@ -351,7 +351,7 @@ const CustomerReviewSection = ({ scrollY,
 
                                 {/* Header */}
                                 <View style={styles.header}>
-                                    <Text style={styles.headerTitle}>Customer Media</Text>
+                                    <Text style={styles.headerTitle}>{customerMedia}</Text>
                                     <TouchableOpacity onPress={() => setMediaModalVisible(false)}>
                                         <Text style={styles.closeText}>✕</Text>
                                     </TouchableOpacity>
@@ -363,14 +363,14 @@ const CustomerReviewSection = ({ scrollY,
                                         style={[styles.tab, activeTab === 'images' && styles.activeTab]}
                                         onPress={() => setActiveTab('images')}
                                     >
-                                        <Text style={styles.tabText}>Images</Text>
+                                        <Text style={styles.tabText}>{customerImages}</Text>
                                     </TouchableOpacity>
 
                                     <TouchableOpacity
                                         style={[styles.tab, activeTab === 'videos' && styles.activeTab]}
                                         onPress={() => setActiveTab('videos')}
                                     >
-                                        <Text style={styles.tabText}>Videos</Text>
+                                        <Text style={styles.tabText}>{customerVideos}</Text>
                                     </TouchableOpacity>
                                 </View>
 

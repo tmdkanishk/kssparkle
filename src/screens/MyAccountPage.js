@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { View, Text, Image, TouchableOpacity, ScrollView, StyleSheet, Platform, Dimensions, useWindowDimensions, Animated, Share, Alert, Modal, ImageBackground, KeyboardAvoidingView, Linking } from "react-native";
+import { View, Text, Image, TouchableOpacity, ScrollView, StyleSheet, Platform, Dimensions, useWindowDimensions, Animated, Share, Alert, Modal, ImageBackground, KeyboardAvoidingView, Linking, I18nManager } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import GlassContainer from "../components/customcomponents/GlassContainer";
 import BackgroundWrapper from "../components/customcomponents/BackgroundWrapper";
@@ -25,6 +25,7 @@ import SuccessModal from "../components/SuccessModal";
 import { useUser } from "../hooks/UserContext";
 import TopStatusBar from '../components/TopStatusBar'
 import { isLiquidGlassSupported, LiquidGlassView } from "@callstack/liquid-glass";
+import RNRestart from "react-native-restart-newarch";
 
 const MyAccountScreen = ({ navigation }) => {
 
@@ -55,6 +56,9 @@ const MyAccountScreen = ({ navigation }) => {
   const scrollY = useRef(new Animated.Value(0)).current;
   const [errors, setErrors] = useState({});
   const [helplineNumber, setHelplineNumber] = useState('')
+  const [registrationNumber, setRegistrationNumber] = useState('')
+  const [storeAddress, setStoreAddress] = useState('');
+  const [taxNumber, setTaxNumber] = useState('');
   const { refreshUser, profileImg } = useUser();
 
 
@@ -121,6 +125,11 @@ const MyAccountScreen = ({ navigation }) => {
         // helplineno
         setLabel(response.data.text);
         console.log("account dashboard", response.data.text);
+        setTaxNumber(response?.data?.taxno)
+        setStoreAddress(response?.data?.storeaddress)
+        setRegistrationNumber(response?.data?.registerno)
+
+
         setOrderStatus(response.data?.orderstatusname);
         setTotalCoins(response.data?.coins_total.toString());
       }
@@ -216,9 +225,49 @@ const MyAccountScreen = ({ navigation }) => {
     }
   };
 
-  const handleOnChangeLang = (value) => {
-    changeLanguage(value)
-  }
+// const handleOnChangeLang = async (value) => {
+//     // 1. Change the translation locale immediately (e.g., using i18next)
+//     await changeLanguage(value);
+//     console.log("language getting changed",value)
+    
+//     // const isArabic = value === 'ar';
+//     // const isCurrentRTL = I18nManager.isRTL;
+
+//     // // 2. Check if the layout direction needs to change
+//     // if (isArabic !== isCurrentRTL) {
+//     //     // Set new direction
+//     //     I18nManager.allowRTL(isArabic);
+//     //     I18nManager.forceRTL(isArabic);
+
+//     //     // 3. Restart to apply the LTR layout for English
+//     //     setTimeout(() => {
+//     //         RNRestart.Restart();
+//     //     }, 150);
+//     // }
+// };
+
+const handleOnChangeLang = async (value) => {
+    // 1. Save the choice to storage so it persists after restart
+    await _storeData('SELECT_LANG', value); 
+    
+    // 2. Change the translation locale (i18next or similar)
+    await changeLanguage(value);
+    
+    const isArabic = value.code === 'ar';
+    const isCurrentRTL = I18nManager.isRTL;
+
+    // 3. If direction changed, restart is MANDATORY
+    if (isArabic !== isCurrentRTL) {
+        I18nManager.allowRTL(isArabic);
+        I18nManager.forceRTL(isArabic);
+
+        setTimeout(() => {
+            RNRestart.Restart();
+        }, 150);
+    }
+};
+
+
 
   const handleOnChangeCurrency = (value) => {
     changeCurrency(value);
@@ -319,8 +368,9 @@ const MyAccountScreen = ({ navigation }) => {
   };
 
   const openWhatsApp = async () => {
-    if (!helplineNumber) return;
 
+    if (!helplineNumber) return;
+    console.log("open whatssapp")
     // remove leading 0 and spaces
     const formatted = helplineNumber.replace(/^0/, '').replace(/\s/g, '');
 
@@ -374,22 +424,13 @@ const MyAccountScreen = ({ navigation }) => {
                   {
                     backgroundColor:
                       !isLiquidGlassSupported && Platform.OS === "android"
-                        ? "rgba(255,255,255,0.08)"
+                        ? "transparent"
                         : "transparent",
                   },
                 ]}
               >
-                {/* <LinearGradient
-          colors={[
-            "rgba(255,255,255,0.35)",
-            "rgba(255,255,255,0.08)",
-            "rgba(255,255,255,0.25)",
-          ]}
-          style={StyleSheet.absoluteFill}
-          pointerEvents="none"
-        /> */}
 
-                <Text style={styles.text}>Go To Home Page</Text>
+                <Text style={styles.text}>{isLabel?.go_to_home}</Text>
               </View>
             </LiquidGlassView>
           </TouchableOpacity>
@@ -426,7 +467,7 @@ const MyAccountScreen = ({ navigation }) => {
           pointerEvents="none"
         /> */}
 
-                <Text style={styles.text}>Edit Account</Text>
+                <Text style={styles.text}>{isLabel?.acntdbeditbtn_label}</Text>
               </View>
             </LiquidGlassView>
           </TouchableOpacity>
@@ -507,9 +548,9 @@ const MyAccountScreen = ({ navigation }) => {
           {/* Row 1 */}
           <GlassContainer padding={0.1} style={{ marginHorizontal: 20, marginTop: 20 }}>
             <View style={{ flexDirection: "row", justifyContent: "space-evenly", marginBottom: 20 }}>
-              <AccountItem image={require("../assets/images/track.png")} label="Track" />
-              <AccountItem image={require("../assets/images/ready.png")} label="Ready to go" />
-              <AccountItem image={require("../assets/images/preparing.png")} label="Preparing" />
+              <AccountItem image={require("../assets/images/track.png")} label={isLabel?.track} />
+              <AccountItem image={require("../assets/images/ready.png")} label={isLabel?.readytogo} />
+              <AccountItem image={require("../assets/images/preparing.png")} label={isLabel?.preparing} />
             </View>
           </GlassContainer>
 
@@ -524,8 +565,8 @@ const MyAccountScreen = ({ navigation }) => {
                     style={{ width: "100%", height: "100%" }}
                     resizeMode="contain"
                   />
-                  <Text style={{ color: "#fff", fontSize: 18, fontWeight: "500", textAlign: "center" }} >
-                    Return
+                  <Text style={{ color: "#fff", fontSize: 15, fontWeight: "500", textAlign: "center" }} >
+                    {isLabel?.return}
                   </Text>
                 </GlassContainer>
 
@@ -541,7 +582,7 @@ const MyAccountScreen = ({ navigation }) => {
                     resizeMode="contain"
                   />
 
-                  <Text style={{ color: "#fff", fontSize: 18, fontWeight: "500", textAlign: "center" }} >
+                  <Text style={{ color: "#fff", fontSize: 15, fontWeight: "500", textAlign: "center" }} >
                     {isLabel?.acntdbmyorders_heading}
                   </Text>
                 </GlassContainer>
@@ -565,12 +606,12 @@ const MyAccountScreen = ({ navigation }) => {
                   <Text
                     style={{
                       color: "#fff",
-                      fontSize: 18,
+                      fontSize: 15,
                       fontWeight: "500",
                       textAlign: "center",
                     }}
                   >
-                    Wishlist
+                    {isLabel?.acntdbwishlist_label}
                   </Text>
                 </GlassContainer>
 
@@ -591,7 +632,7 @@ const MyAccountScreen = ({ navigation }) => {
               </GlassContainer>
             </View> */}
 
-              <View style={{ alignItems: "center" }}>
+              <TouchableOpacity style={{ alignItems: "center" }}>
                 <GlassContainer style={{ width: 90, height: 90, justifyContent: "center", alignItems: "center" }}>
                   <Image
                     source={require("../assets/images/more.png")}
@@ -599,11 +640,13 @@ const MyAccountScreen = ({ navigation }) => {
                     resizeMode="contain"
                   />
 
-                  <Text style={{ color: "#fff", fontSize: 18, fontWeight: "500", textAlign: "center" }} >
-                    More
+                  <Text style={{ color: "#fff", fontSize: 15, fontWeight: "500", textAlign: "center" }} >
+                    {isLabel?.more}
                   </Text>
                 </GlassContainer>
-              </View>
+
+              </TouchableOpacity>
+
 
             </View>
 
@@ -613,14 +656,14 @@ const MyAccountScreen = ({ navigation }) => {
 
           <View style={styles.row}>
             <TouchableOpacity onPress={() => { navigation.navigate("Notification") }}>
-              <AccountItem image={require("../assets/images/notification.png")} label="Notification" />
+              <AccountItem image={require("../assets/images/notification.png")} label={isLabel?.notification}/>
             </TouchableOpacity>
 
             <TouchableOpacity onPress={() => { }}>
               <AccountItem image={require("../assets/images/address.png")} label={isLabel?.acntdbmyaddrs_label} />
             </TouchableOpacity>
 
-            <AccountItem image={require("../assets/images/wallet.png")} label="Wallet" />
+            <AccountItem image={require("../assets/images/wallet.png")} label={isLabel?.preparing} />
           </View>
 
           <TouchableOpacity
@@ -635,6 +678,7 @@ const MyAccountScreen = ({ navigation }) => {
                 minWidth: '80%',
                 alignItems: 'center',
                 justifyContent: 'center',
+                 minWidth: '85%',
               }}
               padding={1}
             >
@@ -649,13 +693,14 @@ const MyAccountScreen = ({ navigation }) => {
             </GlassContainer>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => onClickOkButton()}>
+          <TouchableOpacity style={{marginTop:10}} onPress={() => onClickOkButton()}>
             <GlassContainer style={{
               borderRadius: 5,
               marginBottom: 12,
+              marginTop:0,
               // padding: 10,
               flexDirection: 'row',
-              minWidth: '80%',
+              minWidth: '85%',
               alignItems: 'center',
               justifyContent: 'center'
             }} padding={8}>
@@ -675,7 +720,7 @@ const MyAccountScreen = ({ navigation }) => {
 
           {/* Footer */}
           <GlassContainer style={styles.footer}>
-            <Text style={styles.footerTitle}>Sell with us</Text>
+            <Text style={styles.footerTitle}>{isLabel?.sellus}</Text>
             <View style={styles.socialRow}>
               {/* <Image source={require("../assets/images/linkedin.png")} style={styles.socialIcon} />
               <Image source={require("../assets/images/instagram.png")} style={styles.socialIcon} />
@@ -696,21 +741,20 @@ const MyAccountScreen = ({ navigation }) => {
             </View>
 
             <Text style={styles.footerLinks}>
-              Privacy Policy   ·   Terms Of Sale   ·   Terms Of Use
+             {isLabel?.privacy_policy}   ·   {isLabel?.terms_of_sale}  ·   {isLabel?.term_of_use}
             </Text>
             <Text style={styles.footerLinks}>
-              Customer Happiness Center  ·  Return Policy  ·  Warranty Policy
+             {isLabel?.customer_happines_center}  ·  {isLabel?.return_policy}  ·  {isLabel?.warranty_policy}
             </Text>
           </GlassContainer>
 
-          <View>
-            <Text style={styles.footerSub}>Noon E Commerce Solutions One Person LLC</Text>
-            <Text style={styles.footerSub}>
-              VAT No. 3020046552 10003 | CR No. 10 10703009
-            </Text>
-            <Text style={styles.footerSub}>Version v4.76 (10325)</Text>
-            <Text style={styles.footerSub}>© 2025 noon.com. All rights reserved.</Text>
+
+          <View style={{ width: '80%', alignSelf: 'center' }}>
+            <Text style={styles.footerSub}>{storeAddress}</Text>
+            <Text style={styles.footerSub}>{taxNumber}</Text>
+            <Text style={styles.footerSub}>{registrationNumber}</Text>
           </View>
+
 
         </ScrollView>
 
@@ -827,8 +871,6 @@ const MyAccountScreen = ({ navigation }) => {
                                 onChangeText={(value) => handleInputChange('email', value)}
                                 isRequired={true}
                                 ErrorMessage={errors?.email}
-
-
                               />
                               <TouchableOpacity
                                 onPress={() => onClickUpdateProfile()}
@@ -1026,10 +1068,11 @@ const styles = StyleSheet.create({
   },
   footerSub: {
     color: "#fff",
-    fontSize: 11,
+    fontSize: 13,
     textAlign: "center",
     marginTop: 2,
-    lineHeight: 30
+    lineHeight: 30,
+    fontWeight: '700'
   },
   liquid: {
     borderRadius: 12,
@@ -1049,7 +1092,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.25,
     shadowRadius: 12,
-    elevation: 8,
+    // elevation: 8,
   },
 
   text: {

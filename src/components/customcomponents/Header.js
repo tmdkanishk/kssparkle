@@ -21,12 +21,16 @@ const Header = ({ onSearchPress, onProfilePress, onLogoPress, paddingHorizontal 
   const [isErrorModal, setErrorModal] = useState(false);
   const [isErrorModalMgs, setErrorModalMgs] = useState();
   const [customerId, setCustomerId] = useState(null);
+  const [language, setlanguage] = useState();
   const { profileImg } = useUser();
   // const [activeSeachingScreen, setActiveSeachingScreen] = useState(false);
 
   useEffect(() => {
     const loadCustomer = async () => {
       const user = await _retrieveData('CUSTOMER_ID');
+      const lang = await _retrieveData('SELECT_LANG');
+
+      setlanguage(lang?.code)
       setCustomerId(user);
     };
 
@@ -80,7 +84,7 @@ const Header = ({ onSearchPress, onProfilePress, onLogoPress, paddingHorizontal 
             style={StyleSheet.absoluteFill}
           />
 
-          <Text style={{ color: "white", fontSize: 10, marginLeft: 3 }}>Search Product</Text>
+          <Text style={{ color: "white", fontSize: 10, marginLeft: 3 }}>{language === "en-gb" ?  "Search Product" :  "بحث عن المنتج"}</Text>
 
           <View style={{ flexDirection: "row", alignItems: "center" }}>
 

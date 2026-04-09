@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     View,
     Text,
@@ -10,7 +10,8 @@ import {
     StyleSheet,
     KeyboardAvoidingView,
     Platform,
-    ActivityIndicator
+    ActivityIndicator,
+    I18nManager
 } from 'react-native';
 import { useCustomContext } from '../hooks/CustomeContext';
 import commonStyles from '../constants/CommonStyles';
@@ -22,6 +23,7 @@ import axios, { HttpStatusCode } from 'axios';
 import FailedModal from './FailedModal';
 import { convertVideoToBase64_UNSAFE } from '../utils/helpers';
 import Icon from '@expo/vector-icons/MaterialIcons';
+import { useLoading } from '../hooks/LoadingProvider';
 
 
 
@@ -30,7 +32,7 @@ import Icon from '@expo/vector-icons/MaterialIcons';
 
 // import ReactNativeBlobUtil from 'react-native-blob-util';
 
-const ReviewModal = ({ visible, onClose, productId, onReviewSuccess }) => {
+const ReviewModal = ({ visible, onClose, productId, onReviewSuccess, orderId }) => {
     const [imageList, setImageList] = useState([]);
     const [videoList, setVideoList] = useState([]);
     const { Colors, EndPoint, GlobalText } = useCustomContext();
@@ -45,6 +47,47 @@ const ReviewModal = ({ visible, onClose, productId, onReviewSuccess }) => {
     const [isSelectError, setSelectError] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [rating, setRating] = useState(0);
+    const {setGlobalLoading} = useLoading();
+    const [reviewText, setReviewText] = useState({});
+
+    useEffect(()=>{
+        getReviewModalText();
+    },[])
+
+    const getReviewModalText = async () => {
+      try {
+      setGlobalLoading(true);
+      const url = `${BASE_URL}${EndPoint?.review_modal}`;
+      const lang = await _retrieveData("SELECT_LANG");
+      const cur = await _retrieveData("SELECT_CURRENCY");
+      const customerId = await _retrieveData("CUSTOMER_ID");
+      const sessionId = await _retrieveData('SESSION_ID');
+      const headers = {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Key: API_KEY,
+      };
+
+      const body = {
+        code: lang?.code,
+        currency: cur?.code,
+        sessionid: sessionId,
+        customer_id: customerId,
+      };
+
+      console.log("Review Modal Text", body, url)
+      const response = await axios.post(url, body, { headers: headers });
+      if (response.status === HttpStatusCode.Ok) {
+        console.log("Review Modal response", response?.data);
+        setReviewText(response?.data)
+
+      }
+    } catch (error) {
+      console.log("error Response", error.response)
+    } finally {
+      setGlobalLoading(false);
+    }
+
+    }
 
 
 
@@ -167,6 +210,7 @@ const ReviewModal = ({ visible, onClose, productId, onReviewSuccess }) => {
 
 
     const onClickWriteViewButton = async () => {
+        console.log("function working")
         if (isSubmitting) return;
 
         setIsSubmitting(true);
@@ -185,6 +229,7 @@ const ReviewModal = ({ visible, onClose, productId, onReviewSuccess }) => {
             formData.append('currency', cur);
             formData.append('sessionid', sessionId);
             formData.append('product_id', productId);
+            formData.append('order_id', orderId)
             formData.append('name', reviewerName);
             formData.append('text', review);
             formData.append('customer_id', user);
@@ -201,12 +246,18 @@ const ReviewModal = ({ visible, onClose, productId, onReviewSuccess }) => {
                 formData.append(`product_videos[${index}][video]`, item.video);
             });
 
+            console.log("HANDLE REVIEW", formData, url)
+
+
             const response = await axios.post(url, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     Key: API_KEY,
                 },
             });
+
+
+
 
             if (response.data.success) {
                 onClose();       // close modal
@@ -216,6 +267,7 @@ const ReviewModal = ({ visible, onClose, productId, onReviewSuccess }) => {
 
         } catch (error) {
             console.log('Error:', error?.response?.data || error);
+
 
             if (error?.response?.data?.error) {
                 setNameError(error.response.data?.error?.name || null);
@@ -252,155 +304,163 @@ const ReviewModal = ({ visible, onClose, productId, onReviewSuccess }) => {
                 >
                     <View style={styles.overlay}>
                         <View style={styles.container}>
-                            <Text style={styles.title}>Write a Review</Text>
-
-                            {/* Username */}
-                            <TextInput
-                                placeholder="Username"
-                                placeholderTextColor="#aaa"
-                                style={[
-                                    styles.input,
-                                    nameError && styles.inputError,   // 👈 red border if error
-                                ]}
-                                value={reviewerName}
-                                onChangeText={(text) => { setReviewerName(text) }}
-                            />
-
-                            {nameError && (
-                                <Text style={styles.errorText}>{nameError}</Text>
-                            )}
-
-                            {/* Email */}
-                            <TextInput
-                                placeholder="Email"
-                                placeholderTextColor="#aaa"
-                                keyboardType="email-address"
-                                autoCapitalize="none"
-                                style={styles.input}
-                                value={reviewerEmail}
-                                onChangeText={(text) => { setReviewerEmail(text) }}
-                            />
-
-                            {/* Review Text */}
-                            <TextInput
-                                placeholder="Write your review..."
-                                placeholderTextColor="#aaa"
-                                multiline
-                                numberOfLines={4}
-                                textAlignVertical="top"
-                                style={[
-                                    styles.input,
-                                    styles.textArea,
-                                    reviewError && styles.inputError,
-                                ]}
-
-                                value={review}
-                                onChangeText={(text) => { setReview(text) }}
-                            />
-
-                            {reviewError && (
-                                <Text style={styles.errorText}>{reviewError}</Text>
-                            )}
-
-
-
-                            <View style={{margin:10, marginBottom:10}}>
-                            {/* Rating */}
-                            <Text style={styles.sectionTitle}>Your Rating</Text>
-                            <SelectableStarRating
-                                rating={rating}
-                                onChange={(value) => {
-                                    setRating(value);
-                                    setRatingError(null);
-                                }}
-                            />
-                            </View>
-
-
-                            {ratingError && (
-                                <Text style={styles.errorText}>{ratingError}</Text>
-                            )}
-
-
-
-                            {/* Upload Buttons */}
-                            <View style={styles.buttonRow}>
-                                <TouchableOpacity style={styles.uploadBtn} onPress={handleAddImage}>
-                                    <Text style={styles.btnText}>Upload Image</Text>
-                                </TouchableOpacity>
-
-                                <TouchableOpacity style={styles.uploadBtn} onPress={handleAddVideo}>
-                                    <Text style={styles.btnText}>Upload Video</Text>
-                                </TouchableOpacity>
-                            </View>
-
-                            {/* Image Preview */}
-                            {imageList.length > 0 && (
-                                <>
-                                    <Text style={styles.sectionTitle}>Images</Text>
-                                    <View style={styles.grid}>
-                                        {imageList.map((item, index) => (
-                                            <View key={index} style={styles.mediaWrapper}>
-                                                <Image source={{ uri: item.uri }} style={styles.image} />
-                                                <TouchableOpacity
-                                                    style={styles.removeBtn}
-                                                    onPress={() => removeImage(index)}
-                                                >
-                                                    <Text style={styles.removeText}>✕</Text>
-                                                </TouchableOpacity>
-                                            </View>
-                                        ))}
-                                    </View>
-                                </>
-                            )}
-
-
-                            {/* Video Preview (NO Image rendering) */}
-                            {videoList.length > 0 && (
-                                <>
-                                    <Text style={styles.sectionTitle}>Videos</Text>
-                                    <View style={styles.grid}>
-                                        {videoList.map((_, index) => (
-                                            <View key={index} style={styles.mediaWrapper}>
-                                                <LinearGradient
-                                                    colors={['#505050', '#808080']}
-                                                    style={styles.videoCard}
-                                                >
-                                                    <Text style={styles.playIcon}>▶</Text>
-                                                </LinearGradient>
-
-                                                <TouchableOpacity
-                                                    style={styles.removeBtn}
-                                                    onPress={() => removeVideo(index)}
-                                                >
-                                                    <Text style={styles.removeText}>✕</Text>
-                                                </TouchableOpacity>
-                                            </View>
-                                        ))}
-                                    </View>
-                                </>
-                            )}
-
-
-                            <TouchableOpacity
-                                onPress={onClickWriteViewButton}
-                                style={[
-                                    styles.closeBtn,
-                                    isSubmitting && { opacity: 0.6 },
-                                ]}
-                                disabled={isSubmitting}
+                            <Text style={styles.title}>{reviewText?.text_write_review}</Text>
+                            <ScrollView
+                                showsVerticalScrollIndicator={false}
+                                contentContainerStyle={{ paddingBottom: 20 }}
                             >
-                                {isSubmitting ? (
-                                    <ActivityIndicator color="#fff" />
-                                ) : (
-                                    <Text style={styles.btnText}>Submit</Text>
-                                )}
-                            </TouchableOpacity>
+                                {/* Username */}
+                                <TextInput
+                                    placeholder={reviewText?.text_username}
+                                    placeholderTextColor="#aaa"
+                                    style={[
+                                        styles.input,
+                                        nameError && styles.inputError,   // 👈 red border if error
+                                    ]}
+                                    value={reviewerName}
+                                    onChangeText={(text) => { setReviewerName(text) }}
+                                    textAlign={I18nManager.isRTL ? 'right' : 'left'}
+                                />
 
-                            {/* Close */}
-                            <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
-                                <Text style={styles.btnText}>Close</Text>
-                            </TouchableOpacity>
+                                {nameError && (
+                                    <Text style={styles.errorText}>{nameError}</Text>
+                                )}
+
+                                {/* Email */}
+                                <TextInput
+                                    placeholder={reviewText?.text_email}
+                                    placeholderTextColor="#aaa"
+                                    keyboardType="email-address"
+                                    autoCapitalize="none"
+                                    style={styles.input}
+                                    value={reviewerEmail}
+                                    onChangeText={(text) => { setReviewerEmail(text) }}
+                                    textAlign={I18nManager.isRTL ? 'right' : 'left'}
+                                />
+
+                                {/* Review Text */}
+                                <TextInput
+                                    placeholder={reviewText?.text_write_review}
+                                    placeholderTextColor="#aaa"
+                                    multiline
+                                    numberOfLines={4}
+                                    textAlignVertical="top"
+                                    style={[
+                                        styles.input,
+                                        styles.textArea,
+                                        reviewError && styles.inputError,
+                                    ]}
+
+                                    value={review}
+                                    onChangeText={(text) => { setReview(text) }}
+                                    textAlign={I18nManager.isRTL ? 'right' : 'left'}
+                                />
+
+                                {reviewError && (
+                                    <Text style={styles.errorText}>{reviewError}</Text>
+                                )}
+
+
+
+                                <View style={{ margin: 10, marginBottom: 10 }}>
+                                    {/* Rating */}
+                                    <Text style={styles.sectionTitle}>{reviewText?.text_rating}</Text>
+                                    <SelectableStarRating
+                                        rating={rating}
+                                        onChange={(value) => {
+                                            setRating(value);
+                                            setRatingError(null);
+                                        }}
+                                    />
+                                </View>
+
+
+                                {ratingError && (
+                                    <Text style={styles.errorText}>{ratingError}</Text>
+                                )}
+
+
+
+                                {/* Upload Buttons */}
+                                <View style={styles.buttonRow}>
+                                    <TouchableOpacity style={styles.uploadBtn} onPress={handleAddImage}>
+                                        <Text style={styles.btnText}>{reviewText?.text_uploadimage}</Text>
+                                    </TouchableOpacity>
+
+                                    <TouchableOpacity style={styles.uploadBtn} onPress={handleAddVideo}>
+                                        <Text style={styles.btnText}>{reviewText?.text_uploadvideo}</Text>
+                                    </TouchableOpacity>
+                                </View>
+
+                                {/* Image Preview */}
+                                {imageList.length > 0 && (
+                                    <>
+                                        <Text style={styles.sectionTitle}>{reviewText?.text_images}</Text>
+                                        <View style={styles.grid}>
+                                            {imageList.map((item, index) => (
+                                                <View key={index} style={styles.mediaWrapper}>
+                                                    <Image source={{ uri: item.uri }} style={styles.image} />
+                                                    <TouchableOpacity
+                                                        style={styles.removeBtn}
+                                                        onPress={() => removeImage(index)}
+                                                    >
+                                                        <Text style={styles.removeText}>✕</Text>
+                                                    </TouchableOpacity>
+                                                </View>
+                                            ))}
+                                        </View>
+                                    </>
+                                )}
+
+
+                                {/* Video Preview (NO Image rendering) */}
+                                {videoList.length > 0 && (
+                                    <>
+                                        <Text style={styles.sectionTitle}>{reviewText?.text_videos}</Text>
+                                        <View style={styles.grid}>
+                                            {videoList.map((_, index) => (
+                                                <View key={index} style={styles.mediaWrapper}>
+                                                    <LinearGradient
+                                                        colors={['#505050', '#808080']}
+                                                        style={styles.videoCard}
+                                                    >
+                                                        <Text style={styles.playIcon}>▶</Text>
+                                                    </LinearGradient>
+
+                                                    <TouchableOpacity
+                                                        style={styles.removeBtn}
+                                                        onPress={() => removeVideo(index)}
+                                                    >
+                                                        <Text style={styles.removeText}>✕</Text>
+                                                    </TouchableOpacity>
+                                                </View>
+                                            ))}
+                                        </View>
+                                    </>
+                                )}
+
+
+                                <TouchableOpacity
+                                    onPress={onClickWriteViewButton}
+                                    style={[
+                                        styles.closeBtn,
+                                        isSubmitting && { opacity: 0.6 },
+                                    ]}
+                                    disabled={isSubmitting}
+                                >
+                                    {isSubmitting ? (
+                                        <ActivityIndicator color="#fff" />
+                                    ) : (
+                                        <Text style={styles.btnText}>{reviewText?.text_submit}</Text>
+                                    )}
+                                </TouchableOpacity>
+
+                                {/* Close */}
+                                <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
+                                    <Text style={styles.btnText}>{reviewText?.text_close}</Text>
+                                </TouchableOpacity>
+
+                            </ScrollView>
                         </View>
                     </View>
                 </KeyboardAvoidingView>
@@ -429,6 +489,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#1e1e1e',
         borderRadius: 12,
         padding: 16,
+        // height:600,
+        maxHeight: '80%',
     },
     title: {
         color: '#fff',

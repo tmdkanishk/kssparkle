@@ -1,5 +1,5 @@
 import { View, Text, SafeAreaView, ScrollView, Platform, TouchableOpacity, StyleSheet, Modal, FlatList, Alert, useWindowDimensions, KeyboardAvoidingView } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import CustomActivity from '../components/CustomActivity'
 import TitleBarName from '../components/TitleBarName'
 import { useCustomContext } from '../hooks/CustomeContext'
@@ -24,6 +24,9 @@ import CustomHeader from '../components/customcomponents/CustomHeader'
 import { useLoading } from '../hooks/LoadingProvider'
 import { BlurView } from '@react-native-community/blur'
 import SelectModalField from '../components/customcomponents/SelectModalField'
+import MapView, { Marker } from 'react-native-maps';
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete'
+import LocationPicker from '../components/LocationPicker'
 
 const AddNewAddress = ({ navigation }) => {
     const { setGlobalLoading } = useLoading();
@@ -62,6 +65,9 @@ const AddNewAddress = ({ navigation }) => {
     const [customFieldList, setCustomFieldList] = useState([]);
     const [customFormData, setcustomFormData] = useState({});
     const [customFieldErrors, setCustomFieldErrors] = useState({});
+    const [latitude, setLatitude] = useState(23.8859);
+    const [longitude, setLongitude] = useState(45.0792);
+    const googleRef = useRef(null);
 
 
 
@@ -116,7 +122,12 @@ const AddNewAddress = ({ navigation }) => {
         fetchMyAddressText();
         // fetchCustomFeilds();
         fetchCountry();
+
     }, []);
+
+    useEffect(() => {
+        fetchAddress(latitude, longitude)
+    }, [latitude, longitude])
 
 
     const fetchCountry = async () => {
@@ -301,11 +312,13 @@ const AddNewAddress = ({ navigation }) => {
                 postcode: isPostalCode,
                 country_id: isDefaultCountry?.country_id,
                 zone_id: isDefaultState?.zone_id,
+                latitude: String(latitude),
+                longitude: String(longitude),
                 // city_id: isDefaultCity?.city_id,
                 'custom_field[address]': customFormData,
                 default: isDefault ? "Yes" : "No",
             }
-            console.log("add new address post", body)
+            console.log("add new address post", body, url)
             const response = await axios.post(url, body, { headers: headers });
             if (response.status === HttpStatusCode.Ok) {
                 console.log("response.data?.success?.addressadd", response.data);
@@ -351,6 +364,36 @@ const AddNewAddress = ({ navigation }) => {
 
     }
 
+    const fetchAddress = async (lat, lng) => {
+        try {
+            const apiKey = 'AIzaSyBq-23EUBHM6cv_I2kb3-SXll4RC3NPcAw';
+            const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${apiKey}`;
+
+            const response = await axios.get(url);
+
+            // Axios stores the JSON response in the 'data' property
+            if (
+                response.data.status === "OK" &&
+                response.data.results.length > 0
+            ) {
+
+                const formattedAddress = response.data.results[0].formatted_address;
+
+                setAddress1(formattedAddress);
+                setAddress1Error(null);
+
+                // 🔥 update autocomplete input
+                googleRef.current?.setAddressText(formattedAddress);
+
+            } else {
+                console.warn("No address found:", response.data.status);
+            }
+        } catch (error) {
+            console.error("Geocoding error with Axios:", error.message);
+        }
+    };
+
+
     return (
         <View style={{ flex: 1 }}>
             <BackgroundWrapper>
@@ -363,7 +406,7 @@ const AddNewAddress = ({ navigation }) => {
                         <CustomHeader pageName={isLabel?.addrsadd_heading} />
                         <View style={{ marginBottom: 20 }}></View>
 
-                        <ScrollView showsVerticalScrollIndicator={false}>
+                        <ScrollView keyboardShouldPersistTaps='always' showsVerticalScrollIndicator={false}>
                             <View style={{ gap: 20, width: '100%', paddingHorizontal: 12, marginVertical: 12 }}>
 
                                 <InputBox
@@ -391,20 +434,81 @@ const AddNewAddress = ({ navigation }) => {
                                     ErrorMessage={isLastnameError}
                                 />
 
-                                {/* <InputBox
+                                <InputBox
                                     label={isLabel?.addrcmpny_label}
                                     placeholder={isLabel?.addrcmpny_label}
                                     inputStyle={{ w: '100%', h: 50, ph: 20 }}
                                     InputType={'text'}
                                     onChangeText={(text) => { setCompnay(text); setCompanyError(null) }}
                                     textVlaue={isCompany}
-                                    isRequired={true}
+                                    // isRequired={true}
                                     ErrorMessage={isCompanyError}
                                     borderColor={isCompanyError ? 'red' : null}
-                                /> */}
+                                />
+                                <LocationPicker
+                                    latitude={latitude}
+                                    longitude={longitude}
+                                    setLatitude={setLatitude}
+                                    setLongitude={setLongitude}
+                                    address={isAddress1}
+                                    setAddress={setAddress1}
+                                    error={isAddress1Error}
+                                    setError={setAddress1Error}
+                                    label={isLabel?.addraddrs1_label}
+                                    apiKey={"AIzaSyBq-23EUBHM6cv_I2kb3-SXll4RC3NPcAw"}
+                                />
+
+                                {/* <MapView
+                                    style={{ flex: 1, height: 200 }}
+                                    onPress={(e) => {
+                                        const { latitude, longitude } = e.nativeEvent.coordinate;
+                                        console.log(latitude, longitude)
+                                        setLatitude(latitude);
+                                        setLongitude(longitude);
+                                    }}
+                                    initialRegion={{
+                                        latitude: Number(latitude),
+                                        longitude: Number(longitude),
+                                        latitudeDelta: 15.0, // Increased to show the whole country
+                                        longitudeDelta: 15.0,
+                                    }}
+                                >
+                                    <Marker
+                                        coordinate={{
+                                            latitude: Number(latitude),
+                                            longitude: Number(longitude),
+                                        }}
+                                        title="Saudi Arabia"
+                                        description="Central Region"
+                                    />
+                                </MapView>
 
                                 <InputBox
-                                    label={isLabel?.addraddrs1_label}
+                                    label={"Latitude"}
+                                    placeholder={"Latitude"}
+                                    inputStyle={{ w: '100%', h: 50, ph: 20 }}
+                                    InputType={'numeric'}
+                                    onChangeText={(text) => { setLatitude(text) }}
+                                    textVlaue={latitude.toString()}
+                                    isRequired={true}
+                                    editable={false}
+                                />
+
+                                <InputBox
+                                    label={"Longitude"}
+                                    placeholder={"Longitude"}
+                                    inputStyle={{ w: '100%', h: 50, ph: 20 }}
+                                    InputType={'numeric'}
+                                    onChangeText={(text) => { setLongitude(text) }}
+                                    textVlaue={longitude.toString()}
+                                    isRequired={true}
+                                    editable={false}
+                                /> */}
+
+
+
+                                {/* <InputBox
+                                    label={placeholder={isLabel?.addraddrs1_label}}
                                     placeholder={isLabel?.addraddrs1_label}
                                     inputStyle={{ w: '100%', h: 50, ph: 20 }}
                                     InputType={'text'}
@@ -413,7 +517,54 @@ const AddNewAddress = ({ navigation }) => {
                                     isRequired={true}
                                     borderColor={isAddress1Error ? 'red' : null}
                                     ErrorMessage={isAddress1Error}
-                                />
+                                /> */}
+                                {/* <View style={{
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                    marginBottom: -10
+                                }}>
+                                    {<Text style={{ color: 'red' }}>* </Text>}
+                                    <Text style={{ color: 'rgba(255,255,255,0.85)', fontSize: 14, fontWeight: '500', }}>{isLabel?.addraddrs1_label}</Text>
+                                </View>
+
+                                <GooglePlacesAutocomplete
+                                    ref={googleRef}
+                                    placeholder={isLabel?.addraddrs1_label}
+                                    fetchDetails={true}
+                                    onPress={(data, details = null) => {
+
+                                        const lat = details.geometry.location.lat;
+                                        const lng = details.geometry.location.lng;
+
+                                        setLatitude(lat);
+                                        setLongitude(lng);
+
+                                        setAddress1(data.description);
+                                        setAddress1Error(null);
+
+                                    }}
+                                    query={{
+                                        key: "AIzaSyBq-23EUBHM6cv_I2kb3-SXll4RC3NPcAw",
+                                        language: "en",
+                                    }}
+                                    textInputProps={{
+                                        onChangeText: (text) => {
+                                            setAddress1(text);
+                                            setAddress1Error(null);
+                                        }
+                                    }}
+                                    styles={{
+                                        textInput: {
+                                            height: 45,
+                                            paddingHorizontal: 10,
+                                            borderRadius: 8,
+                                            backgroundColor: "transparent",
+                                            color: "#fff",
+                                            borderWidth: 1,
+                                            borderColor: isAddress1Error ? "red" : "#ccc",
+                                        }
+                                    }}
+                                /> */}
 
                                 {/* <InputBox
                                     label={isLabel?.addraddrs2_label}
@@ -492,21 +643,21 @@ const AddNewAddress = ({ navigation }) => {
                                         <Text style={[styles.label, { color: '#fff' }]}>{isLabel?.addrstate_label}</Text>
                                     </View>
                                     <GlassContainer padding={0.1}>
-                                    <TouchableOpacity onPress={() => setStateModal(true)} style={{
-                                        // borderWidth: 1,
-                                        borderColor: isZoneError ? 'red' : 'rgba(255,255,255,0.6)',
-                                        height: 54,
-                                        overflow: 'hidden',
-                                        width: '100%',
-                                        backgroundColor: 'rgba(255,255,255,0.05)',
-                                        justifyContent: 'center',
-                                        paddingLeft: 20,
-                                        borderRadius: 12
+                                        <TouchableOpacity onPress={() => setStateModal(true)} style={{
+                                            // borderWidth: 1,
+                                            borderColor: isZoneError ? 'red' : 'rgba(255,255,255,0.6)',
+                                            height: 54,
+                                            overflow: 'hidden',
+                                            width: '100%',
+                                            backgroundColor: 'rgba(255,255,255,0.05)',
+                                            justifyContent: 'center',
+                                            paddingLeft: 20,
+                                            borderRadius: 12
 
-                                    }}>
-                                        <Text style={{ color: '#fff' }}>{isDefaultState?.name || 'N/A'}</Text>
+                                        }}>
+                                            <Text style={{ color: '#fff' }}>{isDefaultState?.name || 'N/A'}</Text>
 
-                                    </TouchableOpacity>
+                                        </TouchableOpacity>
                                     </GlassContainer>
 
                                     {
@@ -644,7 +795,7 @@ const AddNewAddress = ({ navigation }) => {
                                     )
                                 }
 
-                                 <SelectModalField
+                                <SelectModalField
                                     label={isLabel?.addrcity_label}
                                     required
                                     value={isDefaultCity}
@@ -879,6 +1030,19 @@ const styles = StyleSheet.create({
         fontSize: 14,
         marginBottom: 10,
     },
+
+    //     labelLeft: {
+    //     flexDirection: 'row',
+    //     alignItems: 'center',
+    // },
+    // label: {
+    //     color: 'rgba(255,255,255,0.85)',
+    //     fontSize: 14,
+    //     fontWeight: '500',
+    // },
+    // required: {
+    //     color: 'red',
+    // },
 
 });
 

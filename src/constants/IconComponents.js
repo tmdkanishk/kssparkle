@@ -179,6 +179,20 @@ export const IconComponentFlipLeftArrow = ({ color, size }) => {
     )
 }
 
+export const IconComponentRating = ({ color, size }) => {
+    return (
+        <FontAwesome name="star-o" size={size ? size : 24} color={color ? color : "black"} />
+
+    )
+}
+
+export const IconComponentEye = ({ color, size }) => {
+    return (
+        <Entypo name="eye" size={size ? size : 24} color={color ? color : "black"} />
+
+    )
+}
+
 export const IconComponentDashboard = ({ color, size }) => {
     return (
         <MaterialCommunityIcons name="view-dashboard" size={size ? size : 24} color={color ? color : "black"} />

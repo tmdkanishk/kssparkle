@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, Alert, Platform, ActivityIndicator, useWindowDimensions, Pressable, Image, Animated } from 'react-native'
+import { View, Text, ScrollView, Alert, Platform, ActivityIndicator, useWindowDimensions, Pressable, Image, Animated, FlatList } from 'react-native'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import TopStatusBar from '../components/TopStatusBar'
@@ -18,6 +18,26 @@ import SearchBarSection from '../components/SearchBarSection'
 import { useLanguageCurrency } from '../hooks/LanguageCurrencyContext'
 import { getSortsFilterList } from '../services/getSortsFilterList'
 import { IconComponentCaretdown, IconComponentCaretup } from '../constants/IconComponents'
+import BackgroundWrapper from '../components/customcomponents/BackgroundWrapper'
+import ProductGlassCard from '../components/customcomponents/ProductGlassCard'
+import CustomHeader from '../components/customcomponents/CustomHeader'
+import { useLoading } from '../hooks/LoadingProvider'
+import Header from '../components/customcomponents/Header'
+import CustomSearchBar from './CustomSearchBar'
+
+/* 
+
+Output --> 
+
+show header for search (complete)
+
+apply infinte scrolling (complete)
+
+fix the image not shown in the product card and the text not showin the white 
+
+
+
+*/
 
 const SpecialProducts = ({ navigation }) => {
     const { language, currency, changeLanguage, changeCurrency } = useLanguageCurrency();
@@ -37,6 +57,8 @@ const SpecialProducts = ({ navigation }) => {
     const [sortsFilter, setSortsFilter] = useState([]);
     const [isSort, setSort] = useState(null);
     const scrollY = useRef(new Animated.Value(0)).current;
+    const { setGlobalLoading } = useLoading();
+    const [activeSeachingScreen, setActiveSeachingScreen] = useState(false);
 
 
     useEffect(() => {
@@ -54,7 +76,7 @@ const SpecialProducts = ({ navigation }) => {
     const fetchSpecialProduct = async (page, order, sort) => {
         try {
             if (initialCall) {
-                setLoading(true);
+                setGlobalLoading(true);
                 setInitialCall(false);
             }
             setProductLoading(true);
@@ -71,7 +93,7 @@ const SpecialProducts = ({ navigation }) => {
             setErrorMgs(GlobalText?.extrafield_somethingwrong);
             setErrorModal(true)
         } finally {
-            setLoading(false);
+            setGlobalLoading(false);
             setProductLoading(false);
         }
     }
@@ -131,102 +153,193 @@ const SpecialProducts = ({ navigation }) => {
         }
     }
 
+    const toggleSearch = () => {
+        setActiveSeachingScreen(prev => !prev);
+    };
+
+
+    if (activeSeachingScreen) {
+        return (
+            <CustomSearchBar
+                setActiveSeachingScreen={setActiveSeachingScreen}
+            />
+        );
+    }
+
+
     return (
         <>
-            {
-                loading ? (
-                    <CustomActivity />
-                ) : (
-                    <SafeAreaView style={{ backgroundColor: Platform.OS === 'ios' ? Colors.primary : null }}>
-                        <View style={commonStyles.bodyConatiner}>
-                            <View style={{ paddingHorizontal: 12, backgroundColor: '#F5F5F5' }}>
-                                <TopStatusBar scrollY={scrollY} onChangeLang={handleOnChangeLang} onChangeCurren={handleOnChangeCurrency} />
-                            </View>
-                            <SearchBarSection onClickSearch={(query) => handleSearch(query)} />
-                            <View style={{ paddingHorizontal: 12 }}>
-                                <Animated.ScrollView
-                                    showsVerticalScrollIndicator={false}
-                                    onScroll={Animated.event(
-                                        [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-                                        { useNativeDriver: false }
+
+            <BackgroundWrapper>
+                <View style={commonStyles.bodyConatiner}>
+                    <View style={{ paddingHorizontal: 12, marginTop: 45 }}>
+
+                        <FlatList
+                            data={data}
+                            keyExtractor={(item, index) => index.toString()}
+                            numColumns={2}
+                            columnWrapperStyle={{
+                                justifyContent: isLandscape ? 'flex-start' : 'space-around',
+                                marginVertical: 10,
+                                gap: 12,
+                            }}
+                            showsVerticalScrollIndicator={false}
+
+                            // 🔹 HEADER
+                            ListHeaderComponent={
+                                <>
+                                    <View style={{ width: '100%' }}>
+                                        <Header
+                                            onSearchPress={toggleSearch}
+                                            paddingHorizontal={20}
+                                        />
+                                    </View>
+
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: 0, marginBottom: 20 }}>
+                                        <CustomHeader pageName={title} />
+                                    </View>
+
+                                    {showSort && (
+                                        <View style={{
+                                            borderTopWidth: 1,
+                                            borderBottomWidth: 1,
+                                            borderColor: Colors.gray,
+                                            padding: 10,
+                                            marginTop: 10
+                                        }}>
+                                            <Text style={{ fontSize: 20, fontWeight: '600' }}>
+                                                {GlobalText?.sortby}
+                                            </Text>
+
+                                            <View style={{
+                                                flexDirection: 'row',
+                                                gap: 10,
+                                                marginVertical: 12,
+                                                flexWrap: 'wrap'
+                                            }}>
+                                                {sortsFilter?.map((item, index) => (
+                                                    <Pressable
+                                                        key={index}
+                                                        onPress={() => {
+                                                            onSortingProduct(item);
+                                                            setShowSort(!showSort);
+                                                        }}
+                                                        style={{
+                                                            borderWidth: 1,
+                                                            padding: 6,
+                                                            borderRadius: 6,
+                                                            borderColor: Colors.gray,
+                                                            backgroundColor:
+                                                                isSort?.text == item?.text
+                                                                    ? Colors.primary
+                                                                    : Colors.white
+                                                        }}
+                                                    >
+                                                        <Text style={{
+                                                            color:
+                                                                isSort?.text == item?.text
+                                                                    ? Colors.white
+                                                                    : Colors.black,
+                                                            fontSize: 14
+                                                        }}>
+                                                            {item?.text}
+                                                        </Text>
+                                                    </Pressable>
+                                                ))}
+                                            </View>
+                                        </View>
                                     )}
-                                >
-                                    <ScrollView showsVerticalScrollIndicator={false}>
-                                        <View>
-                                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: 12 }}>
-                                                <Text style={commonStyles.heading}>{title}</Text>
-                                                <Pressable disabled={data?.length == 0} onPress={() => setShowSort(!showSort)} style={{ borderWidth: 1, gap: 10, flexDirection: 'row', alignItems: 'center', padding: 10, borderRadius: 10, borderColor: Colors.gray, opacity: data?.length == 0 ? 0.5 : 1 }}>
-                                                    <Text>{GlobalText?.sortby}</Text>
-                                                    {showSort ? <IconComponentCaretup size={18} /> : <IconComponentCaretdown size={18} />}
-                                                </Pressable>
-                                            </View>
+                                </>
+                            }
 
-                                            {showSort && <View style={{ borderTopWidth: 1, borderBottomWidth: 1, borderColor: Colors.gray, padding: 10, marginTop: 10 }}>
-                                                <Text style={{ fontSize: 20, fontWeight: '600' }}>{GlobalText?.sortby}</Text>
-                                                <View style={{ flexDirection: 'row', gap: 10, marginVertical: 12, width: '100%', flexWrap: 'wrap' }}>
-                                                    {sortsFilter?.map((item, index) => (
-                                                        <Pressable onPress={() => { onSortingProduct(item); setShowSort(!showSort) }} key={index} style={{ borderWidth: 1, padding: 6, borderRadius: 6, borderColor: Colors.gray, backgroundColor: isSort?.text == item?.text ? Colors.primary : Colors.white }}>
-                                                            <Text style={{ color: isSort?.text == item?.text ? Colors.white : Colors.black, fontWeight: '400', fontSize: 14 }}>{item?.text}</Text>
-                                                        </Pressable>))
+                            // 🔹 ITEM
+                            renderItem={({ item }) => (
+                                <ProductGlassCard
+                                    item={item}
+                                    onPress={(product) =>
+                                        navigation.navigate("ProductDetail", {
+                                            productId: product?.product_id,
+                                        })
+                                    }
+                                />
+                            )}
+
+                            // 🔹 EMPTY STATE
+                            ListEmptyComponent={
+                                !loading && !isProductLoading ? (
+                                    <Image
+                                        source={require('../assets/images/notfound.png')}
+                                        style={{
+                                            width: 200,
+                                            height: 200,
+                                            alignSelf: 'center',
+                                            marginTop: 40
+                                        }}
+                                    />
+                                ) : null
+                            }
+
+                            // 🔹 FOOTER
+                            ListFooterComponent={
+                                <>
+                                    {isProductLoading && (
+                                        <View style={{
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            marginVertical: 20
+                                        }}>
+                                            <ActivityIndicator size="large" color={Colors.primary} />
+                                        </View>
+                                    )}
+{/* 
+                                    {isCurretPage < isTotalPage &&
+                                        !isProductLoading &&
+                                        data?.length !== 0 && (
+                                            <View style={{ alignItems: 'center', marginVertical: 24 }}>
+                                                <CustomButton
+                                                    OnClickButton={() =>
+                                                        onClickLoadMoreBtn(isCurretPage + 1)
                                                     }
-                                                </View>
-                                            </View>}
-                                        </View>
-
-                                        <View style={{ paddingBottom: 200 }}>
-                                            <View style={{ flexDirection: 'row', marginVertical: 12, flexWrap: 'wrap', justifyContent: isLandscape ? 'flex-start' : 'space-between', gap: 12, }}>
-                                                {
-                                                    data?.length > 0 && (
-                                                        data.map((item, index) => (
-                                                            <ProductCard
-                                                                key={index}
-                                                                itemdetail={item}
-                                                            />
-                                                        ))
-                                                    )
-                                                }
-
-
+                                                    buttonStyle={{
+                                                        w: '60%',
+                                                        h: 46,
+                                                        backgroundColor: Colors.primary,
+                                                        borderRadius: 6
+                                                    }}
+                                                    buttonText={GlobalText?.extrafield_loadmorebtn_label}
+                                                />
                                             </View>
+                                        )} */}
+                                </>
+                            }
 
-                                            {!loading && !isProductLoading && data?.length == 0 && <Image source={require('../assets/images/notfound.png')} style={{ width: 200, height: 200, alignSelf: 'center' }} />}
-
-                                            {
-                                                isProductLoading && (
-                                                    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                                                        <ActivityIndicator size={'large'} color={Colors.primary} />
-                                                    </View>
-
-                                                )
-                                            }
-
-                                            {
-                                                isCurretPage < isTotalPage && !isProductLoading && data?.length != 0 && (
-                                                    <View style={{ alignItems: 'center', marginVertical: 24 }}>
-                                                        <CustomButton OnClickButton={() => onClickLoadMoreBtn(isCurretPage + 1)} buttonStyle={{ w: '60%', h: 46, backgroundColor: Colors.primary, borderRadius: 6 }} buttonText={GlobalText?.extrafield_loadmorebtn_label} />
-                                                    </View>
-                                                )
-                                            }
-                                        </View>
-
-                                    </ScrollView>
-                                </Animated.ScrollView>
-                            </View>
-                        </View>
-                        <BottomBar />
-
-                        <FailedModal
-                            isModal={isErrorModal}
-                            isSuccessMessage={isErrorMgs}
-                            handleCloseModal={() => { setErrorModal(false); setErrorMgs() }}
-                            onClickClose={() => { setErrorModal(false); setErrorMgs() }}
+                            onEndReached={() => {
+                                if (isCurretPage < isTotalPage && !isProductLoading) {
+                                    onClickLoadMoreBtn(isCurretPage + 1);
+                                }
+                            }}
+                            onEndReachedThreshold={0.5}
                         />
+                    </View>
+                </View>
 
-                        <NotificationAlert />
+                {/* 🔹 MODALS OUTSIDE */}
+                <FailedModal
+                    isModal={isErrorModal}
+                    isSuccessMessage={isErrorMgs}
+                    handleCloseModal={() => {
+                        setErrorModal(false);
+                        setErrorMgs();
+                    }}
+                    onClickClose={() => {
+                        setErrorModal(false);
+                        setErrorMgs();
+                    }}
+                />
 
-                    </SafeAreaView >
-                )
-            }
+                <NotificationAlert />
+            </BackgroundWrapper>
+
         </>
 
     )

@@ -149,11 +149,13 @@ const VerificationCode = ({ navigation, route }) => {
                     Key: API_KEY,
                 };
                 const body = {
-                    // code: lang?.code,
-                    // currency: cur?.code,
+                    code: lang?.code,
+                    currency: cur?.code,
                     sessionId: sessionId
                 }
                 const response = await axios.post(url, body, { headers: headers });
+
+                console.log("fetchVerificationPageText",body, url)
 
                 if (response.status === HttpStatusCode.Ok) {
                     setText(response.data);

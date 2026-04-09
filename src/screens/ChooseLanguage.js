@@ -1,4 +1,4 @@
-import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, Image, Platform } from 'react-native'
+import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, Image, Platform, I18nManager } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { API_KEY, BASE_URL } from '../utils/config';
 import axios, { HttpStatusCode } from 'axios';
@@ -8,6 +8,8 @@ import { useCustomContext } from '../hooks/CustomeContext';
 import { _retrieveData, _storeData } from '../utils/storage';
 import BackgroundWrapper from '../components/customcomponents/BackgroundWrapper';
 import { useLoading } from '../hooks/LoadingProvider';
+import RNRestart from "react-native-restart-newarch"; // Import package from node modules
+
 
 const ChooseLanguage = ({ navigation }) => {
     const { Colors, EndPoint, SetAppLanguage } = useCustomContext();
@@ -51,43 +53,37 @@ const ChooseLanguage = ({ navigation }) => {
         }
     };
 
-    //   const onSelectLanguage = async (item) => {
-    //         await _storeData('SELECT_LANG', item);
 
-    //         const locales = Localization.getLocales();
-    //         const region = locales?.[0]?.languageRegionCode;
-
-    //         if (region === 'IN') {
-    //             const inrCurrency = {
-    //                 code: 'INR',
-    //                 symbol_left: 'Rs ',
-    //                 symbol_right: '',
-    //                 title: 'INR',
-    //             };
-
-    //             await _storeData('SELECT_CURRENCY', inrCurrency);
-    //             await _storeData('ONBOARDING_DONE', true);
-
-    //             navigation.replace('Home');
-    //         } else {
-    //             navigation.replace('ChooseCurrency');
-    //         }
-    //     };
-
-
-    // const onSelectLanguage = async (item) => {
-    //     await _storeData('SELECT_LANG', item);
-    //     navigation.replace('Login');
-    //     //  navigation.replace('Home');
-    //     // navigation.replace('ChooseCurrency')
-    // }
-
-        const onSelectLanguage = async (item) => {
+    const onSelectLanguage = async (item) => {
         await _storeData('SELECT_LANG', item);
         SetAppLanguage(item?.code);
         console.log(item?.code)
         navigation.replace('ChooseCurrency')
     }
+
+    //     const onSelectLanguage = async (item) => {
+    //     const selectedLanguage = item?.code;
+    //     const isArabic = selectedLanguage === 'ar';
+
+    //     // 1. Store the selection
+    //     await _storeData('SELECT_LANG', item);
+    //     SetAppLanguage(selectedLanguage);
+
+    //     // 2. Check if we need to flip the RTL state
+    //     // I18nManager.isRTL tells us the *current* active state
+    //     if (I18nManager.isRTL !== isArabic) {
+    //         I18nManager.allowRTL(isArabic);
+    //         I18nManager.forceRTL(isArabic);
+
+    //         // // 3. Restart is MANDATORY for the UI to flip
+    //         // setTimeout(() => {
+    //         //     RNRestart.Restart();
+    //         // }, 150);
+    //     } else {
+    //         // If no flip is needed, just navigate normally
+    //         navigation.replace('ChooseCurrency');
+    //     }
+    // };
 
     return (
         <>
@@ -101,7 +97,7 @@ const ChooseLanguage = ({ navigation }) => {
                             </View>
                         ) : (
                             <ScrollView showsVerticalScrollIndicator={false}>
-                                <View style={{ width: '90%', alignSelf: 'center', marginVertical: 20, marginTop:60 }}>
+                                <View style={{ width: '90%', alignSelf: 'center', marginVertical: 20, marginTop: 60 }}>
                                     <Text style={[commonStyles.heading, { color: Colors.white }]}>{isLabel}</Text>
                                 </View>
 

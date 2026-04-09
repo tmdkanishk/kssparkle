@@ -3,10 +3,12 @@ import React from 'react'
 import { IconComponentImage, IconComponentStar } from '../constants/IconComponents'
 import commonStyles from '../constants/CommonStyles'
 import { useCustomContext } from '../hooks/CustomeContext'
+import GlassContainer from './customcomponents/GlassContainer'
 
 const RatingCard = ({ image, productName, productReview, productRate, totalRate }) => {
     const { Colors } = useCustomContext();
     return (
+        <GlassContainer>
         <View style={{ flexDirection: 'row', gap: 20, borderWidth: 1, borderColor: Colors.gray, borderRadius: 10, padding: 12, alignItems: 'center', marginTop: 20 }}>
             <View style={{ width: '25%', height: 100, borderWidth: 1, borderRadius: 10, borderColor: Colors?.border_color, justifyContent: 'center', alignItems: 'center' }}>
                 {
@@ -28,6 +30,7 @@ const RatingCard = ({ image, productName, productReview, productRate, totalRate 
                 </View>
             </View>
         </View>
+        </GlassContainer>
     )
 }
 

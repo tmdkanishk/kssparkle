@@ -2,14 +2,14 @@ import React, { useState } from "react";
 import { ImageBackground, StyleSheet, View } from "react-native";
 
 export default function BackgroundWrapper({ children, backgroundColor }) {
-  const [loaded, setLoaded] = useState(false);
+  // const [loaded, setLoaded] = useState(false);
 
   return (
     <ImageBackground
       source={require("../../assets/images/backgroundimage.png")}
       style={styles.bg}
       resizeMode="cover"
-      onLoadEnd={() => setLoaded(true)}
+      // onLoadEnd={() => setLoaded(true)}
     >
       {/* Overlay with dynamic background color */}
       <View
@@ -20,7 +20,7 @@ export default function BackgroundWrapper({ children, backgroundColor }) {
       />
 
       {/* Your app content */}
-      {loaded && children}
+      {children}
     </ImageBackground>
   );
 }

@@ -3,7 +3,7 @@ import { API_KEY, BASE_URL } from '../utils/config';
 import { _retrieveData, _storeData } from '../utils/storage';
 
 
-export const addToCartWithOptionCopy = async (productid, quantity, radioData, checkboxData, selectData, cart_add) => {
+export const addToCartWithOptionCopy = async (productid, quantity, radioData, checkboxData, selectData, textAreaData, cart_add) => {
     try {
         const url = `${BASE_URL}${cart_add}`;
         const lang = await _retrieveData('SELECT_LANG');
@@ -25,11 +25,11 @@ export const addToCartWithOptionCopy = async (productid, quantity, radioData, ch
             quantity: quantity ? quantity : "1",
         }
 
-      const mergedObj = { ...body, ...radioData, ...checkboxData, ...selectData };
+      const mergedObj = { ...body, ...radioData, ...checkboxData, ...selectData, ...textAreaData };
         
         const response = await axios.post(url, mergedObj, { headers: headers });
 
-         console.log("function is hitting")
+         console.log("function is hitting", url, mergedObj)
 
         if (response.status === HttpStatusCode.Ok) {
             await _storeData("CART_PRODUCT_COUNT", response.data?.cartproductcount);

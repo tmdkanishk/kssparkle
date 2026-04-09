@@ -23,6 +23,8 @@ import { BlurView } from '@react-native-community/blur'
 import CustomHeader from '../components/customcomponents/CustomHeader'
 import { useLoading } from '../hooks/LoadingProvider'
 import SelectModalField from '../components/customcomponents/SelectModalField'
+import LocationPicker from '../components/LocationPicker'
+import GlassContainer from '../components/customcomponents/GlassContainer'
 
 const EditAddress = ({ navigation, route }) => {
     const { item } = route.params;
@@ -64,6 +66,9 @@ const EditAddress = ({ navigation, route }) => {
     const [customFormData, setcustomFormData] = useState({});
     const [customFieldErrors, setCustomFieldErrors] = useState({});
     const { setGlobalLoading } = useLoading();
+
+        const [latitude, setLatitude] = useState(item?.latitude);
+        const [longitude, setLongitude] = useState(item?.longitude);
 
 
 
@@ -116,6 +121,7 @@ const EditAddress = ({ navigation, route }) => {
 
 
     useEffect(() => {
+        console.log("item in edit address", item)
         fetchMyAddressText();
         if (item?.custom_field) {
             console.log('item?.custom_field', item);
@@ -297,10 +303,13 @@ const EditAddress = ({ navigation, route }) => {
                 address_id: item?.address_id,
                 firstname: isName,
                 lastname: isLastname,
-                company: isCompany | "",
+                company: isCompany || "",
                 address_1: isAddress1,
                 address_2: isAddress2,
                 city: isDefaultCity?.name || "",
+                 latitude: String(latitude),
+                longitude: String(longitude),
+                // city_id: isDefaultCity?.city_id,
                 // city_id: isDefaultCity?.city_id,
                 postcode: isPostalCode,
                 country_id: isDefaultCountry?.country_id || item?.country_id,
@@ -309,7 +318,7 @@ const EditAddress = ({ navigation, route }) => {
                 default: isDefault ? "Yes" : "No"
             }
 
-            console.log("body update adrress", body);
+            console.log("body update adrress", body, url);
 
             const response = await axios.post(url, body, { headers: headers });
             if (response.status === HttpStatusCode.Ok) {
@@ -410,12 +419,25 @@ const EditAddress = ({ navigation, route }) => {
                                         InputType={'text'}
                                         onChangeText={(text) => { setCompnay(text); setCompanyError(null) }}
                                         textVlaue={isCompany}
-                                        isRequired={true}
+                                        // isRequired={true}
                                         borderColor={isCompanyError ? 'red' : null}
                                         ErrorMessage={isCompanyError}
                                     />
 
-                                    <InputBox
+                                    <LocationPicker
+                                    latitude={latitude}
+                                    longitude={longitude}
+                                    setLatitude={setLatitude}
+                                    setLongitude={setLongitude}
+                                    address={isAddress1}
+                                    setAddress={setAddress1}
+                                    error={isAddress1Error}
+                                    setError={setAddress1Error}
+                                    label={isLabel?.addraddrs1_label}
+                                    apiKey={"AIzaSyBq-23EUBHM6cv_I2kb3-SXll4RC3NPcAw"}
+                                />
+
+                                    {/* <InputBox
                                         label={isLabel?.addraddrs1_label}
                                         placeholder={isLabel?.addraddrs1_label}
                                         inputStyle={{ w: '100%', h: 50, ph: 20 }}
@@ -434,7 +456,7 @@ const EditAddress = ({ navigation, route }) => {
                                         InputType={'text'}
                                         onChangeText={(text) => setAddress2(text)}
                                         textVlaue={isAddress2}
-                                    />
+                                    /> */}
 
                                     {/* <InputBox
                                                 label={isLabel?.addrcity_label}
@@ -461,9 +483,9 @@ const EditAddress = ({ navigation, route }) => {
                                     <View style={styles.container}>
                                         <View style={{ flexDirection: 'row' }}>
                                             <Text style={[styles.label, { color: 'red', }]}>*</Text>
-                                            <Text style={[styles.label, { color: Colors.iconColor, }]}>{isLabel?.addrcntry_label}</Text>
+                                            <Text style={[styles.label, { color: Colors.white, }]}>{isLabel?.addrcntry_label}</Text>
                                         </View>
-
+                                          <GlassContainer padding={0.1}>
                                         <TouchableOpacity onPress={() => setCountryModal(true)} style={{
                                             borderWidth: 1,
                                             borderColor: isCountryError ? 'red' : Colors?.iconColor,
@@ -479,6 +501,7 @@ const EditAddress = ({ navigation, route }) => {
                                             <Text style={{ color: '#fff' }}>{isDefaultCountry?.name || item?.country}</Text>
 
                                         </TouchableOpacity>
+                                        </GlassContainer>
 
                                         {isCountryError && (
                                             <Text style={{ color: 'red' }}>{isCountryError}</Text>
@@ -490,8 +513,9 @@ const EditAddress = ({ navigation, route }) => {
                                     <View style={styles.container}>
                                         <View style={{ flexDirection: 'row' }}>
                                             <Text style={{ color: 'red' }}>*</Text>
-                                            <Text style={[styles.label, { color: Colors.iconColor, }]}>{isLabel?.addrstate_label}</Text>
+                                            <Text style={[styles.label, { color: Colors.white, }]}>{isLabel?.addrstate_label}</Text>
                                         </View>
+                                         <GlassContainer padding={0.1}>
                                         <TouchableOpacity onPress={() => setStateModal(true)} style={{
                                             borderWidth: 1,
                                             borderColor: isZoneError ? 'red' : Colors?.iconColor,
@@ -514,6 +538,7 @@ const EditAddress = ({ navigation, route }) => {
 
                                             }
                                         </TouchableOpacity>
+                                        </GlassContainer>
 
                                         {
                                             isZoneError && (

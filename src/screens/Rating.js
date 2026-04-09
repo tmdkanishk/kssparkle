@@ -11,6 +11,8 @@ import { checkAutoLogin } from '../utils/helpers';
 import NotificationAlert from '../components/NotificationAlert';
 import { FlatList } from 'react-native-gesture-handler';
 import BottomBar from '../components/BottomBar';
+import BackgroundWrapper from '../components/customcomponents/BackgroundWrapper';
+import CustomHeader from '../components/customcomponents/CustomHeader';
 
 const Rating = ({ navigation }) => {
     const { Colors, EndPoint, GlobalText } = useCustomContext();
@@ -24,10 +26,14 @@ const Rating = ({ navigation }) => {
     const [hasMoreData, setHasMoreData] = useState(true);
     const [page, setPage] = useState(1);
 
+    // useEffect(() => {
+    //     checkAutoLogin();
+    //     fetchRatingList();
+    // }, [page]);
+
     useEffect(() => {
-        checkAutoLogin();
         fetchRatingList();
-    }, [page]);
+    }, [])
 
 
     const fetchRatingList = async () => {
@@ -37,10 +43,10 @@ const Rating = ({ navigation }) => {
             }
 
             setLoadingMore(true);
-            const result = await getRatedProduct(page, EndPoint?.productdetails_ReviewRateinglist);
+            const result = await getRatedProduct(page, EndPoint?.productdetails_OrderReviews);
             console.log("rating", result);
             setLabel(result);
-            setRatedProduct((prevData) => [...prevData, ...result?.products]);
+            // setRatedProduct((prevData) => [...prevData, ...result?.products]);
 
             if (page >= result?.pages) {
                 setHasMoreData(false);
@@ -100,27 +106,29 @@ const Rating = ({ navigation }) => {
                     <CustomActivity />
                 ) : (
                     <>
-                        <View style={commonStyles.bodyConatiner}>
-                            <TitleBarName onClickBackIcon={() => navigation.goBack()} titleName={isLabel?.ratingpagename} />
+                        <BackgroundWrapper>
+                            <View style={commonStyles.bodyConatiner}>
+                                {/* <TitleBarName onClickBackIcon={() => navigation.goBack()} titleName={isLabel?.ratingpagename} /> */}
+                                <CustomHeader pageName={"Rating"} />
+                                <FlatList
+                                    key={isLandscape}
+                                    data={isRatedProduct}
+                                    renderItem={renderItem}
+                                    keyExtractor={(item, index) => index?.toString()}
+                                    onEndReached={handleLoadMore}
+                                    onEndReachedThreshold={0.5}
+                                    ListHeaderComponent={renderHeader}
+                                    ListFooterComponent={renderFooter}
+                                    ListEmptyComponent={renderEmptyList}
+                                    showsVerticalScrollIndicator={false}
+                                    contentContainerStyle={{ paddingHorizontal: 12, paddingBottom: 150 }}
 
-                            <FlatList
-                                key={isLandscape}
-                                data={isRatedProduct}
-                                renderItem={renderItem}
-                                keyExtractor={(item, index) => index?.toString()}
-                                onEndReached={handleLoadMore}
-                                onEndReachedThreshold={0.5}
-                                ListHeaderComponent={renderHeader}
-                                ListFooterComponent={renderFooter}
-                                ListEmptyComponent={renderEmptyList}
-                                showsVerticalScrollIndicator={false}
-                                contentContainerStyle={{ paddingHorizontal: 12, paddingBottom: 150 }}
+                                />
 
-                            />
-
-                        </View>
-                        <BottomBar />
-                        <NotificationAlert />
+                            </View>
+                            {/* <BottomBar /> */}
+                            <NotificationAlert />
+                        </BackgroundWrapper>
                     </>)
             }
 

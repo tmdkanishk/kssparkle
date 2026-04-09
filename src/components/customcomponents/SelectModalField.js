@@ -7,6 +7,7 @@ import {
   FlatList,
   StyleSheet,
   ImageBackground,
+  I18nManager,
 } from 'react-native';
 import { BlurView } from '@react-native-community/blur';
 import BackgroundWrapper from './BackgroundWrapper';
@@ -49,7 +50,7 @@ const SelectModalField = ({
               { borderColor: error ? 'red' : 'rgba(255,255,255,0.6)' },
             ]}
           >
-            <Text style={{ color: '#fff' }}>
+            <Text style={{ color: '#fff', paddingStart: 20, textAlign: I18nManager.isRTL ? 'right' : 'left', writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr'}}>
               {value ? renderItemLabel(value) : placeholder}
             </Text>
           </TouchableOpacity>
@@ -162,7 +163,8 @@ const styles = StyleSheet.create({
     // borderWidth: 1,
     height: 54,
     justifyContent: 'center',
-    paddingLeft: 20,
+    // paddingLeft: 20,
+      paddingHorizontal: 20,
     borderRadius: 12,
     backgroundColor: 'rgba(255,255,255,0.05)',
   },

@@ -82,7 +82,7 @@ const OrderSuccessScreen = ({ navigation, route }) => {
                     </Text>
 
                     {/* Order Tracking Link */}
-                    <TouchableOpacity
+                    {/* <TouchableOpacity
                         onPress={() => navigation.navigate("OrderTracking")}
                         style={{ marginTop: 28 }}
                     >
@@ -95,7 +95,7 @@ const OrderSuccessScreen = ({ navigation, route }) => {
                         >
                             Order Tracking
                         </Text>
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                 </View>
                 </GlassContainer>
 

@@ -18,6 +18,7 @@ import { useCustomContext } from "../hooks/CustomeContext";
 import CategoryCard from "../components/customcomponents/CategoryCard";
 import { gatSubCategoryOrProduct } from "../services/getSubCategoryOrProduct";
 import CustomSearchBar from "./CustomSearchBar";
+import { _retrieveData } from "../utils/storage";
 
 
 const categories = [
@@ -89,6 +90,18 @@ const SubCategory = ({ navigation, route }) => {
     const [totalPages, setTotalPages] = useState(1);
     const [loading, setLoading] = useState(false);
     const [activeSeachingScreen, setActiveSeachingScreen] = useState(false);
+    const [language, setlanguage] = useState();
+      // const [activeSeachingScreen, setActiveSeachingScreen] = useState(false);
+    
+      useEffect(() => {
+        const loadLanguage = async () => {
+          const lang = await _retrieveData('SELECT_LANG');
+    
+          setlanguage(lang?.code)
+        };
+    
+        loadLanguage();
+      }, []);
 
 
 
@@ -102,6 +115,7 @@ const SubCategory = ({ navigation, route }) => {
                 pageNumber,
                 EndPoint?.newcategories
             );
+            console.log("getSubCategoryProducts",result)
 
             // ✅ Set subcategories only once
             if (pageNumber === 1) {
@@ -290,7 +304,8 @@ const SubCategory = ({ navigation, route }) => {
                                     fontWeight: "600",
                                 }}
                             >
-                                Sub Categories
+                                {language === "ar" ? "الفئات الفرعية": "Sub Categories"}
+                              
                             </Text>
                         )}
                         </TouchableOpacity>
@@ -312,7 +327,8 @@ const SubCategory = ({ navigation, route }) => {
                         {/* SECTION TITLE */}
                         {products.length > 0 && (
                             <Text style={{ color: "#fff", fontSize: 16, fontWeight: "600", marginLeft: 20, marginTop:10 }}>
-                                Products
+                                                 {language === "ar" ? "منتجات": "Products"}
+                               
                             </Text>
                         )}
                     </>

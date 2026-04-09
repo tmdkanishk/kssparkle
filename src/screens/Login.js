@@ -37,6 +37,7 @@ const Login = ({ navigation }) => {
     const [isErrorModalMgs, setErrorModalMgs] = useState();
     const [isLastScreen, setLastScreen] = useState(null);
     const [mobileNumber, setMobileNumber] = useState('');
+    const [lang, setLang] = useState("")
 
 
     useEffect(() => {
@@ -68,10 +69,12 @@ const Login = ({ navigation }) => {
             };
             const body = {
                 code: lang?.code,
-                // currency: cur?.code,
-                // customer_id: user ? user[0]?.customer_id : null,
+                currency: cur?.code,
+                customer_id: user ? user : null,
                 sessionid: sessionId,
             }
+            console.log("fetch login text",body)
+            setLang(lang?.code)
             const response = await axios.post(url, body, { headers: headers });
 
             if (response.status == HttpStatusCode.Ok) {
@@ -152,7 +155,7 @@ const Login = ({ navigation }) => {
                     style={{
                         // borderWidth: 1,
                         padding: 10,
-                        width: "30%",
+                        width: lang === "en-gb" ? "30%" : '50%',
                         alignItems: "center",
                         borderRadius: 12,
                         alignSelf: "flex-end",
@@ -165,7 +168,7 @@ const Login = ({ navigation }) => {
                     }}
                 >
                     <GlassContainer borderRadius={10}>
-                    <Text style={{ color: "white" }}>Skip Login</Text>
+                    <Text style={{ color: "white" }}>{isLabel?.text_skiplogin}</Text>
                      </GlassContainer>
                 </TouchableOpacity>
                

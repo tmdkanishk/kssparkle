@@ -1,4 +1,4 @@
-import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, Platform, } from 'react-native'
+import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, Platform, I18nManager, } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import CustomActivity from '../components/CustomActivity';
 import { API_KEY, BASE_URL } from '../utils/config';
@@ -8,6 +8,7 @@ import commonStyles from '../constants/CommonStyles';
 import { _retrieveData, _storeData } from '../utils/storage';
 import { useLoading } from '../hooks/LoadingProvider';
 import BackgroundWrapper from '../components/customcomponents/BackgroundWrapper';
+import RNRestart from 'react-native-restart-newarch';
 
 const ChooseCurrency = ({ navigation }) => {
     const { Colors, EndPoint, GlobalText } = useCustomContext();
@@ -54,10 +55,57 @@ const ChooseCurrency = ({ navigation }) => {
         }
     };
 
+    //     const onSelectLanguage = async (item) => {
+    //     const selectedLanguage = item?.code;
+    //     const isArabic = selectedLanguage === 'ar';
+
+    //     // 1. Store the selection
+    //     await _storeData('SELECT_LANG', item);
+    //     SetAppLanguage(selectedLanguage);
+
+    //     // 2. Check if we need to flip the RTL state
+    //     // I18nManager.isRTL tells us the *current* active state
+    //     if (I18nManager.isRTL !== isArabic) {
+    //         I18nManager.allowRTL(isArabic);
+    //         I18nManager.forceRTL(isArabic);
+
+    //         // // 3. Restart is MANDATORY for the UI to flip
+    //         // setTimeout(() => {
+    //         //     RNRestart.Restart();
+    //         // }, 150);
+    //     } else {
+    //         // If no flip is needed, just navigate normally
+    //         navigation.replace('ChooseCurrency');
+    //     }
+    // };
+    
     const onSelectCurrency = async (item) => {
-        await _storeData('SELECT_CURRENCY', item);
-        navigation.replace('Login');
-    }
+        try {
+            const selectedLanguage = await _retrieveData('SELECT_LANG');
+            const isArabic = selectedLanguage?.code === 'ar';
+
+            // 1. Always store the currency selection first
+            await _storeData('SELECT_CURRENCY', item);
+
+            // 2. Check if a layout flip is needed
+            if (I18nManager.isRTL !== isArabic) {
+                // Apply the new RTL settings
+                I18nManager.allowRTL(isArabic);
+                I18nManager.forceRTL(isArabic);
+
+                // 3. Restart is MANDATORY for the UI layout engine to flip
+                // Short delay ensures native settings are written before reload
+                setTimeout(() => {
+                    RNRestart.Restart();
+                }, 150);
+            } else {
+                // If no flip is needed, navigate as usual
+                navigation.replace('Login');
+            }
+        } catch (error) {
+            console.error("Failed to update currency/RTL settings:", error);
+        }
+    };
 
     return (
         <>
@@ -71,7 +119,7 @@ const ChooseCurrency = ({ navigation }) => {
                                 <Text style={{ fontSize: 18, color: 'red', textAlign: 'center' }}>{isError}</Text>
                             </View>
                         ) : (<ScrollView showsVerticalScrollIndicator={false}>
-                            <View style={{ width: '90%', alignSelf: 'center', marginVertical: 20, marginTop:60 }}>
+                            <View style={{ width: '90%', alignSelf: 'center', marginVertical: 20, marginTop: 60 }}>
                                 <Text style={[commonStyles.heading, { color: Colors.white }]}>{isLabel}</Text>
                             </View>
 
@@ -86,7 +134,7 @@ const ChooseCurrency = ({ navigation }) => {
                                                 <View style={{ width: 28, height: 30 }}>
                                                     <Text style={{ fontSize: 24 }}>{item?.symbol_left || item?.symbol_right}</Text>
                                                 </View>
-                                                 <Text style={{ color: Colors.white }}>{item.title}</Text>
+                                                <Text style={{ color: Colors.white }}>{item.title}</Text>
                                             </TouchableOpacity>
                                         ))
                                     ) : null

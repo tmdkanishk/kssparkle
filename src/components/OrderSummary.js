@@ -2,12 +2,12 @@ import { View, Text, StatusBar, ScrollView, TouchableOpacity, Image } from 'reac
 import React from 'react'
 import commonStyles from '../constants/CommonStyles'
 import SquareIconComponent from './SquareIconComponent'
-import { IconComponentCart, IconComponentFlipLeftArrow, IconComponentImage } from '../constants/IconComponents'
+import { IconComponentCart, IconComponentEye, IconComponentFlipLeftArrow, IconComponentImage, IconComponentRating } from '../constants/IconComponents'
 import { useCustomContext } from '../hooks/CustomeContext'
 import GlassContainer from './customcomponents/GlassContainer'
 import PriceView from './customcomponents/PriceView'
 
-const OrderSummary = ({ label, data, onClickReorderBtn, onClickCancelBtn }) => {
+const OrderSummary = ({ label, data, onClickReorderBtn, onClickCancelBtn, onTriggerReview, onTriggerViewReview }) => {
     const { Colors } = useCustomContext();
     return (
         <GlassContainer>
@@ -66,6 +66,18 @@ const OrderSummary = ({ label, data, onClickReorderBtn, onClickCancelBtn }) => {
                                     <SquareIconComponent onClickIcon={() => onClickCancelBtn(item?.product_id)} width={40} height={40} backgroundColor={Colors.primary} IconComponent={IconComponentFlipLeftArrow} iconProps={{
                                         color: Colors.white
                                     }} />
+                                    <SquareIconComponent onClickIcon={() => onTriggerReview()} width={40} height={40} backgroundColor={Colors.secondary} IconComponent={IconComponentRating} iconProps={{
+                                        color: Colors.white
+                                    }} />
+                                    <SquareIconComponent
+                                        // Pass the specific item's product_id here
+                                        onClickIcon={() => onTriggerViewReview(item.product_id)}
+                                        width={40}
+                                        height={40}
+                                        backgroundColor={Colors.black}
+                                        IconComponent={IconComponentEye}
+                                        iconProps={{ color: Colors.white }}
+                                    />
                                 </View>
                             </View>
                         ))
