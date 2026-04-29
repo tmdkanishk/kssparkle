@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { NavigationContainer } from '@react-navigation/native';
+import { DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
 import Home from '../screens/Home';
 import Splash from '../screens/Splash';
@@ -21,7 +21,7 @@ import Contact from '../screens/Contact';
 import Search from '../screens/Search';
 import AllCategoryView from '../screens/AllCategoryView';
 import CategoryView from '../screens/CategoryView';
-import { Platform, StatusBar, useWindowDimensions } from 'react-native';
+import { ImageBackground, Platform, StatusBar, useWindowDimensions, View, StyleSheet, Dimensions } from 'react-native';
 import { useCustomContext } from '../hooks/CustomeContext';
 import ChooseLanguage from '../screens/ChooseLanguage';
 import ChooseCurrency from '../screens/ChooseCurrency';
@@ -71,6 +71,7 @@ import { shouldShowPopup } from '../utils/shouldShowPopup';
 import { isAppReady } from '../utils/appState';
 import TamaraPaymentScreen from '../screens/TamaraPaymentScreen';
 import GlassTestScreen from '../screens/GlassTestScreen';
+import BackgroundWrapper from '../components/customcomponents/BackgroundWrapper';
 
 // const EXCLUDED_SCREENS = ["Splash", "Login", "VerificationCode", "Register", "ChooseLanguage", "ChooseCurrency"];
 
@@ -89,6 +90,15 @@ const AppNavigator = () => {
   const { Colors, EndPoint } = useCustomContext();
   const popupTimerRef = useRef(null);
   const hasScheduledPopup = useRef(false);
+
+  const navTheme = {
+    ...DefaultTheme,
+    colors: {
+      ...DefaultTheme.colors,
+      background: "transparent",
+    },
+  };
+
 
 
   // useEffect(() => {
@@ -132,99 +142,122 @@ const AppNavigator = () => {
   //   };
   // }, []);
 
-const handleClose = () => {
+  const handleClose = () => {
     console.log("❌ Parent handleClose triggered");
-  if (popupTimerRef.current) {
-    console.log("🧹 Clearing timer");
-    clearTimeout(popupTimerRef.current);
-  }
+    if (popupTimerRef.current) {
+      console.log("🧹 Clearing timer");
+      clearTimeout(popupTimerRef.current);
+    }
 
-  setPopupVisible(false);
+    setPopupVisible(false);
 
-  console.log("📴 Popup hidden");
+    console.log("📴 Popup hidden");
 
-};
+  };
   return (
     <>
-      <NavigationContainer ref={navigationRef}>
-        <StatusBar hidden={isLandscape ? true : false} />
-        <SafeAreaView style={{ flex: 1, backgroundColor: isLandscape ? null : "grey", }}>
-          <Stack.Navigator>
-            <Stack.Screen name="Splash" component={Splash} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition, }} />
-            <Stack.Screen name="Home" component={Home} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition, gestureEnabled: false }} />
-            <Stack.Screen name="SideBar" component={SideBar} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-            <Stack.Screen name="Login" component={Login} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-            <Stack.Screen name="Register" component={Register} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-            <Stack.Screen name="VerificationCode" component={VerificationCode} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-            <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicy} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-            <Stack.Screen name="ForgetPassword" component={ForgetPassword} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-            <Stack.Screen name="Product" component={Product} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-            <Stack.Screen name="ProductDetail" component={ProductDetail} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-            <Stack.Screen name="ProductSearchScreen" component={ProductSearchScreen} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-            <Stack.Screen name="ShoppingBag" component={ShoppingBag} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-            <Stack.Screen name="ShippingMethod" component={ShippingMethod} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-            <Stack.Screen name="ChoosePaymentMethod" component={ChoosePaymentMethod} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-            <Stack.Screen name="ChooseDeliveryAddress" component={ChooseDeliveryAddress} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-            <Stack.Screen name="MyAccountScreen" component={MyAccountScreen} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-            <Stack.Screen name="MyOrderScreen" component={MyOrderScreen} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-            <Stack.Screen name="TrackingDetails" component={TrackingDetails} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-            <Stack.Screen name="SparkleScreen" component={SparkleScreen} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-            <Stack.Screen name="OrderDetailsScreen" component={OrderDetailsScreen} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-            <Stack.Screen name="ReviewMediaScreen" component={ReviewMediaScreen} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-            <Stack.Screen name="OrderSuccessScreen" component={OrderSuccessScreen} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-            <Stack.Screen name="Review" component={Review} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-            <Stack.Screen name="AccountDashboard" component={AccountDashboard} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-            <Stack.Screen name="CartScreen" component={CartScreen} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-            <Stack.Screen name="Checkout" component={Checkout} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-            <Stack.Screen name="OrderConfirmation" component={OrderConfirmation} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-            <Stack.Screen name="OrderHistory" component={OrderHistory} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition, ...TransitionPresets.ModalFadeTransition }} />
-            <Stack.Screen name="OrderView" component={OrderView} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-            <Stack.Screen name="Category" component={Category} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-            <Stack.Screen name="SubCategory" component={SubCategory} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-            <Stack.Screen name="Contact" component={Contact} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-            <Stack.Screen name="Search" component={Search} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-            <Stack.Screen name="AllCategoryView" component={AllCategoryView} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-            <Stack.Screen name="CategoryView" component={CategoryView} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-            <Stack.Screen name="ChooseLanguage" component={ChooseLanguage} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-            <Stack.Screen name="ChooseCurrency" component={ChooseCurrency} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-            <Stack.Screen name="ResetPassword" component={ResetPassword} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-            <Stack.Screen name="Wishlist" component={Wishlist} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-            <Stack.Screen name="MyAddress" component={MyAddress} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-            <Stack.Screen name="UserDetail" component={UserDetail} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-            <Stack.Screen name="Rating" component={Rating} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-            <Stack.Screen name="Download" component={Download} options={{ headerShown: false }} />
-            <Stack.Screen name="ChangePassword" component={ChangePassword} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-            <Stack.Screen name="Compare" component={Compare} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-            <Stack.Screen name="Payment" component={Payment} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-            <Stack.Screen name="OrderPlace" component={OrderPlace} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-            <Stack.Screen name="TabbyCheckoutScreen" component={TabbyCheckoutScreen} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-            <Stack.Screen name="Notification" component={Notification} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-            <Stack.Screen name="ReturnOrder" component={ReturnOrder} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-            <Stack.Screen name="AddNewAddress" component={AddNewAddress} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-            <Stack.Screen name="EditAddress" component={EditAddress} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-            <Stack.Screen name="SpecialProducts" component={SpecialProducts} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-             <Stack.Screen name="TamaraPaymentScreen" component={TamaraPaymentScreen} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />    
-            <Stack.Screen name="LatestCategoryView" component={LatestCategoryView} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-            <Stack.Screen name="AccountDelete" component={AccountDelete} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-            <Stack.Screen name="AccountDeleteReview" component={AccountDeleteReview} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-            <Stack.Screen name="Brands" component={Brands} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-            <Stack.Screen name="Products" component={Products} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-             <Stack.Screen name="GlassTestScreen" component={GlassTestScreen} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-            <Stack.Screen
-              name="PromoWebView"
-              component={PromoWebViewScreen}
-              // options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition,  title: route.params?.title || 'Payment Details'}}
-              options={({ route }) => ({
-                title: route.params?.title || 'Payment Details',
-                headerShown: false, ...TransitionPresets.ModalFadeTransition,
-              })}
-            />
-            <Stack.Screen name="MoyasarPayment" component={MoyasarPaymentScreen} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+      <NavigationContainer theme={navTheme} ref={navigationRef}>
+        <ImageBackground
+          source={require("../assets/images/backgroundimage.png")}
+          style={{ flex: 1, }}
+          resizeMode="cover"
+          imageStyle={{
+            left: -30,  // move image left
+          }}
 
-          </Stack.Navigator>
-        </SafeAreaView>
+        >
+
+          <View
+            pointerEvents="none"
+            style={[
+              StyleSheet.absoluteFillObject,
+              { backgroundColor: "rgba(0,0,0,0.4)" },
+            ]}
+          />
+          <StatusBar hidden={isLandscape ? true : false} />
+          <SafeAreaView style={{ height: "100%", backgroundColor: "transparent", paddingVertical: Platform.OS === 'ios' ? height * 0.05 : height * 0.0001 }}>
+            <Stack.Navigator screenOptions={{
+              headerShown: false,
+              cardStyle: { backgroundColor: "rgba(0,0,0,0.01)" },
+              ...TransitionPresets.ModalFadeTransition,
+              detachPreviousScreen: true,  // ✅ ADD THIS
+            }}>
+              <Stack.Screen name="Splash" component={Splash} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition, }} />
+              <Stack.Screen name="Home" component={Home} />
+              <Stack.Screen name="SideBar" component={SideBar} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+              <Stack.Screen name="Login" component={Login} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+              <Stack.Screen name="Register" component={Register} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+              <Stack.Screen name="VerificationCode" component={VerificationCode} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+              <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicy} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+              <Stack.Screen name="ForgetPassword" component={ForgetPassword} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+              <Stack.Screen name="Product" component={Product} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+              <Stack.Screen name="ProductDetail" component={ProductDetail} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+              <Stack.Screen name="ProductSearchScreen" component={ProductSearchScreen} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+              <Stack.Screen name="ShoppingBag" component={ShoppingBag} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+              <Stack.Screen name="ShippingMethod" component={ShippingMethod} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+              <Stack.Screen name="ChoosePaymentMethod" component={ChoosePaymentMethod} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+              <Stack.Screen name="ChooseDeliveryAddress" component={ChooseDeliveryAddress} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+              <Stack.Screen name="MyAccountScreen" component={MyAccountScreen} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+              <Stack.Screen name="MyOrderScreen" component={MyOrderScreen} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+              <Stack.Screen name="TrackingDetails" component={TrackingDetails} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+              <Stack.Screen name="SparkleScreen" component={SparkleScreen} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+              <Stack.Screen name="OrderDetailsScreen" component={OrderDetailsScreen} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+              <Stack.Screen name="ReviewMediaScreen" component={ReviewMediaScreen} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+              <Stack.Screen name="OrderSuccessScreen" component={OrderSuccessScreen} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+              <Stack.Screen name="Review" component={Review} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+              <Stack.Screen name="AccountDashboard" component={AccountDashboard} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+              <Stack.Screen name="CartScreen" component={CartScreen} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+              <Stack.Screen name="Checkout" component={Checkout} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+              <Stack.Screen name="OrderConfirmation" component={OrderConfirmation} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+              <Stack.Screen name="OrderHistory" component={OrderHistory} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition, ...TransitionPresets.ModalFadeTransition }} />
+              <Stack.Screen name="OrderView" component={OrderView} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+              <Stack.Screen name="Category" component={Category} />
+              <Stack.Screen name="SubCategory" component={SubCategory} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+              <Stack.Screen name="Contact" component={Contact} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+              <Stack.Screen name="Search" component={Search} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+              <Stack.Screen name="AllCategoryView" component={AllCategoryView} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+              <Stack.Screen name="CategoryView" component={CategoryView} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+              <Stack.Screen name="ChooseLanguage" component={ChooseLanguage} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+              <Stack.Screen name="ChooseCurrency" component={ChooseCurrency} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+              <Stack.Screen name="ResetPassword" component={ResetPassword} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+              <Stack.Screen name="Wishlist" component={Wishlist} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+              <Stack.Screen name="MyAddress" component={MyAddress} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+              <Stack.Screen name="UserDetail" component={UserDetail} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+              <Stack.Screen name="Rating" component={Rating} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+              <Stack.Screen name="Download" component={Download} options={{ headerShown: false }} />
+              <Stack.Screen name="ChangePassword" component={ChangePassword} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+              <Stack.Screen name="Compare" component={Compare} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+              <Stack.Screen name="Payment" component={Payment} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+              <Stack.Screen name="OrderPlace" component={OrderPlace} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+              <Stack.Screen name="TabbyCheckoutScreen" component={TabbyCheckoutScreen} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+              <Stack.Screen name="Notification" component={Notification} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+              <Stack.Screen name="ReturnOrder" component={ReturnOrder} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+              <Stack.Screen name="AddNewAddress" component={AddNewAddress} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+              <Stack.Screen name="EditAddress" component={EditAddress} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+              <Stack.Screen name="SpecialProducts" component={SpecialProducts} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+              <Stack.Screen name="TamaraPaymentScreen" component={TamaraPaymentScreen} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+              <Stack.Screen name="LatestCategoryView" component={LatestCategoryView} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+              <Stack.Screen name="AccountDelete" component={AccountDelete} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+              <Stack.Screen name="AccountDeleteReview" component={AccountDeleteReview} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+              <Stack.Screen name="Brands" component={Brands} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+              <Stack.Screen name="Products" component={Products} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+              <Stack.Screen name="GlassTestScreen" component={GlassTestScreen} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+              <Stack.Screen
+                name="PromoWebView"
+                component={PromoWebViewScreen}
+                // options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition,  title: route.params?.title || 'Payment Details'}}
+                options={({ route }) => ({
+                  title: route.params?.title || 'Payment Details',
+                  headerShown: false, ...TransitionPresets.ModalFadeTransition,
+                })}
+              />
+              <Stack.Screen name="MoyasarPayment" component={MoyasarPaymentScreen} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+
+            </Stack.Navigator>
+          </SafeAreaView>
+        </ImageBackground>
       </NavigationContainer>
-{/* 
+      {/* 
 <GlobalPopup
   visible={popupVisible}
   data={popupData}

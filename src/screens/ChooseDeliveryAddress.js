@@ -115,7 +115,7 @@ const ChooseDeliveryAddress = () => {
 
     const fetchAddress = async (lat, lng) => {
         try {
-            const apiKey = "AIzaSyBq-23EUBHM6cv_I2kb3-SXll4RC3NPcAw"
+            const apiKey = "AIzaSyAU0LmfMrzU4oiUvTn3c2UhFs6y-DPQsFU"
             const url =
                 `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${apiKey}`;
 
@@ -548,7 +548,7 @@ const ChooseDeliveryAddress = () => {
 
                                     <Text style={styles.sectionSubtitle}>{isLabel?.recipientdetails}</Text>
 
-                                    <GlassContainer padding={4} borderRadius={10}>
+                                    <GlassContainer padding={4} borderRadius={20}>
                                         <TextInput
                                             placeholder={isLabel?.fullname}
                                             placeholderTextColor="#fff"
@@ -567,7 +567,7 @@ const ChooseDeliveryAddress = () => {
                                         </Text>
                                     )}
 
-                                    <GlassContainer padding={4} borderRadius={10}>
+                                    <GlassContainer padding={4} borderRadius={20}>
                                         <TextInput
                                             placeholder={isLabel?.phonenumber}
                                             placeholderTextColor="#fff"
@@ -603,7 +603,7 @@ const ChooseDeliveryAddress = () => {
                                             multiline
                                         />
                                     </GlassContainer> */}
-                                    <View style={{ height: 200, marginVertical: 10, borderRadius: 10, overflow: 'hidden' }}>
+                                    <View style={{ height: 200, marginVertical: 10, borderRadius: 20, overflow: 'hidden' }}>
 
                                         <MapView
                                             ref={mapRef}
@@ -664,7 +664,7 @@ const ChooseDeliveryAddress = () => {
 
                                     </View>
 
-                                    <GlassContainer padding={4} borderRadius={10}>
+                                    <GlassContainer padding={4} borderRadius={20}>
                                         <TextInput
                                             placeholder={isLabel?.longitude}
                                             placeholderTextColor="#fff"
@@ -680,7 +680,7 @@ const ChooseDeliveryAddress = () => {
                                         />
                                     </GlassContainer>
 
-                                    <GlassContainer padding={4} borderRadius={10}>
+                                    <GlassContainer padding={4} borderRadius={20}>
                                         <TextInput
                                             placeholder={isLabel?.latitude}
                                             placeholderTextColor="#fff"
@@ -697,7 +697,7 @@ const ChooseDeliveryAddress = () => {
                                     </GlassContainer>
 
 
-                                    <GlassContainer borderRadius={10} padding={0.1}>
+                                    <GlassContainer borderRadius={20} padding={0.1}>
                                         <GooglePlacesAutocomplete
                                             ref={googleRef}
                                             placeholder={isLabel?.addraddrs1_label}
@@ -717,7 +717,7 @@ const ChooseDeliveryAddress = () => {
                                             }}
 
                                             query={{
-                                                key: "AIzaSyBq-23EUBHM6cv_I2kb3-SXll4RC3NPcAw",
+                                                key: "AIzaSyAU0LmfMrzU4oiUvTn3c2UhFs6y-DPQsFU",
                                                 language: "en",
                                             }}
                                             textInputProps={{
@@ -757,7 +757,7 @@ const ChooseDeliveryAddress = () => {
                                     // error={isAddress1Error}
                                     // setError={setAddress1Error}
                                     label={isLabel?.addraddrs1_label}
-                                    apiKey={"AIzaSyBq-23EUBHM6cv_I2kb3-SXll4RC3NPcAw"}
+                                    apiKey={"AIzaSyAU0LmfMrzU4oiUvTn3c2UhFs6y-DPQsFU"}
                                 /> */}
 
                                     {giftErrors?.gift_address_1 && (
@@ -767,7 +767,7 @@ const ChooseDeliveryAddress = () => {
                                     )}
 
 
-                                    <GlassContainer padding={4} borderRadius={6}>
+                                    <GlassContainer padding={4} borderRadius={20}>
                                         <TextInput
                                             placeholder={isLabel?.addrescity_label}
                                             placeholderTextColor="#fff"
@@ -788,7 +788,7 @@ const ChooseDeliveryAddress = () => {
                                     )}
 
 
-                                    <GlassContainer padding={4} borderRadius={6}>
+                                    <GlassContainer padding={4} borderRadius={20}>
                                         <TextInput
                                             placeholder={isLabel?.addrespostcode_label}
                                             placeholderTextColor="#fff"
@@ -811,7 +811,7 @@ const ChooseDeliveryAddress = () => {
 
 
                                     <View style={{}}>
-                                        <GlassContainer padding={4} borderRadius={10} style={{ height: 70 }}>
+                                        <GlassContainer padding={4} borderRadius={20} style={{ height: 70 }}>
                                             <TextInput
                                                 placeholder={isLabel?.custommessage}
                                                 placeholderTextColor="#fff"
@@ -890,7 +890,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
-        paddingHorizontal: 16,
+        paddingHorizontal: 10,
         paddingTop: 10,
         marginBottom: 10,
         marginTop: Platform.OS === "ios" ? 15 : 0
@@ -904,8 +904,9 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: "#fff",
         borderRadius: 6,
-        paddingHorizontal: 10,
+        paddingHorizontal: 5,
         paddingVertical: 4,
+        width:'35%'
     },
     addNewText: {
         color: "#fff",
@@ -919,7 +920,7 @@ const styles = StyleSheet.create({
         marginLeft: 15
     },
     addressCard: {
-        padding: 16,
+        padding: 10,
         marginTop: 6,
         borderRadius: 20,
     },

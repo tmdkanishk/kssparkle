@@ -1,31 +1,24 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { LiquidGlassView, LiquidGlassContainerView, isLiquidGlassSupported } from '@callstack/liquid-glass';
+import BackgroundWrapper from '../components/customcomponents/BackgroundWrapper';
+import GlassContainer from '../components/customcomponents/GlassContainer';
 
-export default function GlassTestScreen() {
+export default function GlassTestScreen({navigation}) {
   return (
-    <View style={{ flex: 1, backgroundColor: 'blue' }}>
-      <LiquidGlassContainerView style={{ flex: 1 }}>
-        
-        <Text style={{ color: 'white', margin: 20, fontSize: 18 }}>
-          Supported: {String(isLiquidGlassSupported)}
-        </Text>
-
-        <LiquidGlassView
-          style={{
-            height: 120,
-            margin: 20,
-            borderRadius: 18,
-            borderWidth:1
-          }}
-          effect="regular"
-        >
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Text style={{ color: 'white', fontSize: 16 }}>GLASS VIEW</Text>
-          </View>
-        </LiquidGlassView>
-
-      </LiquidGlassContainerView>
-    </View>
+    <BackgroundWrapper>
+                   <TouchableOpacity onPress={()=>navigation.goBack()} style={{alignItems:"center", justifyContent:'center', flex:0.5}}>
+                       <Text>Back Button</Text>
+                   </TouchableOpacity>
+                   <TouchableOpacity onPress={()=>navigation.navigate("GlassTest")} style={{alignItems:"center", justifyContent:'center', flex:1}}>
+                       <GlassContainer>
+                   <Text>Testing Glass Test Screen</Text>
+                       </GlassContainer>
+   
+                   </TouchableOpacity>
+   
+                    
+   
+               </BackgroundWrapper>
   );
 }

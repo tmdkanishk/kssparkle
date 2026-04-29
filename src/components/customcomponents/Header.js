@@ -1,6 +1,6 @@
 import React, { memo, useEffect, useState } from "react";
 import { View, Image, TouchableOpacity, StyleSheet, Text, Dimensions, Platform } from "react-native";
-import { BlurView } from "@react-native-community/blur";
+import { BlurView } from 'expo-blur';
 import LinearGradient from "react-native-linear-gradient";
 import { useCartCount } from "../../hooks/CartContext";
 import { useNavigation } from "@react-navigation/native";

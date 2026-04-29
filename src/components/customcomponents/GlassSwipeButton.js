@@ -19,7 +19,7 @@ const GlassSwipeButton = forwardRef(
     }));
 
     const Thumb = () => (
-      <GlassContainer borderRadius={5} padding={6}>
+      <GlassContainer borderRadius={15} padding={6}>
         <Image
           source={require('../../assets/images/swipe_button_arrow.png')}
           style={{ width: 20, height: 20 }}

@@ -10,7 +10,7 @@ import React from 'react';
 import { IconComponentWarning } from '../constants/IconComponents';
 import { useCustomContext } from '../hooks/CustomeContext';
 import commonStyles from '../constants/CommonStyles';
-import { BlurView } from '@react-native-community/blur';
+import { BlurView } from 'expo-blur';
 
 const AlertModal = ({
     isModal,
@@ -41,16 +41,15 @@ const AlertModal = ({
                 }}
             >
                 <BlurView
-                    style={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                    }}
-                    blurType="dark"     // light | dark | extraDark
-                    blurAmount={15}     // intensity
-                    reducedTransparencyFallbackColor="rgba(0,0,0,0.6)"
+                        style={{
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                        }}
+                        tint="dark"      // Matches blurType="dark"
+                        intensity={75}   // Roughly matches blurAmount={15}. Adjust between 60-90 to taste.
                 />
                 {/* PREVENT CLOSE ON CARD PRESS */}
                 <TouchableOpacity activeOpacity={1}>

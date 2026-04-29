@@ -167,7 +167,7 @@ const Login = ({ navigation }) => {
                         marginTop: Platform.OS === "ios" ? 60 : 40
                     }}
                 >
-                    <GlassContainer borderRadius={10}>
+                    <GlassContainer>
                     <Text style={{ color: "white" }}>{isLabel?.text_skiplogin}</Text>
                      </GlassContainer>
                 </TouchableOpacity>

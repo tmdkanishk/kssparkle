@@ -20,7 +20,7 @@ import { updateUserInfomation } from "../services/updateUserInfomation";
 import InputBox from "../components/InputBox";
 import ImageContainer from "../components/ImageContainer";
 import commonStyles from "../constants/CommonStyles";
-import { BlurView } from "@react-native-community/blur";
+import { BlurView } from 'expo-blur';
 import SuccessModal from "../components/SuccessModal";
 import { useUser } from "../hooks/UserContext";
 import TopStatusBar from '../components/TopStatusBar'
@@ -403,7 +403,7 @@ const handleOnChangeLang = async (value) => {
             flexDirection: "row",
             justifyContent: "space-between",
             alignItems: "center",
-            marginTop: Platform.OS === "ios" ? 60 : 40,
+            marginTop: Platform.OS === "ios" ? 40 : 40,
             paddingHorizontal: 20,
           }}
         >
@@ -413,11 +413,12 @@ const handleOnChangeLang = async (value) => {
             style={{ width: "45%" }}
             activeOpacity={0.9}
           >
-            <LiquidGlassView
+            {/* <LiquidGlassView
               style={styles.liquid}
               effect="clear"
               interactive
-            >
+            > */}
+            <GlassContainer padding={0.1}>
               <View
                 style={[
                   styles.inner,
@@ -432,7 +433,8 @@ const handleOnChangeLang = async (value) => {
 
                 <Text style={styles.text}>{isLabel?.go_to_home}</Text>
               </View>
-            </LiquidGlassView>
+              </GlassContainer>
+            {/* </LiquidGlassView> */}
           </TouchableOpacity>
 
           {/* EDIT BUTTON */}
@@ -441,11 +443,12 @@ const handleOnChangeLang = async (value) => {
             style={{ width: "45%" }}
             activeOpacity={0.9}
           >
-            <LiquidGlassView
+            {/* <LiquidGlassView
               style={styles.liquid}
               effect="clear"
               interactive
-            >
+            > */}
+            <GlassContainer padding={0.1}>
               <View
                 style={[
                   styles.inner,
@@ -469,7 +472,10 @@ const handleOnChangeLang = async (value) => {
 
                 <Text style={styles.text}>{isLabel?.acntdbeditbtn_label}</Text>
               </View>
-            </LiquidGlassView>
+              </GlassContainer>
+
+            {/* </LiquidGlassView> */}
+
           </TouchableOpacity>
         </View>
 
@@ -792,9 +798,8 @@ const handleOnChangeLang = async (value) => {
                     right: 0,
                     bottom: 0,
                   }}
-                  blurType="dark"     // light | dark | extraDark
-                  blurAmount={15}     // intensity
-                  reducedTransparencyFallbackColor="rgba(0,0,0,0.6)"
+  tint="dark"      // Matches blurType="dark"
+                        intensity={75}   // Roughly matches blurAmount={15}. Adjust between 60-90 to taste.
                 />
 
                 <TouchableOpacity activeOpacity={1}>

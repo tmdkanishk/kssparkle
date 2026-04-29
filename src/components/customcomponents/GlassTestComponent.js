@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, ImageBackground } from 'react-native';
-import { BlurView } from '@react-native-community/blur';
+import { BlurView } from 'expo-blur';
 import LinearGradient from 'react-native-linear-gradient'; // npm install react-native-linear-gradient
 
 const GlassTestContainer = ({ title = 'Custom Message', style }) => {

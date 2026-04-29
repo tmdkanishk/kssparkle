@@ -1,6 +1,6 @@
 import React, { memo } from "react";
 import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
-import { BlurView } from "@react-native-community/blur";
+import { BlurView } from 'expo-blur';
 import LinearGradient from "react-native-linear-gradient";
 
 const GlassCategoryCard = ({ item, onPress, fullWidth }) => {

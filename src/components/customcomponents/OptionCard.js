@@ -15,7 +15,7 @@ const OptionCard = ({ item, selected, onPress }) => {
     : require("../../assets/images/headphonesblack.png");
 
   return (
-    <GlassContainer padding={0.1} borderRadius={10}>
+    <GlassContainer padding={0.1} borderRadius={25}>
     <TouchableOpacity
       activeOpacity={0.85}
       onPress={onPress}

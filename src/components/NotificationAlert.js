@@ -3,7 +3,7 @@ import React from 'react'
 import { IconComponentClose } from '../constants/IconComponents'
 import { useCustomContext } from '../hooks/CustomeContext';
 import { useNavigation } from '@react-navigation/native';
-import { BlurView } from '@react-native-community/blur';
+import { BlurView } from 'expo-blur';
 
 
 const NotificationAlert = () => {
@@ -50,9 +50,8 @@ const NotificationAlert = () => {
                             right: 0,
                             bottom: 0,
                         }}
-                        blurType="dark"     // light | dark | extraDark
-                        blurAmount={15}     // intensity
-                        reducedTransparencyFallbackColor="rgba(0,0,0,0.6)"
+                        tint="dark"      // Matches blurType="dark"
+                        intensity={75}   // Roughly matches blurAmount={15}. Adjust between 60-90 to taste.
                     />
 
                                       <ImageBackground

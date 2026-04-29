@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, Image, TouchableOpacity, ScrollView, StyleSheet, Platform } from "react-native";
-import LinearGradient from "react-native-linear-gradient";
-import { BlurView } from "@react-native-community/blur";
 import GlassContainer from "../components/customcomponents/GlassContainer";
 import BackgroundWrapper from "../components/customcomponents/BackgroundWrapper";
 import { useNavigation } from "@react-navigation/native";

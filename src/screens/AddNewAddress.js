@@ -22,7 +22,7 @@ import BackgroundWrapper from '../components/customcomponents/BackgroundWrapper'
 import GlassContainer from '../components/customcomponents/GlassContainer'
 import CustomHeader from '../components/customcomponents/CustomHeader'
 import { useLoading } from '../hooks/LoadingProvider'
-import { BlurView } from '@react-native-community/blur'
+import { BlurView } from 'expo-blur';
 import SelectModalField from '../components/customcomponents/SelectModalField'
 import MapView, { Marker } from 'react-native-maps';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete'
@@ -366,7 +366,7 @@ const AddNewAddress = ({ navigation }) => {
 
     const fetchAddress = async (lat, lng) => {
         try {
-            const apiKey = 'AIzaSyBq-23EUBHM6cv_I2kb3-SXll4RC3NPcAw';
+            const apiKey = 'AIzaSyAU0LmfMrzU4oiUvTn3c2UhFs6y-DPQsFU';
             const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${apiKey}`;
 
             const response = await axios.get(url);
@@ -455,7 +455,7 @@ const AddNewAddress = ({ navigation }) => {
                                     error={isAddress1Error}
                                     setError={setAddress1Error}
                                     label={isLabel?.addraddrs1_label}
-                                    apiKey={"AIzaSyBq-23EUBHM6cv_I2kb3-SXll4RC3NPcAw"}
+                                    apiKey={"AIzaSyAU0LmfMrzU4oiUvTn3c2UhFs6y-DPQsFU"}
                                 />
 
                                 {/* <MapView
@@ -544,7 +544,7 @@ const AddNewAddress = ({ navigation }) => {
 
                                     }}
                                     query={{
-                                        key: "AIzaSyBq-23EUBHM6cv_I2kb3-SXll4RC3NPcAw",
+                                        key: "AIzaSyAU0LmfMrzU4oiUvTn3c2UhFs6y-DPQsFU",
                                         language: "en",
                                     }}
                                     textInputProps={{
@@ -923,6 +923,8 @@ const AddNewAddress = ({ navigation }) => {
                         blurType="dark"
                         blurAmount={15}
                         reducedTransparencyFallbackColor="rgba(0,0,0,0.6)"
+                          tint="dark"      // Matches blurType="dark"
+                                                intensity={75}   // Roughly matches blurAmount={15}. Adjust between 60-90 to taste.
                     />
 
                     {/* Optional dark overlay for better contrast */}

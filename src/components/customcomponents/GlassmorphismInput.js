@@ -1,6 +1,6 @@
 import React, { memo, useState } from 'react';
 import { View, TextInput, StyleSheet, TouchableOpacity, Dimensions, I18nManager } from 'react-native';
-import { BlurView } from '@react-native-community/blur';
+import { BlurView } from 'expo-blur';
 import LinearGradient from 'react-native-linear-gradient';
 import { Image } from 'react-native';
 import GlassContainer from './GlassContainer';

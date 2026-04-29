@@ -19,7 +19,7 @@ import CustomSelect from '../customFields/CustomSelect'
 import CustomDateTime from '../customFields/CustomDateTime'
 import { getCustomFields } from '../services/getCustomFields'
 import BackgroundWrapper from '../components/customcomponents/BackgroundWrapper'
-import { BlurView } from '@react-native-community/blur'
+import { BlurView } from 'expo-blur';
 import CustomHeader from '../components/customcomponents/CustomHeader'
 import { useLoading } from '../hooks/LoadingProvider'
 import SelectModalField from '../components/customcomponents/SelectModalField'
@@ -434,7 +434,7 @@ const EditAddress = ({ navigation, route }) => {
                                     error={isAddress1Error}
                                     setError={setAddress1Error}
                                     label={isLabel?.addraddrs1_label}
-                                    apiKey={"AIzaSyBq-23EUBHM6cv_I2kb3-SXll4RC3NPcAw"}
+                                    apiKey={"AIzaSyAU0LmfMrzU4oiUvTn3c2UhFs6y-DPQsFU"}
                                 />
 
                                     {/* <InputBox
@@ -725,6 +725,8 @@ const EditAddress = ({ navigation, route }) => {
                             blurType="dark"
                             blurAmount={15}
                             reducedTransparencyFallbackColor="rgba(0,0,0,0.6)"
+                              tint="dark"      // Matches blurType="dark"
+                                                    intensity={75}   // Roughly matches blurAmount={15}. Adjust between 60-90 to taste.
                         />
 
                         {/* Optional dark overlay for contrast */}
@@ -804,6 +806,8 @@ const EditAddress = ({ navigation, route }) => {
                             blurType="dark"
                             blurAmount={15}
                             reducedTransparencyFallbackColor="rgba(0,0,0,0.6)"
+                              tint="dark"      // Matches blurType="dark"
+                                                    intensity={75}   // Roughly matches blurAmount={15}. Adjust between 60-90 to taste.
                         />
 
                         {/* Optional dark overlay for better contrast */}

@@ -9,122 +9,104 @@ import {
   isLiquidGlassSupported,
 } from '@callstack/liquid-glass';
 import { InteractionManager } from 'react-native';
+import { requireNativeViewManager } from 'expo-modules-core';
+import { Host } from '@expo/ui/swift-ui'; // 1. Import Host
+
+const NativeView = requireNativeViewManager('LiquidGlassViewModule');
+
 
 const GlassContainer = ({ title, children, style, padding, borderRadius }) => {
-  // const [ready, setReady] = useState(false);
+  const radius = borderRadius || 18;
+  const [ready, setReady] = useState(false);
+  const mountedRef = useRef(false);
 
-  // useEffect(() => {
-  //   const task = InteractionManager.runAfterInteractions(() => {
-  //     setReady(true);
-  //   });
+  useEffect(() => {
+    if (mountedRef.current) return; // Only run once per mount
+    mountedRef.current = true;
 
-  //   return () => task.cancel();
-  // }, []);
+    const timer = setTimeout(() => setReady(true), 50);
+    return () => clearTimeout(timer);
+  }, []); // ← empty deps, no isFocused dependency
 
-  // const isFocused = useIsFocused();
-  // const [ready, setReady] = useState(false);
-
-  // useEffect(() => {
-  //   if (isFocused) {
-  //     const id = setTimeout(() => setReady(true), 40);
-  //     return () => clearTimeout(id);
-  //   } else {
-  //     setReady(false);
-  //   }
-  // }, [isFocused]);
-
-
-  const radius = borderRadius ? borderRadius : 18;
-    const isFocused = useIsFocused(); // Crucial for navigation stability
-  const [layoutReady, setLayoutReady] = useState(false);
-
-    // If navigation is "freezing" the view, this key change forces a native re-mount
-  const navigationKey = Platform.OS === 'ios' ? `glass-${isFocused}` : 'glass-static';
-
-
-
-  return (
-    <View  style={[styles.glowWrapper, style]}>
+if (Platform.OS === 'ios') {
+    return (
+    <View style={[styles.glowWrapper, style]}>
 
       {/* --- Liquid Glass Layer (NEW) --- */}
 
-        <LiquidGlassView
-         key={navigationKey} // Forces re-init when screen is focused
-          style={[{ borderRadius: radius, }, !isLiquidGlassSupported && { backgroundColor: 'transparent' }]}
-          interactive
-          effect="clear"
-        >
+      <Host >
+        <NativeView style={{ borderRadius: radius, opacity: ready ? 1 : 0 }}>
+
 
           <View
             style={[
               styles.wrapper,
               {
-                padding: padding ? padding : 14,
+                padding: padding || 14,
                 borderRadius: radius,
-                // Ensure background is transparent so glass can be seen
-              backgroundColor: !isLiquidGlassSupported ? 'rgba(255,255,255,0.08)' : 'transparent',
-
-                // backgroundColor: !isLiquidGlassSupported ? Platform.OS === 'ios' ? 'transparent' : 'rgba(255,255,255,0.08)'  : 'transparent',
+                backgroundColor: "transparent",
               },
             ]}
           >
 
 
-            {/* Glass Tint */}
-            {/* Glass Tint (existing) */}
-            {/* <LinearGradient
-              colors={[
-                'rgba(255,255,255,0.2)',
-                'rgba(255,255,255,0.1)',
-                'rgba(255,255,255,0.15)',
-              ]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={StyleSheet.absoluteFill}
-              pointerEvents="none"
-            /> */}
+            {title && <Text style={styles.title}>{title}</Text>}
+            <View style={[styles.content, style]}>{children}</View>
 
-            {/* ---- EDGE LIGHT (NEW) ---- */}
+          </View>
 
 
-            {/* <LinearGradient
-              colors={['rgba(255,255,255,0.55)', 'transparent']}
-              style={[styles.edge, styles.top]}
-              pointerEvents="none"
-            />
+        </NativeView>
 
-            <LinearGradient
-              colors={['transparent', 'rgba(255,255,255,0.45)']}
-              style={[styles.edge, styles.bottom]}
-              pointerEvents="none"
-            />
+      </Host>
+
+    </View>
+  );
+  
+}
+
+  return (
+<View style={[{  borderRadius: 18,
+    marginVertical: 8,
+
+    // iOS shadow (floating depth)
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.25,
+    shadowRadius: 20, }, style]}>
+
+      {/* --- Liquid Glass Layer (NEW) --- */}
+{/* 
+      <Host >
+        <NativeView style={{ borderRadius: radius, opacity: ready ? 1 : 0 }}> */}
 
 
-            <LinearGradient
-              colors={['rgba(255,255,255,0.55)', 'transparent']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={[styles.edgeVertical, styles.left]}
-              pointerEvents="none"
-            />
+          <View
+            style={[
+              styles.wrapper,
+              {
+                padding: padding || 14,
+                borderRadius: radius,
+                backgroundColor: "transparent",
+              },
+            ]}
+          >
 
-
-            <LinearGradient
-              colors={['transparent', 'rgba(255,255,255,0.45)']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={[styles.edgeVertical, styles.right]}
-              pointerEvents="none"
-            /> */}
 
             {title && <Text style={styles.title}>{title}</Text>}
             <View style={[styles.content, style]}>{children}</View>
 
           </View>
-        </LiquidGlassView>
+
+
+        {/* </NativeView>
+
+      </Host> */}
 
     </View>
   );
+
+
 };
 
 const styles = StyleSheet.create({
@@ -168,6 +150,16 @@ const styles = StyleSheet.create({
     bottom: 0,
     width: 5,   // thickness of left/right highlight
   },
+
+    androidWrapper: {
+    marginVertical: 8,
+    backgroundColor: 'transparent',
+    borderRadius:10,
+    borderWidth:1.5,
+    // borderColor:'white'
+  },
+
+
 
   top: {
     top: 0,

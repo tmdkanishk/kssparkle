@@ -92,7 +92,7 @@ const LocationPicker = ({
                 inputStyle={{ w: '100%', h: 50, ph: 20 }}
                 InputType={'numeric'}
                 onChangeText={(text) => { setLatitude(text) }}
-                textVlaue={latitude.toString()}
+                textVlaue={latitude?.toString() || ""} 
                 isRequired={true}
                 editable={false}
             />
@@ -103,7 +103,7 @@ const LocationPicker = ({
                 inputStyle={{ w: '100%', h: 50, ph: 20 }}
                 InputType={'numeric'}
                 onChangeText={(text) => { setLongitude(text) }}
-                textVlaue={longitude.toString()}
+                    textVlaue={longitude?.toString() || ""}
                 isRequired={true}
                 editable={false}
             />

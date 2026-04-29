@@ -58,7 +58,7 @@ import GlassSwipeButton from "../components/customcomponents/GlassSwipeButton";
 import { useFocusEffect } from "@react-navigation/native";
 import { buildApplePayConfig } from "../utils/buildApplePayConfig";
 import { parsePriceHtml } from "../utils/parsePriceHtml";
-import { API_KEY, BASE_URL } from "../utils/config";
+import { API_KEY, APPLE_PUBLIC_KEY, BASE_URL, MOYASAR3_PUBLIC_KEY } from "../utils/config";
 import axios, { HttpStatusCode } from "axios";
 
 const OrderPlace = ({ navigation }) => {
@@ -229,7 +229,7 @@ const OrderPlace = ({ navigation }) => {
           const moyasarConfig = buildMoyasarConfig({
             amount: extractAmount(isTotal),
             orderId: isOtherInfo?.order_id,     
-            publishableKey: "pk_live_Mijc7Htr4NhyQG27DUdp9DgALzzWSN4yhXS5eH8M",
+            publishableKey: MOYASAR3_PUBLIC_KEY,
           });
 
           navigation.navigate("MoyasarPayment", {
@@ -259,7 +259,7 @@ const OrderPlace = ({ navigation }) => {
           const appleConfig = buildApplePayConfig({
             amount: extractAmount(isTotal),
             orderId: isOtherInfo?.order_id,
-            publishableKey: "pk_live_Mijc7Htr4NhyQG27DUdp9DgALzzWSN4yhXS5eH8M",
+            publishableKey: APPLE_PUBLIC_KEY,
           });
           navigation.navigate("MoyasarPayment", {
             paymentConfig: appleConfig,

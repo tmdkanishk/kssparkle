@@ -1,6 +1,6 @@
 import React, { memo } from "react";
 import { View, Image, StyleSheet } from "react-native";
-import { BlurView } from "@react-native-community/blur";
+import { BlurView } from 'expo-blur';
 import LinearGradient from "react-native-linear-gradient";
 const GlassProductCard = ({ imageSource }) => {
   return (
@@ -17,6 +17,8 @@ const GlassProductCard = ({ imageSource }) => {
         style={styles.borderGlow}
       />
 
+
+
       {/* Frosted glass layer */}
       <View style={styles.glassWrapper}>
         <BlurView
@@ -24,6 +26,8 @@ const GlassProductCard = ({ imageSource }) => {
           blurType="light"
           blurAmount={20}
           reducedTransparencyFallbackColor="white"
+          tint="dark"      // Matches blurType="dark"
+          intensity={75}   // Roughly matches blurAmount={15}. Adjust between 60-90 to taste.
         />
 
         {/* Subtle transparent dark gradient for depth */}
@@ -35,7 +39,7 @@ const GlassProductCard = ({ imageSource }) => {
         />
 
         {/* Product Image */}
-        <Image source={imageSource} style={styles.image}  />
+        <Image source={imageSource} style={styles.image} />
       </View>
     </View>
   );

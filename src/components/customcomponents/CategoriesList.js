@@ -1,6 +1,5 @@
 import React, { memo } from "react";
 import { View, Text, Image, FlatList, StyleSheet, Dimensions } from "react-native";
-import { BlurView } from "@react-native-community/blur";
 import CategoryItem from "./CategoryItem";
 
 const { width } = Dimensions.get("window");

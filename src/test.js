@@ -153,7 +153,7 @@
 // import React from 'react';
 // import { View, StyleSheet, Text } from 'react-native';
 // import LinearGradient from 'react-native-linear-gradient';
-// import { BlurView } from '@react-native-community/blur';
+// import { BlurView } from 'expo-blur';
 
 // const BoxWithShadow = () => {
 //   return (
@@ -250,69 +250,110 @@
 // export default BoxWithShadow;
 
 
-import React from 'react';
-import { Platform, StyleSheet, Text } from 'react-native';
+// import React from 'react';
+// import { Platform, StyleSheet, Text } from 'react-native';
 // import LinearGradient from 'react-native-linear-gradient';
-import {
-  LiquidGlassView,
-  LiquidGlassContainerView,
-  isLiquidGlassSupported,
-} from '@callstack/liquid-glass';
+// import {
+//   LiquidGlassView,
+//   LiquidGlassContainerView,
+//   isLiquidGlassSupported,
+// } from '@callstack/liquid-glass';
 
-const BoxWithShadow = () => {
+import React from 'react'
+import { StyleSheet, Pressable, View } from 'react-native'
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated'
+import { BlurView } from 'expo-blur'
+
+const AnimatedView = Animated.createAnimatedComponent(View)
+
+
+
+const BoxWithShadow = ({
+  children,
+  style,
+  intensity = 60,
+  tint = 'light',
+}) => {
+  const scale = useSharedValue(1)
+  const opacity = useSharedValue(0.9)
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ scale: scale.value }],
+      opacity: opacity.value,
+    }
+  })
+
+  const handlePressIn = () => {
+    scale.value = withSpring(1.03, { damping: 15 })
+    opacity.value = withTiming(1, { duration: 150 })
+  }
+
+  const handlePressOut = () => {
+    scale.value = withSpring(1, { damping: 15 })
+    opacity.value = withTiming(0.9, { duration: 150 })
+  }
+   
   return (
-     <LiquidGlassView
-      style={[
-        { width: 200, height: 100, borderRadius: 20 },
-        // !isLiquidGlassSupported && {  backgroundColor:
-        //       Platform.OS === 'ios'
-        //         ? 'transparent'
-        //         : 'rgba(255,255,255,0.08)', },
-      ]}
-      interactive
-      effect="clear"
+      <Pressable
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
+      style={style} // 👈 keeps layout intact
     >
-      <Text>Hello World</Text>
-    </LiquidGlassView>
+      <AnimatedView style={[styles.container, animatedStyle]}>
+        <BlurView
+          intensity={intensity}
+          tint={tint}
+          style={styles.blur}
+        >
+          <View style={styles.overlay}>
+            {children}
+          </View>
+        </BlurView>
+      </AnimatedView>
+    </Pressable>
   );
 };
 
 const styles = StyleSheet.create({
-  card: {
-    width: 150,
-    height: 120,
-    borderRadius: 20,
-    borderWidth: 0.5,
-    borderColor: 'rgba(255,255,255,0.35)',
-    overflow: 'hidden',
+   container: {
+    height:500
+  },
+  backgroundImage: {
+    ...StyleSheet.absoluteFillObject,
+    width: '100%',
+    height: '100%',
+  },
+  containerStyle: {
+    position: 'absolute',
+    top: 200,
+    left: 50,
+    width: 250,
+    height: 100,
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    gap: 5,
   },
-
-  text: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: '600',
+  glass1: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
   },
-
-  edge: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    height: 3,
+  glass2: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
   },
-
-  edgeVertical: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    width: 3,
+  glass3: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
   },
-
-  top: { top: 0 },
-  bottom: { bottom: 0 },
-  left: { left: 0 },
-  right: { right: 0 },
 });
 
 export default BoxWithShadow;

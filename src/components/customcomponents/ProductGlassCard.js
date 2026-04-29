@@ -10,6 +10,7 @@ import SuccessModal from "../SuccessModal";
 import { useCartCount } from "../../hooks/CartContext";
 import PriceView from "./PriceView";
 import { LiquidGlassView } from "@callstack/liquid-glass";
+import GlassContainer from "./GlassContainer";
 const ProductGlassCard = ({ item, onPress, onAddToCart }) => {
     const { Colors, EndPoint, GlobalText } = useCustomContext();
     const { updateCartCount } = useCartCount();
@@ -61,61 +62,62 @@ const ProductGlassCard = ({ item, onPress, onAddToCart }) => {
                     productId: item?.product_id,
                 })}
             >
-                <LiquidGlassView
+                <GlassContainer
+                    padding={0.1}
                     style={styles.glassBackground}
-                    interactive
-                    effect="clear"
+                // interactive
+                // effect="clear"
                 >
                     {/* ✅ Glass background without blur - using gradient only */}
                     {/* <LinearGradient
                         colors={["rgba(255,255,255,0.25)", "rgba(255,255,255,0.10)"]}
                         style={styles.glassBackground}
                     > */}
-                        {/* ✅ Foreground Content */}
-                        <View style={styles.content}>
-                            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-                                <View style={styles.headerStrip}>
-                                    <Text style={styles.categoryText}>{item?.category_name}</Text>
-                                </View>
-                                {/* 🛍️ Bag Icon */}
-                                <TouchableOpacity
-                                    hitSlop={60}
-                                    activeOpacity={0.8}
-                                    onPress={() => { item?.optionsstatus ? onClickAddToCartOption() : onclickAddToCart() }}
-                                >
-                                    <Image
-                                        source={require("../../assets/images/parcel.png")}
-                                        style={styles.bagIcon}
-                                        resizeMode="contain"
-                                    />
-                                </TouchableOpacity>
-
+                    {/* ✅ Foreground Content */}
+                    <View style={styles.content}>
+                        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+                            <View style={styles.headerStrip}>
+                                <Text style={styles.categoryText}>{item?.category_name}</Text>
                             </View>
-
-                            {/* ✅ Product Image Center */}
-                            <View style={styles.imageWrapper}>
+                            {/* 🛍️ Bag Icon */}
+                            <TouchableOpacity
+                                hitSlop={60}
+                                activeOpacity={0.8}
+                                onPress={() => { item?.optionsstatus ? onClickAddToCartOption() : onclickAddToCart() }}
+                            >
                                 <Image
-                                    source={{ uri: item?.thumb }}
-                                    style={styles.productImage}
+                                    source={require("../../assets/images/parcel.png")}
+                                    style={styles.bagIcon}
                                     resizeMode="contain"
+                                />
+                            </TouchableOpacity>
+
+                        </View>
+
+                        {/* ✅ Product Image Center */}
+                        <View style={styles.imageWrapper}>
+                            <Image
+                                source={{ uri: item?.thumb }}
+                                style={styles.productImage}
+                                resizeMode="contain"
+                            />
+                        </View>
+
+                        {/* ✅ Product Info */}
+                        <View style={styles.infoContainer}>
+                            <Text style={styles.productName} numberOfLines={2}>{item?.name}</Text>
+                            <View style={{ marginLeft: 10 }}>
+                                <PriceView
+                                    priceHtml={item?.price}
+                                    textStyle={styles.price}
                                 />
                             </View>
 
-                            {/* ✅ Product Info */}
-                            <View style={styles.infoContainer}>
-                                <Text style={styles.productName} numberOfLines={2}>{item?.name}</Text>
-                                <View style={{ marginLeft: 10 }}>
-                                    <PriceView
-                                        priceHtml={item?.price}
-                                        textStyle={styles.price}
-                                    />
-                                </View>
-
-                                {/* <Text style={styles.price}>{item?.price}</Text> */}
-                            </View>
+                            {/* <Text style={styles.price}>{item?.price}</Text> */}
                         </View>
+                    </View>
                     {/* </LinearGradient> */}
-                </LiquidGlassView>
+                </GlassContainer>
             </TouchableOpacity>
 
 
@@ -152,9 +154,9 @@ const styles = StyleSheet.create({
     glassBackground: {
         height: 200,
         borderRadius: 20,
-        overflow: "hidden",
-        borderWidth: 0.6,
-        borderColor: "rgba(255,255,255,0.4)",
+        // overflow: "hidden",
+        // borderWidth: 0.6,
+        // borderColor: "rgba(255,255,255,0.4)",
         // backgroundColor: "rgba(255,255,255,0.1)", // Fallback
     },
     content: {

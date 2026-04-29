@@ -164,7 +164,8 @@ const Category = ({ navigation }) => {
 
   return (
     <BackgroundWrapper>
-       <LiquidGlassContainerView style={{ flex: 1 }}>
+      
+       <View style={{ flex: 1 }}>
       <FlatList
         data={categories}
         keyExtractor={(item) => item.category_id}
@@ -176,7 +177,7 @@ const Category = ({ navigation }) => {
           paddingHorizontal: 10,
         }}
 
-        /* 🔹 HEADER */
+       
         ListHeaderComponent={
           <>
             <View style={styles.headerContainer}>
@@ -201,7 +202,7 @@ const Category = ({ navigation }) => {
 
 
 
-            {/* 🔹 SPECIAL OFFER CARD */}
+
             <TouchableOpacity
               activeOpacity={0.8}
               style={{ width: "100%", alignItems: "center", marginBottom: 20 }}
@@ -242,8 +243,18 @@ const Category = ({ navigation }) => {
           </>
         }
 
-        /* 🔹 ITEMS */
+
         renderItem={({ item }) => (
+
+          <>
+
+          {/* <GlassContainer padding={0.1}>
+            <View  style={{padding:50}}>
+  <Text>random</Text>
+            </View>
+
+          </GlassContainer> */}
+          
           <CategoryCard
             item={item}
             onPress={(category) =>
@@ -252,13 +263,14 @@ const Category = ({ navigation }) => {
               })
             }
           />
+          </>
         )}
 
-        /* 🔹 PAGINATION */
+
         onEndReached={loadMoreCategories}
         onEndReachedThreshold={0.2}
 
-        /* 🔹 FOOTER */
+
         ListFooterComponent={
           loading ? (
             <Text style={{ color: "#fff", textAlign: "center", padding: 10 }}>
@@ -267,7 +279,7 @@ const Category = ({ navigation }) => {
           ) : null
         }
       />
-      </LiquidGlassContainerView>
+      </View>
     </BackgroundWrapper>
 
   );

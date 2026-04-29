@@ -1,5 +1,5 @@
 
-import { BlurView } from '@react-native-community/blur';
+import { BlurView } from 'expo-blur';
 import { View, Text, StyleSheet, Dimensions, TouchableOpacity, Image } from 'react-native';
 import React, { memo } from 'react';
 import LinearGradient from 'react-native-linear-gradient';

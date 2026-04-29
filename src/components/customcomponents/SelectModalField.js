@@ -9,7 +9,7 @@ import {
   ImageBackground,
   I18nManager,
 } from 'react-native';
-import { BlurView } from '@react-native-community/blur';
+import { BlurView } from 'expo-blur';
 import BackgroundWrapper from './BackgroundWrapper';
 import { IconComponentClose } from '../../constants/IconComponents';
 import GlassContainer from './GlassContainer';
@@ -35,7 +35,7 @@ const SelectModalField = ({
           <Text style={[styles.label, { color: '#fff' }]}>{label}</Text>
         </View>
 
-        <GlassContainer padding={0.1}  style={{
+        <GlassContainer padding={0.1} style={{
           // borderWidth: 1,
           // height: 54,
           // justifyContent: 'center',
@@ -50,7 +50,7 @@ const SelectModalField = ({
               { borderColor: error ? 'red' : 'rgba(255,255,255,0.6)' },
             ]}
           >
-            <Text style={{ color: '#fff', paddingStart: 20, textAlign: I18nManager.isRTL ? 'right' : 'left', writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr'}}>
+            <Text style={{ color: '#fff', paddingStart: 20, textAlign: I18nManager.isRTL ? 'right' : 'left', writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr' }}>
               {value ? renderItemLabel(value) : placeholder}
             </Text>
           </TouchableOpacity>
@@ -75,6 +75,8 @@ const SelectModalField = ({
             blurType="dark"
             blurAmount={15}
             reducedTransparencyFallbackColor="rgba(0,0,0,0.6)"
+            tint="dark"      // Matches blurType="dark"
+            intensity={75}   // Roughly matches blurAmount={15}. Adjust between 60-90 to taste.
           />
 
           {/* DARK OVERLAY */}
@@ -164,7 +166,7 @@ const styles = StyleSheet.create({
     height: 54,
     justifyContent: 'center',
     // paddingLeft: 20,
-      paddingHorizontal: 20,
+    paddingHorizontal: 20,
     borderRadius: 12,
     backgroundColor: 'rgba(255,255,255,0.05)',
   },

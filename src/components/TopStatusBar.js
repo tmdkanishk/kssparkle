@@ -16,7 +16,7 @@ import { logout } from '../services/logout';
 import { getCartItem } from '../services/getCartItem';
 import { useLanguageCurrency } from '../hooks/LanguageCurrencyContext';
 import BackgroundWrapper from './customcomponents/BackgroundWrapper';
-import { BlurView } from '@react-native-community/blur';
+import { BlurView } from 'expo-blur';
 
 
 const TopStatusBar = ({ onChangeLang, onChangeCurren, scrollY }) => {
@@ -32,7 +32,7 @@ const TopStatusBar = ({ onChangeLang, onChangeCurren, scrollY }) => {
     const [isSelectedLanguage, setSelectedLanguage] = useState(null);
     const [isLogin, setLogin] = useState(false);
     const { width } = Dimensions.get('window');
-    
+
 
 
 
@@ -233,9 +233,8 @@ const TopStatusBar = ({ onChangeLang, onChangeCurren, scrollY }) => {
                                     right: 0,
                                     bottom: 0,
                                 }}
-                                blurType="dark"
-                                blurAmount={15}
-                                reducedTransparencyFallbackColor="rgba(0,0,0,0.6)"
+                                tint="dark"      // Matches blurType="dark"
+                                intensity={75}   // Roughly matches blurAmount={15}. Adjust between 60-90 to taste.
                             />
 
                             {/* Prevent close when pressing inside */}
@@ -244,7 +243,7 @@ const TopStatusBar = ({ onChangeLang, onChangeCurren, scrollY }) => {
                                     source={require('../assets/images/backgroundimage.png')}
                                     resizeMode="cover"
                                     style={{
-                                          width: width * 0.8,
+                                        width: width * 0.8,
                                         borderRadius: 16,
                                         overflow: 'hidden',
                                     }}
@@ -294,113 +293,112 @@ const TopStatusBar = ({ onChangeLang, onChangeCurren, scrollY }) => {
                     </Modal>
 
                     {/* currency Modal */}
-<Modal
-  transparent={true}
-  animationType="slide"
-  visible={isVisibleCurrency}
-  onRequestClose={() => setVisibleCurrency(false)}
->
-  <TouchableOpacity
-    activeOpacity={1}
-    onPress={() => setVisibleCurrency(false)}
-    style={{
-      flex: 1,
-      backgroundColor: 'rgba(0,0,0,0.6)',
-      justifyContent: 'center',
-      alignItems: 'center',
-    }}
-  >
-    {/* Blur Background */}
-    <BlurView
-      style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-      }}
-      blurType="dark"
-      blurAmount={15}
-      reducedTransparencyFallbackColor="rgba(0,0,0,0.6)"
-    />
-
-    {/* Prevent close when pressing inside */}
-    <TouchableOpacity activeOpacity={1}>
-      <ImageBackground
-        source={require('../assets/images/backgroundimage.png')}
-        resizeMode="cover"
-        style={{
-           width: width * 0.8,
-          borderRadius: 16,
-          overflow: 'hidden',
-        }}
-      >
-        {/* Glass Overlay */}
-        <View
-          style={{
-            padding: 20,
-            backgroundColor: 'rgba(0,0,0,0.45)',
-          }}
-        >
-          {/* ===== YOUR EXISTING CONTENT STARTS HERE ===== */}
-
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <Text style={[commonStyles.heading]}>Select Currency</Text>
-            <TouchableOpacity onPress={() => setVisibleCurrency(false)}>
-              <IconComponentClose />
-            </TouchableOpacity>
-          </View>
-
-          <View style={{ marginVertical: 20 }}>
-            <ScrollView showsVerticalScrollIndicator={false}>
-              {
-                curencyList?.currencies?.length > 0 ? (
-                  curencyList?.currencies?.map((item, index) => (
-                    <TouchableOpacity
-                      key={index}
-                      onPress={() => onChangeCurrency(item)}
-                      style={{
-                        backgroundColor: isSelectedCurrency == item?.code ? Colors?.primary : null,
-                        width: '100%',
-                        borderBottomWidth: 1,
-                        borderColor: Colors?.border_color,
-                        height: 40,
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        gap: 10,
-                        borderRadius: 10,
-                        paddingHorizontal: 20
-                      }}
+                    <Modal
+                        transparent={true}
+                        animationType="slide"
+                        visible={isVisibleCurrency}
+                        onRequestClose={() => setVisibleCurrency(false)}
                     >
-                      <View style={{ width: 28, height: 24, justifyContent: 'center', alignItems: 'center' }}>
-                        <Text style={{
-                          fontSize: 20,
-                          fontWeight: 'bold',
-                          color: isSelectedCurrency == item?.code ? Colors?.white : null,
-                        }}>
-                          {item.symbol_left || item.symbol_right}
-                        </Text>
-                      </View>
+                        <TouchableOpacity
+                            activeOpacity={1}
+                            onPress={() => setVisibleCurrency(false)}
+                            style={{
+                                flex: 1,
+                                backgroundColor: 'rgba(0,0,0,0.6)',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                            }}
+                        >
+                            {/* Blur Background */}
+                            <BlurView
+                                style={{
+                                    position: 'absolute',
+                                    top: 0,
+                                    left: 0,
+                                    right: 0,
+                                    bottom: 0,
+                                }}
+                                tint="dark"      // Matches blurType="dark"
+                                intensity={75}   // Roughly matches blurAmount={15}. Adjust between 60-90 to taste.
+                            />
 
-                      <Text style={{
-                        color: isSelectedCurrency == item?.code ? Colors?.white : null,
-                      }}>
-                        {item.title}
-                      </Text>
-                    </TouchableOpacity>
-                  ))
-                ) : null
-              }
-            </ScrollView>
-          </View>
+                            {/* Prevent close when pressing inside */}
+                            <TouchableOpacity activeOpacity={1}>
+                                <ImageBackground
+                                    source={require('../assets/images/backgroundimage.png')}
+                                    resizeMode="cover"
+                                    style={{
+                                        width: width * 0.8,
+                                        borderRadius: 16,
+                                        overflow: 'hidden',
+                                    }}
+                                >
+                                    {/* Glass Overlay */}
+                                    <View
+                                        style={{
+                                            padding: 20,
+                                            backgroundColor: 'rgba(0,0,0,0.45)',
+                                        }}
+                                    >
+                                        {/* ===== YOUR EXISTING CONTENT STARTS HERE ===== */}
 
-          {/* ===== YOUR EXISTING CONTENT ENDS HERE ===== */}
+                                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                            <Text style={[commonStyles.heading]}>Select Currency</Text>
+                                            <TouchableOpacity onPress={() => setVisibleCurrency(false)}>
+                                                <IconComponentClose />
+                                            </TouchableOpacity>
+                                        </View>
 
-        </View>
-      </ImageBackground>
-    </TouchableOpacity>
-  </TouchableOpacity>
-</Modal>
+                                        <View style={{ marginVertical: 20 }}>
+                                            <ScrollView showsVerticalScrollIndicator={false}>
+                                                {
+                                                    curencyList?.currencies?.length > 0 ? (
+                                                        curencyList?.currencies?.map((item, index) => (
+                                                            <TouchableOpacity
+                                                                key={index}
+                                                                onPress={() => onChangeCurrency(item)}
+                                                                style={{
+                                                                    backgroundColor: isSelectedCurrency == item?.code ? Colors?.primary : null,
+                                                                    width: '100%',
+                                                                    borderBottomWidth: 1,
+                                                                    borderColor: Colors?.border_color,
+                                                                    height: 40,
+                                                                    flexDirection: 'row',
+                                                                    alignItems: 'center',
+                                                                    gap: 10,
+                                                                    borderRadius: 10,
+                                                                    paddingHorizontal: 20
+                                                                }}
+                                                            >
+                                                                <View style={{ width: 28, height: 24, justifyContent: 'center', alignItems: 'center' }}>
+                                                                    <Text style={{
+                                                                        fontSize: 20,
+                                                                        fontWeight: 'bold',
+                                                                        color: isSelectedCurrency == item?.code ? Colors?.white : null,
+                                                                    }}>
+                                                                        {item.symbol_left || item.symbol_right}
+                                                                    </Text>
+                                                                </View>
+
+                                                                <Text style={{
+                                                                    color: isSelectedCurrency == item?.code ? Colors?.white : null,
+                                                                }}>
+                                                                    {item.title}
+                                                                </Text>
+                                                            </TouchableOpacity>
+                                                        ))
+                                                    ) : null
+                                                }
+                                            </ScrollView>
+                                        </View>
+
+                                        {/* ===== YOUR EXISTING CONTENT ENDS HERE ===== */}
+
+                                    </View>
+                                </ImageBackground>
+                            </TouchableOpacity>
+                        </TouchableOpacity>
+                    </Modal>
 
                 </View>
             </View>

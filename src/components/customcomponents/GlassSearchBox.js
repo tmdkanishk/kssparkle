@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { BlurView } from '@react-native-community/blur';
+import { BlurView } from 'expo-blur';
 // import Feather from 'react-native-vector-icons/Feather';
 
 const GlassSearchBox = ({

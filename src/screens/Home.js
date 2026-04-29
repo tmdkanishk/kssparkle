@@ -46,6 +46,9 @@ import { useLoading } from '../hooks/LoadingProvider';
 import { getGlobalPopupData } from '../services/getGlobalPopupData';
 import { shouldShowPopup } from '../utils/shouldShowPopup';
 import { getSessionHasShownPopup, getSessionHidePopup, setSessionHasShownPopup } from '../utils/popupSession';
+import LiquidGlassOrb from '../components/customcomponents/LiquidGlassOrb';
+import SkiaGlassCard from '../components/customcomponents/SkiaGlassCard';
+import SkiaGlassOrb from '../components/customcomponents/SkiaGlassCard';
 
 
 
@@ -431,7 +434,11 @@ useFocusEffect(
                 ) : (
                     <View style={{ paddingHorizontal: 12 }}>
 
-                        {/* <BoxWithShadow /> */}
+                      {/* <SkiaGlassOrb /> */}
+
+                        {/* <TouchableOpacity onPress={()=>navigation.navigate("GlassTestScreen")}>
+                            <Text>random text</Text>
+                        </TouchableOpacity> */}
                       
                         <CustomProductList header={
                             <HomeHeader />

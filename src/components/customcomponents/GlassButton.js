@@ -11,6 +11,7 @@ import {
   LiquidGlassView,
   isLiquidGlassSupported,
 } from '@callstack/liquid-glass';
+import GlassContainer from './GlassContainer';
 
 const GlassButton = ({ title, onPress, style, textStyle, innerStyle }) => {
   return (
@@ -19,11 +20,12 @@ const GlassButton = ({ title, onPress, style, textStyle, innerStyle }) => {
       onPress={onPress}
       style={[styles.wrapper, style]}
     >
-      <LiquidGlassView
+      {/* <LiquidGlassView
         style={styles.liquid}
         effect="clear"
         interactive
-      >
+      > */}
+      <GlassContainer padding={0.1}>
         <View
           style={[
             styles.inner,
@@ -51,7 +53,8 @@ const GlassButton = ({ title, onPress, style, textStyle, innerStyle }) => {
 
           <Text style={[styles.text, textStyle]}>{title}</Text>
         </View>
-      </LiquidGlassView>
+        </GlassContainer>
+      {/* </LiquidGlassView> */}
     </TouchableOpacity>
   );
 };

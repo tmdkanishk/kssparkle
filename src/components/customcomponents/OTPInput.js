@@ -1,7 +1,5 @@
 import React, { useRef } from 'react';
 import { View, TextInput, StyleSheet } from "react-native";
-import { BlurView } from "@react-native-community/blur";
-import LinearGradient from "react-native-linear-gradient";
 import GlassContainer from './GlassContainer';
 
 const OTPInput = ({ length = 6, value = "", onChange }) => {

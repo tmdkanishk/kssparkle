@@ -4,7 +4,7 @@ import { IconComponentCheck } from '../constants/IconComponents';
 import { useCustomContext } from '../hooks/CustomeContext';
 import commonStyles from '../constants/CommonStyles';
 import { Dimensions } from 'react-native';
-import { BlurView } from '@react-native-community/blur';
+import { BlurView } from 'expo-blur';
 
 
 const SuccessModal = ({
@@ -46,9 +46,8 @@ const SuccessModal = ({
                             right: 0,
                             bottom: 0,
                         }}
-                        blurType="dark"     // light | dark | extraDark
-                        blurAmount={15}     // intensity
-                        reducedTransparencyFallbackColor="rgba(0,0,0,0.6)"
+                        tint="dark"      // Matches blurType="dark"
+                        intensity={75}   // Roughly matches blurAmount={15}. Adjust between 60-90 to taste.
                     />
 
                     {/* STOP CLOSING WHEN CLICKING CARD */}

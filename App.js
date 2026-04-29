@@ -102,7 +102,7 @@ export default function App() {
 
 
   return (
-    // <BackgroundWrapper>
+    
 
     <LoadingProvider>
       <CustomProvider>
@@ -110,15 +110,15 @@ export default function App() {
           <UserProvider>
             <CartProvider>
               <WishlistProvider>
+                {/* <BackgroundWrapper> */}
                 <AppNavigator />
+                {/* </BackgroundWrapper> */}
               </WishlistProvider>
             </CartProvider>
           </UserProvider>
         </LanguageCurrencyProvider>
       </CustomProvider>
     </LoadingProvider>
-
-    // </BackgroundWrapper>
 
 
 

@@ -10,7 +10,7 @@ import { addToCartWithOptionCopy } from '../services/addToCartWithOptionCopy'
 import { useCartCount } from '../hooks/CartContext'
 import OptionCard from './customcomponents/OptionCard'
 import { getProductInfo } from '../services/getProductInfo'
-import { BlurView } from '@react-native-community/blur'
+import { BlurView } from 'expo-blur';
 
 const AddToCartOptionUiModal = ({ isModalVisibal, closeModal, items, productId }) => {
     // console.log("items AddToCartOptionUiModal", items)
@@ -129,15 +129,14 @@ const AddToCartOptionUiModal = ({ isModalVisibal, closeModal, items, productId }
                     {/* BLUR */}
                     <BlurView
                         style={{
-                            position: "absolute",
+                            position: 'absolute',
                             top: 0,
                             left: 0,
                             right: 0,
                             bottom: 0,
                         }}
-                        blurType="dark"
-                        blurAmount={15}
-                        reducedTransparencyFallbackColor="rgba(0,0,0,0.6)"
+                        tint="dark"      // Matches blurType="dark"
+                        intensity={75}   // Roughly matches blurAmount={15}. Adjust between 60-90 to taste.
                     />
 
                     {/* STOP CLOSE ON CARD CLICK */}

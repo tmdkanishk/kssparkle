@@ -18,7 +18,7 @@ import { useCustomContext } from '../hooks/CustomeContext';
 import { useNavigation } from '@react-navigation/native';
 import { autoSearch } from '../services/autoSearch';
 import GlassSearchBox from './customcomponents/GlassSearchBox';
-import { BlurView } from '@react-native-community/blur';
+import { BlurView } from 'expo-blur';
 import GlassContainer from './customcomponents/GlassContainer';
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;

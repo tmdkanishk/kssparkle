@@ -111,7 +111,7 @@ const Splash = ({ navigation }) => {
                 getSplaceWidthAndHeight();
 
                 // Splash delay
-                await new Promise(resolve => setTimeout(resolve, 3190));
+                await new Promise(resolve => setTimeout(resolve, 5500));
 
                 const isLanguageAndCurrency = await checkLanguageandCurrency();
                 const customerId = await _retrieveData('CUSTOMER_ID');
@@ -289,39 +289,36 @@ const Splash = ({ navigation }) => {
 
     return (
 
-        <BackgroundWrapper backgroundColor={"rgba(0,0,0,0.3)"}>
-        <View style={[style.mainContainer, {}]}>
-        {/* <Video
-          source={require("../assets/splash_transparent_white.gif")}
-          style={{  width: 300, height: 300, backgroundColor:'green'}}
-          resizeMode="contain"
-          repeat
-          muted
-          isLooping={true}
-        /> */}
+      
+<View style={styles.container}>
+  <Image
+    source={require('../assets/sparkle_logo.gif')}
+    style={styles.gif}
+    resizeMode="cover"
+  />
 
-            <Image source={require('../assets/images/sparklelogo.png')} style={style.img} />
+  <View style={styles.overlay} />
+</View>
 
-        </View>
-        </BackgroundWrapper>
     )
 }
 
 export default Splash
 
 
-const style = StyleSheet.create({
-    mainContainer: {
-        width: '100%',
-        height: '100%',
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
 
-    img: {
-        resizeMode: 'contain',
-        width: '80%',
-        height: '80%'
-    }
+  gif: {
+    width: '100%',
+    height: '100%',
+    position: 'absolute',
+  },
 
-})
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.4)', // adjust darkness here
+  },
+});
