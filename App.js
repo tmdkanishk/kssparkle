@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import AppNavigator from './src/navigation/AppNavigator';
 import { CustomProvider } from './src/hooks/CustomeContext';
-import { Alert, Image, Text, View, NativeModules } from 'react-native';
+import { ActivityIndicator, Alert, Image, Text, View, NativeModules } from 'react-native';
 import { LanguageCurrencyProvider } from './src/hooks/LanguageCurrencyContext';
 import { CartProvider } from './src/hooks/CartContext';
 import { WishlistProvider } from './src/hooks/WishlistContext';
@@ -70,35 +70,7 @@ export default function App() {
 
 
 
-  const [ready, setReady] = useState(false);
-
-
-  useEffect(() => {
-    async function preload() {
-      const assets = [
-        require("./src/assets/images/backgroundimage.png"),
-      ];
-
-      const promises = assets.map((img) =>
-        Image.prefetch(Image.resolveAssetSource(img).uri)
-      );
-
-      await Promise.all(promises);
-      setReady(true);
-    }
-
-    preload();
-  }, []);
-
-  // useEffect(() => {
-  //   Tabby.setApiKey('pk_test_xxxxxxxxx');
-  // }, []);
-
-
-  if (!ready) {
-    // Show loader or splash screen
-    return null;
-  }
+ 
 
 
   return (

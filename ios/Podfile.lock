@@ -164,17 +164,6 @@ PODS:
   - GoogleDataTransport (10.1.0):
     - nanopb (~> 3.30910.0)
     - PromisesObjC (~> 2.4)
-  - GoogleUtilities (8.1.0):
-    - GoogleUtilities/AppDelegateSwizzler (= 8.1.0)
-    - GoogleUtilities/Environment (= 8.1.0)
-    - GoogleUtilities/Logger (= 8.1.0)
-    - GoogleUtilities/MethodSwizzler (= 8.1.0)
-    - GoogleUtilities/Network (= 8.1.0)
-    - "GoogleUtilities/NSData+zlib (= 8.1.0)"
-    - GoogleUtilities/Privacy (= 8.1.0)
-    - GoogleUtilities/Reachability (= 8.1.0)
-    - GoogleUtilities/SwizzlerTestHelpers (= 8.1.0)
-    - GoogleUtilities/UserDefaults (= 8.1.0)
   - GoogleUtilities/AppDelegateSwizzler (8.1.0):
     - GoogleUtilities/Environment
     - GoogleUtilities/Logger
@@ -199,8 +188,6 @@ PODS:
   - GoogleUtilities/Reachability (8.1.0):
     - GoogleUtilities/Logger
     - GoogleUtilities/Privacy
-  - GoogleUtilities/SwizzlerTestHelpers (8.1.0):
-    - GoogleUtilities/MethodSwizzler
   - GoogleUtilities/UserDefaults (8.1.0):
     - GoogleUtilities/Logger
     - GoogleUtilities/Privacy
@@ -3622,10 +3609,8 @@ DEPENDENCIES:
   - "ExpoUI (from `../node_modules/@expo/ui/ios`)"
   - fast_float (from `../node_modules/react-native/third-party-podspecs/fast_float.podspec`)
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
-  - FirebaseCore
   - fmt (from `../node_modules/react-native/third-party-podspecs/fmt.podspec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
-  - GoogleUtilities
   - hermes-engine (from `../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec`)
   - "LiquidGlass (from `../node_modules/@callstack/liquid-glass`)"
   - LiquidGlassView (from `../modules/liquid-glass-view/ios`)
@@ -4106,9 +4091,9 @@ SPEC CHECKSUMS:
   RNCAsyncStorage: 8857fb173af29664cb90897903902dc8533e36cc
   RNCPicker: 5ecdf273a7a933dea82838515cc17c402fcf3ff7
   RNDateTimePicker: 239dc0c70f94e440d815763d3bace9c4ea73ae27
-  RNFBAnalytics: c2cde764d259a1b2c8cc0aee7835d107d71116de
-  RNFBApp: b3cbe404d93969ec9c1385e253ff946676f9cc6f
-  RNFBMessaging: c19ae4965abe8f473ca75750db14735407218dcd
+  RNFBAnalytics: 8e769555d8976795ec59211e1765f1420ecb7c63
+  RNFBApp: 4c8bc0805684070c773e7f6fea610a96a479483c
+  RNFBMessaging: 1d92c8c40a3cc6a9fe66a92cef96b719f44c689d
   RNGestureHandler: e7f3de6bb187705b88b64286e32ecb55d4804da0
   RNReanimated: 0a23a0a9721f450580f0fdf04b9ae928cd22915a
   RNScreens: 32d204189c8c164da3aef640b6d1d8721c25a86f
@@ -4117,6 +4102,6 @@ SPEC CHECKSUMS:
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   Yoga: c7fcecd3a5864321db161a74cf2cd735f800c119
 
-PODFILE CHECKSUM: b843174d57b2f35404bfaaec612c8fa23025f99c
+PODFILE CHECKSUM: a4828f44749eb88ad88e2ef12805b86c8dc6432e
 
 COCOAPODS: 1.16.2
