@@ -60,6 +60,9 @@
     "ios": {
       "bundleIdentifier": "com.ksasparkle",
       "googleServicesFile": "./GoogleService-Info.plist",
+      "entitlements": {
+        "aps-environment": "production"
+      },
       "infoPlist": {
         "NSAppTransportSecurity": {
           "NSAllowsArbitraryLoads": true,

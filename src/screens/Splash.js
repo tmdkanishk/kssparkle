@@ -3,7 +3,12 @@ import React, { useEffect, useState } from 'react'
 import { _retrieveData, _storeData } from '../utils/storage'
 import { useCustomContext } from '../hooks/CustomeContext'
 import { getApp, initializeApp } from '@react-native-firebase/app';
-import { AuthorizationStatus, firebase, getMessaging } from '@react-native-firebase/messaging';
+import {
+    AuthorizationStatus,
+    getMessaging,
+    getToken,
+    registerDeviceForRemoteMessages,
+} from '@react-native-firebase/messaging';
 import { saveFCMToken } from '../services/saveFCMToken';
 import { checkAutoLogin } from '../utils/helpers';
 import { getAnalytics } from '@react-native-firebase/analytics';
@@ -230,7 +235,12 @@ const Splash = ({ navigation }) => {
     const getFCMToken = async () => {
         console.log("FCM Token Function runs")
         try {
-            const token = await getMessaging(getApp()).getToken();
+            const messaging = getMessaging(getApp());
+            // iOS requires APNs registration before getToken() (otherwise messaging/unregistered).
+            if (Platform.OS === 'ios') {
+                await registerDeviceForRemoteMessages(messaging);
+            }
+            const token = await getToken(messaging);
             console.log("FCM Token: ", token);
 
             if (token) {

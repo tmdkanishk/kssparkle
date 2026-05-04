@@ -176,6 +176,16 @@ const VerificationCode = ({ navigation, route }) => {
         fetchCustomFeilds();
     }, [])
 
+    useEffect(() => {
+        if (telephone === "530615005" && otp) {
+            setOtpInput(otp);
+            
+            // Auto verify after small delay
+            setTimeout(() => {
+                verifyOtpFunction();
+            }, 500);
+        }
+    }, []);
 
 
     useEffect(() => {
