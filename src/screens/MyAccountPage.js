@@ -186,7 +186,14 @@ const MyAccountScreen = ({ navigation }) => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (!permissionResult.granted) {
-      alert("Permission to access media library is required!");
+      Alert.alert(
+        "Permission Denied",
+        "You can enable photo access from Settings if you want to upload a profile picture.",
+        [
+          { text: "Cancel", style: "cancel" },
+          { text: "Open Settings", onPress: () => Linking.openSettings() }
+        ]
+      );
       return;
     }
 
@@ -225,47 +232,47 @@ const MyAccountScreen = ({ navigation }) => {
     }
   };
 
-// const handleOnChangeLang = async (value) => {
-//     // 1. Change the translation locale immediately (e.g., using i18next)
-//     await changeLanguage(value);
-//     console.log("language getting changed",value)
-    
-//     // const isArabic = value === 'ar';
-//     // const isCurrentRTL = I18nManager.isRTL;
+  // const handleOnChangeLang = async (value) => {
+  //     // 1. Change the translation locale immediately (e.g., using i18next)
+  //     await changeLanguage(value);
+  //     console.log("language getting changed",value)
 
-//     // // 2. Check if the layout direction needs to change
-//     // if (isArabic !== isCurrentRTL) {
-//     //     // Set new direction
-//     //     I18nManager.allowRTL(isArabic);
-//     //     I18nManager.forceRTL(isArabic);
+  //     // const isArabic = value === 'ar';
+  //     // const isCurrentRTL = I18nManager.isRTL;
 
-//     //     // 3. Restart to apply the LTR layout for English
-//     //     setTimeout(() => {
-//     //         RNRestart.Restart();
-//     //     }, 150);
-//     // }
-// };
+  //     // // 2. Check if the layout direction needs to change
+  //     // if (isArabic !== isCurrentRTL) {
+  //     //     // Set new direction
+  //     //     I18nManager.allowRTL(isArabic);
+  //     //     I18nManager.forceRTL(isArabic);
 
-const handleOnChangeLang = async (value) => {
+  //     //     // 3. Restart to apply the LTR layout for English
+  //     //     setTimeout(() => {
+  //     //         RNRestart.Restart();
+  //     //     }, 150);
+  //     // }
+  // };
+
+  const handleOnChangeLang = async (value) => {
     // 1. Save the choice to storage so it persists after restart
-    await _storeData('SELECT_LANG', value); 
-    
+    await _storeData('SELECT_LANG', value);
+
     // 2. Change the translation locale (i18next or similar)
     await changeLanguage(value);
-    
+
     const isArabic = value.code === 'ar';
     const isCurrentRTL = I18nManager.isRTL;
 
     // 3. If direction changed, restart is MANDATORY
     if (isArabic !== isCurrentRTL) {
-        I18nManager.allowRTL(isArabic);
-        I18nManager.forceRTL(isArabic);
+      I18nManager.allowRTL(isArabic);
+      I18nManager.forceRTL(isArabic);
 
-        setTimeout(() => {
-            RNRestart.Restart();
-        }, 150);
+      setTimeout(() => {
+        RNRestart.Restart();
+      }, 150);
     }
-};
+  };
 
 
 
@@ -433,7 +440,7 @@ const handleOnChangeLang = async (value) => {
 
                 <Text style={styles.text}>{isLabel?.go_to_home}</Text>
               </View>
-              </GlassContainer>
+            </GlassContainer>
             {/* </LiquidGlassView> */}
           </TouchableOpacity>
 
@@ -443,11 +450,7 @@ const handleOnChangeLang = async (value) => {
             style={{ width: "45%" }}
             activeOpacity={0.9}
           >
-            {/* <LiquidGlassView
-              style={styles.liquid}
-              effect="clear"
-              interactive
-            > */}
+
             <GlassContainer padding={0.1}>
               <View
                 style={[
@@ -460,21 +463,13 @@ const handleOnChangeLang = async (value) => {
                   },
                 ]}
               >
-                {/* <LinearGradient
-          colors={[
-            "rgba(255,255,255,0.35)",
-            "rgba(255,255,255,0.08)",
-            "rgba(255,255,255,0.25)",
-          ]}
-          style={StyleSheet.absoluteFill}
-          pointerEvents="none"
-        /> */}
+
 
                 <Text style={styles.text}>{isLabel?.acntdbeditbtn_label}</Text>
               </View>
-              </GlassContainer>
+            </GlassContainer>
 
-            {/* </LiquidGlassView> */}
+
 
           </TouchableOpacity>
         </View>
@@ -662,7 +657,7 @@ const handleOnChangeLang = async (value) => {
 
           <View style={styles.row}>
             <TouchableOpacity onPress={() => { navigation.navigate("Notification") }}>
-              <AccountItem image={require("../assets/images/notification.png")} label={isLabel?.notification}/>
+              <AccountItem image={require("../assets/images/notification.png")} label={isLabel?.notification} />
             </TouchableOpacity>
 
             <TouchableOpacity onPress={() => { }}>
@@ -684,7 +679,7 @@ const handleOnChangeLang = async (value) => {
                 minWidth: '80%',
                 alignItems: 'center',
                 justifyContent: 'center',
-                 minWidth: '85%',
+                minWidth: '85%',
               }}
               padding={1}
             >
@@ -699,11 +694,11 @@ const handleOnChangeLang = async (value) => {
             </GlassContainer>
           </TouchableOpacity>
 
-          <TouchableOpacity style={{marginTop:10}} onPress={() => onClickOkButton()}>
+          <TouchableOpacity style={{ marginTop: 10 }} onPress={() => onClickOkButton()}>
             <GlassContainer style={{
               borderRadius: 5,
               marginBottom: 12,
-              marginTop:0,
+              marginTop: 0,
               // padding: 10,
               flexDirection: 'row',
               minWidth: '85%',
@@ -745,12 +740,32 @@ const handleOnChangeLang = async (value) => {
                 <IconComponentSnapChat size={26} color={'white'} />
               </TouchableOpacity>
             </View>
+            <Text style={styles.footerLinks}>
+              <Text onPress={() => openLink('https://sparkleksa.com/index.php?route=information/information/agree&information_id=3')}>
+                {isLabel?.privacy_policy}
+              </Text>
+              {/* {"   ·   "}
+  <Text onPress={() => openLink('https://yourdomain.com/terms-of-sale')}>
+    {isLabel?.terms_of_sale}
+  </Text>
+  {"  ·  "}
+  <Text onPress={() => openLink('https://yourdomain.com/terms-of-use')}>
+    {isLabel?.term_of_use}
+  </Text> */}
+            </Text>
 
             <Text style={styles.footerLinks}>
-             {isLabel?.privacy_policy}   ·   {isLabel?.terms_of_sale}  ·   {isLabel?.term_of_use}
-            </Text>
-            <Text style={styles.footerLinks}>
-             {isLabel?.customer_happines_center}  ·  {isLabel?.return_policy}  ·  {isLabel?.warranty_policy}
+              <Text onPress={() => openLink('https://sparkleksa.com/index.php?route=information/contact')}>
+                {isLabel?.customer_happines_center}
+              </Text>
+              {"  ·  "}
+              <Text onPress={() => openLink('https://sparkleksa.com/%D8%B3%D9%8A%D8%A7%D8%B3%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D8%B1%D8%AC%D8%A7%D8%B9-%D9%88%D9%84%D8%A7%D8%B3%D8%AA%D8%A8%D8%AF%D8%A7%D9%84')}>
+                {isLabel?.return_policy}
+              </Text>
+              {"  ·  "}
+              <Text onPress={() => openLink('https://sparkleksa.com/%D8%B3%D9%8A%D8%A7%D8%B3%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D8%B1%D8%AC%D8%A7%D8%B9-%D9%88%D9%84%D8%A7%D8%B3%D8%AA%D8%A8%D8%AF%D8%A7%D9%84')}>
+                {isLabel?.warranty_policy}
+              </Text>
             </Text>
           </GlassContainer>
 
@@ -798,8 +813,8 @@ const handleOnChangeLang = async (value) => {
                     right: 0,
                     bottom: 0,
                   }}
-  tint="dark"      // Matches blurType="dark"
-                        intensity={75}   // Roughly matches blurAmount={15}. Adjust between 60-90 to taste.
+                  tint="dark"      // Matches blurType="dark"
+                  intensity={75}   // Roughly matches blurAmount={15}. Adjust between 60-90 to taste.
                 />
 
                 <TouchableOpacity activeOpacity={1}>

@@ -148,10 +148,10 @@ const OrderPlace = ({ navigation }) => {
   };
 
   const extractAmount = (value = '') => {
-  const cleaned = value.replace(/,/g, '');
-  const match = cleaned.match(/\d+(\.\d+)?/);
-  return match ? match[0] : '';
-};
+    const cleaned = value.replace(/,/g, '');
+    const match = cleaned.match(/\d+(\.\d+)?/);
+    return match ? match[0] : '';
+  };
 
 
 
@@ -228,7 +228,7 @@ const OrderPlace = ({ navigation }) => {
           console.log("hit moyasar3", extractAmount(isTotal))
           const moyasarConfig = buildMoyasarConfig({
             amount: extractAmount(isTotal),
-            orderId: isOtherInfo?.order_id,     
+            orderId: isOtherInfo?.order_id,
             publishableKey: MOYASAR3_PUBLIC_KEY,
           });
 
@@ -244,7 +244,7 @@ const OrderPlace = ({ navigation }) => {
           console.log("tamarapay");
 
           const res = await getTamaraCheckoutUrl();
-          console.log("res tamara checkout",res);
+          console.log("res tamara checkout", res);
 
           if (res?.checkout_url) {
             navigation.navigate("TamaraPaymentScreen", {
@@ -340,6 +340,15 @@ const OrderPlace = ({ navigation }) => {
       console.log("tabby payload currency", cur)
 
       const currency = cur?.code;
+
+      // ✅ BLOCK unsupported currency BEFORE API call
+      if (currency !== "SAR") {
+        Alert.alert(
+          "Payment Not Available",
+          "Tabby is only available for SAR currency. Please change your currency or select another payment method."
+        );
+        return;
+      }
 
       const payload = {
         merchant_code: "sa",
@@ -884,9 +893,9 @@ const OrderPlace = ({ navigation }) => {
                             <View style={{ width: '70%' }}>
                               <Text style={commonStyles.text}>
                                 <PriceView
-                                    priceHtml={item?.title}
-                                    textStyle={{ fontWeight: '700' }}
-                                  />
+                                  priceHtml={item?.title}
+                                  textStyle={{ fontWeight: '700' }}
+                                />
                                 {/* {item?.title}: */}
                               </Text>
                             </View>
@@ -1042,7 +1051,7 @@ const OrderPlace = ({ navigation }) => {
                       /> */}
                       <GlassSwipeButton
                         key={swipeKey}
-                        title={isLabel?.confirmorderbtn_label}
+                        title={isLabel?.slidetoconfirm}
                         onSwipeStart={() => setScrollEnabled(false)}
                         onSwipeEnd={() => setScrollEnabled(true)}
                         onSwipeSuccess={() => onClickPlaceOrder()}

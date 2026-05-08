@@ -286,7 +286,7 @@ const ChooseDeliveryAddress = () => {
             }
 
         } catch (error) {
-            // console.log("errorxsacds", error.response.data);
+            console.log("errorxsacds", error.response);
             alert(GlobalText?.extrafield_somethingwrong);
         } finally {
             setLoading(false);

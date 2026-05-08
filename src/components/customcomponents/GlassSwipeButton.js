@@ -1,5 +1,5 @@
 import React, { forwardRef, useImperativeHandle, useRef } from 'react';
-import { StyleSheet, View, Text, Image } from "react-native";
+import { StyleSheet, View, Text, Image, I18nManager } from "react-native";
 import SwipeButton from "rn-swipe-button";
 import LinearGradient from "react-native-linear-gradient";
 // import Icon from "react-native-vector-icons/MaterialIcons";
@@ -22,7 +22,11 @@ const GlassSwipeButton = forwardRef(
       <GlassContainer borderRadius={15} padding={6}>
         <Image
           source={require('../../assets/images/swipe_button_arrow.png')}
-          style={{ width: 20, height: 20 }}
+          style={{
+            width: 20,
+            height: 20,
+            transform: [{ scaleX: I18nManager.isRTL ? -1 : 1 }], // 👈 flip here
+          }}
           resizeMode="contain"
         />
       </GlassContainer>

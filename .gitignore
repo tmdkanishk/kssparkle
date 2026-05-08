@@ -38,4 +38,4 @@ yarn-error.*
 # Expo
 .expo
 dist/
-web-build/
+web-build/*.aab

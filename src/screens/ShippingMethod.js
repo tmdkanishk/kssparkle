@@ -478,7 +478,7 @@ const ShippingMethod = ({ navigation }) => {
 
                     <GlassSwipeButton
                         key={swipeKey}
-                        title={isLabel?.chkoutshipmethodcontinuebtn_label}
+                        title={isLabel?.slidetocontinue}
                         onSwipeStart={() => setScrollEnabled(false)}
                         onSwipeEnd={() => setScrollEnabled(true)}
                         onSwipeSuccess={() => onClickContinueOrder()}
