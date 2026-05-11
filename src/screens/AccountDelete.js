@@ -59,7 +59,7 @@ const AccountDelete = ({ navigation }) => {
                     <TitleBarName onClickBackIcon={() => navigation.goBack()} titleName={isLabel?.pagelabel} />
 
                     <ScrollView showsVerticalScrollIndicator={false}>
-                        <Text style={{ flexWrap: 'wrap', paddingHorizontal: 14 }}>
+                        <Text style={{ flexWrap: 'wrap', paddingHorizontal: 14, lineHeight:30, fontSize:16 }}>
                             {isTermDescription}
                         </Text>
 

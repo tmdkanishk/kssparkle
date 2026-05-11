@@ -21,6 +21,7 @@ import {
 } from '../constants/IconComponents';
 import { deleteAccount } from '../services/deleteAccount';
 import { _clearAllData, _clearData } from '../utils/storage';
+import TitleBarName from '../components/TitleBarName';
 
 const AccountDeleteReview = ({ navigation, route }) => {
   const { width, height } = useWindowDimensions();
@@ -84,13 +85,15 @@ const AccountDeleteReview = ({ navigation, route }) => {
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={{ flex: 1, backgroundColor: 'white' }}>
+            <TitleBarName onClickBackIcon={() => navigation.goBack()} titleName={label?.whyleaveusheading} />
+
           <View style={{ marginBottom: 70, }}>
             <ScrollView
               contentContainerStyle={{ paddingHorizontal: 12, paddingBottom: 100 }}
               keyboardShouldPersistTaps="handled"
               showsVerticalScrollIndicator={false}
             >
-              <Text
+              {/* <Text
                 style={{
                   fontSize: 18,
                   fontWeight: '600',
@@ -99,7 +102,7 @@ const AccountDeleteReview = ({ navigation, route }) => {
                 }}
               >
                 {label?.whyleaveusheading}
-              </Text>
+              </Text> */}
 
               {reasons?.map((item, index) => (
                 <TouchableOpacity

@@ -12,7 +12,11 @@ import Fontisto from '@expo/vector-icons/Fontisto';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons';
 
-
+export const IconComponentDelete = ({ color, size }) => {
+    return (
+        <MaterialIcons name="delete-outline" size={size ? size : 26} color={color ? color : "black"} />
+    )
+}
 
 export const IconComponentNotification = ({ color, size }) => {
     return (

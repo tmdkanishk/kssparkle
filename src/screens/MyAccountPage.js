@@ -15,7 +15,7 @@ import { API_KEY, BASE_URL } from "../utils/config";
 import axios, { HttpStatusCode } from "axios";
 import * as ImagePicker from 'expo-image-picker';
 import { getUserInfo } from "../services/getUserInfo";
-import { IconComponentClose, IconComponentEdit, IconComponentImage, IconComponentInstagram, IconComponentNotification, IconComponentSnapChat, IconComponentTikTok, IconComponentWhatsapp } from "../constants/IconComponents";
+import { IconComponentClose, IconComponentDelete, IconComponentEdit, IconComponentImage, IconComponentInstagram, IconComponentNotification, IconComponentSnapChat, IconComponentTikTok, IconComponentWhatsapp } from "../constants/IconComponents";
 import { updateUserInfomation } from "../services/updateUserInfomation";
 import InputBox from "../components/InputBox";
 import ImageContainer from "../components/ImageContainer";
@@ -186,13 +186,10 @@ const MyAccountScreen = ({ navigation }) => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (!permissionResult.granted) {
+      // Do not prompt user to reconsider - simply inform them and return
       Alert.alert(
-        "Permission Denied",
-        "You can enable photo access from Settings if you want to upload a profile picture.",
-        [
-          { text: "Cancel", style: "cancel" },
-          { text: "Open Settings", onPress: () => Linking.openSettings() }
-        ]
+        "Photo Access Required",
+        "Photo library access is needed to upload a profile picture."
       );
       return;
     }
@@ -393,10 +390,6 @@ const MyAccountScreen = ({ navigation }) => {
   };
 
 
-
-
-
-
   return (
     <>
 
@@ -549,9 +542,15 @@ const MyAccountScreen = ({ navigation }) => {
           {/* Row 1 */}
           <GlassContainer padding={0.1} style={{ marginHorizontal: 20, marginTop: 20 }}>
             <View style={{ flexDirection: "row", justifyContent: "space-evenly", marginBottom: 20 }}>
-              <AccountItem image={require("../assets/images/track.png")} label={isLabel?.track} />
-              <AccountItem image={require("../assets/images/ready.png")} label={isLabel?.readytogo} />
-              <AccountItem image={require("../assets/images/preparing.png")} label={isLabel?.preparing} />
+              <TouchableOpacity onPress={() => navigation.navigate('MyOrderScreen')}>
+                <AccountItem image={require("../assets/images/track.png")} label={isLabel?.track} />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => Alert.alert(isLabel?.readytogo, "This feature is coming soon!")}>
+                <AccountItem image={require("../assets/images/ready.png")} label={isLabel?.readytogo} />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => { navigation.navigate("OrderHistory") }}>
+                <AccountItem image={require("../assets/images/preparing.png")} label={isLabel?.preparing} />
+              </TouchableOpacity>
             </View>
           </GlassContainer>
 
@@ -559,7 +558,7 @@ const MyAccountScreen = ({ navigation }) => {
           <GlassContainer style={styles.section}>
             <View style={{ flexDirection: "row", justifyContent: "space-between", marginVertical: 10, }}>
 
-              <View style={{ alignItems: "center" }}>
+              <TouchableOpacity onPress={() => navigation.navigate('OrderHistory')}>
                 <GlassContainer style={{ width: 90, height: 100, justifyContent: "center", alignItems: "center" }}>
                   <Image
                     source={require("../assets/images/return.png")}
@@ -570,9 +569,7 @@ const MyAccountScreen = ({ navigation }) => {
                     {isLabel?.return}
                   </Text>
                 </GlassContainer>
-
-
-              </View>
+              </TouchableOpacity>
 
               {/* ORDER */}
               <TouchableOpacity onPress={() => { navigation.navigate("MyOrderScreen") }} style={{ alignItems: "center" }}>
@@ -633,7 +630,7 @@ const MyAccountScreen = ({ navigation }) => {
               </GlassContainer>
             </View> */}
 
-              <TouchableOpacity style={{ alignItems: "center" }}>
+              <TouchableOpacity onPress={() => Alert.alert(isLabel?.more, "This feature is coming soon!")}>
                 <GlassContainer style={{ width: 90, height: 90, justifyContent: "center", alignItems: "center" }}>
                   <Image
                     source={require("../assets/images/more.png")}
@@ -645,7 +642,6 @@ const MyAccountScreen = ({ navigation }) => {
                     {isLabel?.more}
                   </Text>
                 </GlassContainer>
-
               </TouchableOpacity>
 
 
@@ -659,12 +655,14 @@ const MyAccountScreen = ({ navigation }) => {
             <TouchableOpacity onPress={() => { navigation.navigate("Notification") }}>
               <AccountItem image={require("../assets/images/notification.png")} label={isLabel?.notification} />
             </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => { }}>
+            {/* 
+            <TouchableOpacity onPress={() => { navigation.navigate("ChooseDeliveryAddress") }}>
               <AccountItem image={require("../assets/images/address.png")} label={isLabel?.acntdbmyaddrs_label} />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
 
-            <AccountItem image={require("../assets/images/wallet.png")} label={isLabel?.preparing} />
+            <TouchableOpacity onPress={() => { navigation.navigate("OrderHistory") }}>
+              <AccountItem image={require("../assets/images/wallet.png")} label={isLabel?.preparing} />
+            </TouchableOpacity>
           </View>
 
           <TouchableOpacity
@@ -691,6 +689,28 @@ const MyAccountScreen = ({ navigation }) => {
                 source={require("../assets/images/support.png")}
                 style={styles.supportIcon}
               />
+            </GlassContainer>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={{ marginTop: 10 }} onPress={() => navigation.navigate("AccountDelete")}>
+            <GlassContainer style={{
+              borderRadius: 5,
+              marginBottom: 12,
+              marginTop: 5,
+              flexDirection: 'row',
+              minWidth: '85%',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }} padding={8}>
+              <Text style={{
+                color: "#fff",
+                fontWeight: "600",
+                fontSize: 20,
+                textAlign: 'center',
+                paddingTop: 0
+              }}>{isLabel?.acntdbdelacnt_label}</Text>
+              <IconComponentDelete color={'#ff4444'} size={30} />
+              {/* <Image source={require("../assets/images/logout.png")} style={{ width: 28, height: 28, tintColor: "#ff4444", marginTop: 10 }} /> */}
             </GlassContainer>
           </TouchableOpacity>
 
@@ -790,7 +810,7 @@ const MyAccountScreen = ({ navigation }) => {
 
           <KeyboardAvoidingView
             style={{ flex: 1 }}
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
           >
 
             <View style={{ flex: 1 }}>

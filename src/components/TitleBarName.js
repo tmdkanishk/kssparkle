@@ -16,7 +16,9 @@ const TitleBarName = ({titleName, onClickBackIcon}) => {
         <TouchableOpacity onPress={onClickBackIcon}>
           <FontAwesome6 name="arrow-left-long" size={24} color={Colors.black} />
         </TouchableOpacity>
-        <Text style={commonStyles.smallHeading}>{titleName}</Text>
+        <Text style={{  fontSize: 16,
+            fontWeight: '500',
+            color:'black'}}>{titleName}</Text>
       </View>
       </View>
   )
