@@ -58,8 +58,9 @@ import GlassSwipeButton from "../components/customcomponents/GlassSwipeButton";
 import { useFocusEffect } from "@react-navigation/native";
 import { buildApplePayConfig } from "../utils/buildApplePayConfig";
 import { parsePriceHtml } from "../utils/parsePriceHtml";
-import { API_KEY, APPLE_PUBLIC_KEY, BASE_URL, MOYASAR3_PUBLIC_KEY } from "../utils/config";
+import { API_KEY, BASE_URL, MOYASAR3_PUBLIC_KEY } from "../utils/config";
 import axios, { HttpStatusCode } from "axios";
+import { buildUnifiedPaymentConfig } from "../utils/buildUnifiedPaymentConfig";
 
 const OrderPlace = ({ navigation }) => {
   const { Colors, EndPoint, GlobalText } = useCustomContext();
@@ -98,6 +99,7 @@ const OrderPlace = ({ navigation }) => {
   const [email, setEmail] = useState(null);
   const [swipeKey, setSwipeKey] = useState(0);
   const [scrollEnabled, setScrollEnabled] = useState(true);
+  const [orderStatusId, setOrderStatusId] = useState();
 
 
   useFocusEffect(
@@ -126,6 +128,7 @@ const OrderPlace = ({ navigation }) => {
       setTelephone(telephone);
       setFullName(fullName);
       setEmail(email);
+      // setOrderStatusId(result?.order_status_id);
       console.log("result in fetchAllOrderSummary", result);
       // console.log("confirm api response", result?.totalsprice);
       const finalTotal = result?.totals?.[result?.totals?.length - 1]?.text;
@@ -153,12 +156,21 @@ const OrderPlace = ({ navigation }) => {
     return match ? match[0] : '';
   };
 
+  const extractMoyassarAmount = (value = '') => {
+    const cleaned = value.replace(/,/g, '');
+    const match = cleaned.match(/\d+(\.\d+)?/);
+    if (!match) return 0;
+    // Convert SAR to halalas (multiply by 100) and round to integer
+                console.log("extractMoyassarAmount")
+    return Math.round(parseFloat(match[0]) * 100);
+  };
+
 
 
   const onClickPlaceOrder = async () => {
     console.log("onClickPlaceOrder")
     try {
-      setGlobalLoading(true);
+      // setGlobalLoading(true);
       const user = await _retrieveData("CUSTOMER_ID");
       const cur = await _retrieveData("SELECT_CURRENCY");
       switch (isOtherInfo?.payment_method?.code) {
@@ -216,6 +228,7 @@ const OrderPlace = ({ navigation }) => {
           updateCartCount(0);
           navigation.navigate("OrderSuccessScreen", {
             orderId: isOtherInfo?.order_id,
+            orderStatusId: isOtherInfo?.order_status_id,
           });
           break;
 
@@ -225,17 +238,23 @@ const OrderPlace = ({ navigation }) => {
           break;
 
         case "moyasar3":
-          console.log("hit moyasar3", extractAmount(isTotal))
-          const moyasarConfig = buildMoyasarConfig({
-            amount: extractAmount(isTotal),
+        case "applepay":
+          console.log("isTotal value",isTotal)
+          const paymentConfig = buildUnifiedPaymentConfig({
+            amount: extractMoyassarAmount(isTotal),
             orderId: isOtherInfo?.order_id,
-            publishableKey: MOYASAR3_PUBLIC_KEY,
+            orderStatusId: isOtherInfo?.order_status_id,
+            publishableKey: MOYASAR3_PUBLIC_KEY, // use one key
+            merchantId: 'merchant.com.ksasparkle', // your Apple merchant ID
+            storeName: 'Sparkle|وجه تألقي',
           });
 
+          console.log("paymentConfig apple pay", paymentConfig)
+
           navigation.navigate("MoyasarPayment", {
-            paymentConfig: moyasarConfig,
+            paymentConfig,
             orderId: isOtherInfo?.order_id,
-            paymentType: "card"
+            orderStatusId: isOtherInfo?.order_status_id
           });
 
           break;
@@ -249,23 +268,25 @@ const OrderPlace = ({ navigation }) => {
           if (res?.checkout_url) {
             navigation.navigate("TamaraPaymentScreen", {
               checkoutUrl: res.checkout_url,
+              orderId: isOtherInfo?.order_id,
+              orderStatusId: isOtherInfo?.order_status_id,
             });
           }
 
           break;
 
-        case "applepay":
-          console.log("apple_pay")
-          const appleConfig = buildApplePayConfig({
-            amount: extractAmount(isTotal),
-            orderId: isOtherInfo?.order_id,
-            publishableKey: APPLE_PUBLIC_KEY,
-          });
-          navigation.navigate("MoyasarPayment", {
-            paymentConfig: appleConfig,
-            orderId: isOtherInfo?.order_id,
-            paymentType: "apple",
-          });
+        // case "applepay":
+        //   console.log("apple_pay")
+        //   const appleConfig = buildApplePayConfig({
+        //     amount: extractAmount(isTotal),
+        //     orderId: isOtherInfo?.order_id,
+        //     publishableKey: APPLE_PUBLIC_KEY,
+        //   });
+        //   navigation.navigate("MoyasarPayment", {
+        //     paymentConfig: appleConfig,
+        //     orderId: isOtherInfo?.order_id,
+        //     paymentType: "apple",
+        //   });
 
         default:
           // Code to run if no case matches
@@ -274,7 +295,7 @@ const OrderPlace = ({ navigation }) => {
       }
     } catch (error) {
       setSwipeKey(prev => prev + 1);
-      console.log("error : ", error.response.data);
+      console.log("catching error in onClickplace order function: ", error);
     } finally {
       setGlobalLoading(false);
     }
@@ -368,17 +389,23 @@ const OrderPlace = ({ navigation }) => {
 
       const { availableProducts } = await Tabby.createSession(payload);
 
+      console.log("available products in tabby", availableProducts);
+
       const installments = availableProducts.find(
         p => p.type === "installments"
       );
 
       if (!installments?.webUrl) {
+        setError("Tabby installments not available");
+        setErrorModal(true);
         console.log("Tabby installments not available");
         return;
       }
 
       navigation.navigate("TabbyCheckoutScreen", {
         url: installments.webUrl,
+        orderId: isOtherInfo?.order_id,
+        orderStatusId: isOtherInfo?.order_status_id,
       });
 
     } catch (e) {
@@ -831,7 +858,7 @@ const OrderPlace = ({ navigation }) => {
                                       {item.price && (
                                         <PriceView
                                           priceHtml={item.price}
-                                          textStyle={{ fontWeight: '700' }}
+                                          textStyle={{ fontWeight: '700', color: "white", }}
                                         />
                                       )}
                                     </Text>
@@ -839,7 +866,7 @@ const OrderPlace = ({ navigation }) => {
                                       {item?.total && (
                                         <PriceView
                                           priceHtml={item?.total}
-                                          textStyle={{ fontWeight: '700' }}
+                                          textStyle={{ fontWeight: '700', color: "white", }}
                                         />
                                       )}
                                     </Text>
@@ -894,7 +921,7 @@ const OrderPlace = ({ navigation }) => {
                               <Text style={commonStyles.text}>
                                 <PriceView
                                   priceHtml={item?.title}
-                                  textStyle={{ fontWeight: '700' }}
+                                  textStyle={{ fontWeight: '700', color: "white", }}
                                 />
                                 {/* {item?.title}: */}
                               </Text>
@@ -904,7 +931,7 @@ const OrderPlace = ({ navigation }) => {
                                 {item?.text && (
                                   <PriceView
                                     priceHtml={item?.text}
-                                    textStyle={{ fontWeight: '700' }}
+                                    textStyle={{ fontWeight: '700', color: "white", }}
                                   />
                                 )}
                               </Text>

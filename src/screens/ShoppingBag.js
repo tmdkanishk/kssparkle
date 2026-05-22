@@ -30,6 +30,7 @@ import FailedModal from "../components/FailedModal";
 import PriceView from "../components/customcomponents/PriceView";
 import { getAllCouponCode } from "../services/getAllCouponCode";
 import BoxWithShadow from "../test";
+import CustomSearchBar from "./CustomSearchBar";
 
 
 const ShoppingBag = ({ navigation }) => {
@@ -64,7 +65,8 @@ const ShoppingBag = ({ navigation }) => {
 
     const [isCouponSuccess, setCouponSuccess] = useState(null);
     const [isVoucherSuccess, setVoucherSuccess] = useState(null);
-
+    const [activeSeachingScreen, setActiveSeachingScreen] = useState(false);
+    const [cartWarning,setCartWarning] = useState("")
     // const scrollY = useRef(new Animated.Value(0)).current;
 
 
@@ -83,14 +85,26 @@ const ShoppingBag = ({ navigation }) => {
         }, [language, currency, cartCount])
     );
 
-    const checkUserLogin = async () => {
-        const data = await _retrieveData("CUSTOMER_ID");
-        if (data != null) {
-            navigation.navigate("ChooseDeliveryAddress");
-        } else {
-            navigation.navigate("Login")
-        }
+    //    setErrorMgs(GlobalText?.extrafield_somethingwrong);
+    //             setErrorModal(true);
+
+const checkUserLogin = async () => {
+
+    // block checkout if stock issue exists
+    if (cartWarning && cartWarning.trim().length > 0) {
+        setErrorMgs(cartWarning);
+        setErrorModal(true);
+        return;
     }
+
+    const data = await _retrieveData("CUSTOMER_ID");
+
+    if (data != null) {
+        navigation.navigate("ChooseDeliveryAddress");
+    } else {
+        navigation.navigate("Login");
+    }
+};
 
     const handleOnChangeLang = (value) => {
         changeLanguage(value);
@@ -136,6 +150,7 @@ const ShoppingBag = ({ navigation }) => {
                 setLabel(response.data?.text);
                 setTotal(response.data?.totals);
                 setCartProducts(response.data?.products);
+                setCartWarning(response?.data?.error_warning)
             }
 
         } catch (error) {
@@ -339,6 +354,19 @@ const ShoppingBag = ({ navigation }) => {
         }
     }
 
+
+    const toggleSearch = () => {
+        setActiveSeachingScreen(prev => !prev);
+    };
+
+    if (activeSeachingScreen) {
+        return (
+            <CustomSearchBar
+                setActiveSeachingScreen={setActiveSeachingScreen}
+            />
+        );
+    }
+
     return (
         <>
             <BackgroundWrapper>
@@ -346,14 +374,14 @@ const ShoppingBag = ({ navigation }) => {
                     style={{ flex: 1 }}
                     behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                 >
-                    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 20, gap: 16, marginTop: Platform.OS === "ios" ? 40 : 0, opacity: screenLoader ? 0.5 : 1 }}>
+                    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 20, gap: 16, marginTop: Platform.OS === "ios" ? 30 : 0, opacity: screenLoader ? 0.5 : 1 }}>
                         {/* Header */}
-                        <Header onLogoPress={() => { navigation.navigate("Home") }} />
+                        <Header onSearchPress={toggleSearch} onLogoPress={() => { navigation.navigate("Home") }} />
 
-                            {/* <BoxWithShadow /> */}
+                        {/* <BoxWithShadow /> */}
 
                         {/* Selected Info */}
-                        <View style={{ paddingTop: 20, paddingBottom: 10, paddingHorizontal: 10 }}>
+                        <View style={{ paddingTop: 0, paddingBottom: 0, paddingHorizontal: 10 }}>
                             <TouchableOpacity style={{ marginBottom: 15 }} onPress={() => navigation.goBack()}>
                                 <Image source={require("../assets/images/back.png")} style={{ width: 18, height: 18, tintColor: "#fff", }} />
                             </TouchableOpacity>
@@ -432,7 +460,7 @@ const ShoppingBag = ({ navigation }) => {
                         {
                             isCartProducts?.length ?
                                 (isCartProducts?.map((item, index) => (
-                                    <ShoppingBagProductCard item={item} key={index} toggleCart={(item) => toggleCart(item)} cartItems={cartItem} outOfStockText={isLabel?.text_outofstock} leftText={isLabel?.lefttoapply} returnDayText={isLabel?.dayreturn}/>
+                                    <ShoppingBagProductCard item={item} key={index} toggleCart={(item) => toggleCart(item)} cartItems={cartItem} outOfStockText={isLabel?.outofstock} leftText={isLabel?.lefttoapply} returnDayText={isLabel?.dayreturn} />
                                 ))) : null
                         }
 
@@ -506,9 +534,9 @@ const ShoppingBag = ({ navigation }) => {
                                     >
                                         <Text style={isFinal ? styles.totalLabel : styles.label}>
                                             <PriceView
-                                    priceHtml={item?.title}
-                                    textStyle={{ fontWeight: '700' }}
-                                  />
+                                                priceHtml={item?.title}
+                                                textStyle={{ fontWeight: '700', color: "white", }}
+                                            />
                                             {/* {item.title} */}
                                         </Text>
 
@@ -516,7 +544,7 @@ const ShoppingBag = ({ navigation }) => {
                                             {item.text && (
                                                 <PriceView
                                                     priceHtml={item.text}
-                                                    textStyle={{ fontWeight: '700' }}
+                                                    textStyle={{ fontWeight: '700', color: "white", }}
                                                 />
                                             )}
                                             {/* {item.text} */}
@@ -534,7 +562,7 @@ const ShoppingBag = ({ navigation }) => {
                         <View style={styles.footer}>
                             {/* <MokaffaPoints /> */}
 
-                            <GlassmorphismButton title={isLabel?.cartcheckoutbtn_label} onPress={() => checkUserLogin()} />
+                            <GlassmorphismButton  title={isLabel?.cartcheckoutbtn_label} onPress={() => checkUserLogin()} />
 
                             {/* <View style={styles.footerBottomRow}>
                                 <Text style={styles.totalText}>₹16669.25</Text>
@@ -699,6 +727,7 @@ const styles = StyleSheet.create({
     },
     footer: {
         marginTop: 10,
+        marginBottom:50
     },
     footerTopRow: {
         flexDirection: "row",       // ← align text + line horizontally

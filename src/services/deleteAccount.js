@@ -6,8 +6,9 @@ export const deleteAccount = async (leavingreasons, howweimprove, deleteaccount_
     try {
         const url = `${BASE_URL}${deleteaccount_deleteandsaveinfo}`;
         const lang = await _retrieveData('SELECT_LANG');
-        const cur = await _retrieveData('SELECT_CURRENCY');
-        const user = await _retrieveData('USER');
+         const cur = await _retrieveData('SELECT_CURRENCY');
+        // const user = await _retrieveData('USER');
+          const user = await _retrieveData('CUSTOMER_ID');
         const sessionId = await _retrieveData('SESSION_ID');
 
         const headers = {
@@ -19,7 +20,8 @@ export const deleteAccount = async (leavingreasons, howweimprove, deleteaccount_
             code: lang?.code,
             currency: cur?.code,
             sessionid: sessionId,
-            customer_id: user ? user[0]?.customer_id : null,
+            // customer_id: user ? user[0]?.customer_id : null,
+            customer_id: user ? user: null,
             leaving_reasons: leavingreasons,
             howimprove: howweimprove,
             agree_deleteaccount: 1

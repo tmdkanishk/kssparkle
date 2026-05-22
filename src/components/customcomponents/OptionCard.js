@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import Colors from "../../constants/Colors";
 import GlassContainer from "./GlassContainer";
+import { IconComponentImage } from "../../constants/IconComponents";
 
 const OptionCard = ({ item, selected, onPress }) => {
   const imageSource = item?.image
@@ -24,14 +25,23 @@ const OptionCard = ({ item, selected, onPress }) => {
         selected && styles.optionCardSelected,
       ]}
     >
-      <Image
-        source={imageSource}
-        style={styles.optionImage}
-      />
+{item?.image ? (
+  <Image
+    source={{ uri: item.image }}
+    style={styles.optionImage}
+  />
+) : (
+  <View style={styles.optionFallback}>
+    <IconComponentImage
+      size={28}
+      color="black"
+    />
+  </View>
+)}
 
       <Text style={styles.optionLabel}>{item?.name}</Text>
     </TouchableOpacity>
-    </GlassContainer>
+   </GlassContainer>
   );
 };
 

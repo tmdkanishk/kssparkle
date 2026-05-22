@@ -90,6 +90,7 @@ const SpecialProducts = ({ navigation }) => {
 
             setTotalPage(result?.pages);
         } catch (error) {
+            console.log("specail product error",error)
             setErrorMgs(GlobalText?.extrafield_somethingwrong);
             setErrorModal(true)
         } finally {

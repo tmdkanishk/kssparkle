@@ -142,6 +142,7 @@ const ProductDetail = ({ navigation, route }) => {
   const [isSuccessModal, setSuccessModal] = useState(false);
   const [isSuccessMgs, setSuccessMgs] = useState();
   const [selectedTextOptions, setSelectedTextOptions] = useState({});
+  const [stockStatus, setStockStatus] = useState('');
 
   useEffect(() => {
     fetchProductDetail();
@@ -240,7 +241,8 @@ const ProductDetail = ({ navigation, route }) => {
         console.log("tebbypromo", response.data.tebbypromo);
         console.log("product detail response images", response?.data?.images);
         console.log("product detail response price", response.data?.price);
-        console.log("response data description", response?.data?.description)
+        console.log("response data description", response?.data?.description);
+
         setPrice(response.data?.price)
         setProductDetail(response.data);
         setAttributeGroups(response.data.attribute_groups)
@@ -431,6 +433,7 @@ const ProductDetail = ({ navigation, route }) => {
     selectedSelectOptions,
     selectedTextOptions
   ) => {
+    // console.log('functions working')
     try {
 
       setItemCardLoading(productId);
@@ -710,14 +713,17 @@ const ProductDetail = ({ navigation, route }) => {
       <BackgroundWrapper>
 
         <ScrollView ref={scrollViewRef} contentContainerStyle={{ paddingBottom: 20, marginTop: Platform.OS === "ios" ? 40 : 0 }} onScroll={(e) => setScrollY(e.nativeEvent.contentOffset.y)} scrollEventThrottle={16} >
-          <View style={{ paddingHorizontal: 30 }}>
+          <View style={{ paddingHorizontal: 30, paddingTop:15 }}>
             <Header onLogoPress={() => navigation.navigate("Home")} onSearchPress={toggleSearch} />
           </View>
 
           <TouchableOpacity style={{ marginLeft: 25, marginTop: 20 }} onPress={() => navigation.goBack()}>
             <Image source={require("../assets/images/back.png")} style={{ width: 18, height: 18, tintColor: "#fff", }} />
           </TouchableOpacity>
+          <View>
           <ProductImageCard headingTitle={productDetail?.heading_title} images={productDetail?.images} />
+          </View>
+
           <View
             style={{
               flexDirection: 'row',
@@ -730,6 +736,7 @@ const ProductDetail = ({ navigation, route }) => {
           >
             <PriceView
               priceHtml={productDetail?.price}
+              specialHtml={productDetail?.special}
               textStyle={{
                 fontSize: 31,
                 fontWeight: "700",
@@ -773,6 +780,37 @@ const ProductDetail = ({ navigation, route }) => {
               tabbyText={productDetail?.tabby_text}
               textNoFee={productDetail?.text_nofee}
             />
+
+
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                marginLeft: 10,
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 20,
+                  color: '#fff',
+                  marginRight: 7,
+                  fontWeight: '600',
+                }}
+              >
+                {productDetail?.text_stock}
+              </Text>
+
+              <Text
+                style={{
+                  color: productDetail?.stock_status_color || '#fff',
+                  fontSize: 22,
+                  fontWeight: '700',
+                }}
+              >
+                {productDetail?.stock_status}
+              </Text>
+            </View>
+
 
 
             {/* <PaymentPromoSection tabbyHtml={productDetail?.tebbypromo} tamaraHtml={productDetail?.tamara_promo} /> */}
@@ -1130,65 +1168,65 @@ const ProductDetail = ({ navigation, route }) => {
 
 
             {productDetail?.options?.map((item, index) => {
-  const isTextInput =
-    item?.type === "text" || item?.type === "textarea";
+              const isTextInput =
+                item?.type === "text" || item?.type === "textarea";
 
-  if (!isTextInput) return null;
+              if (!isTextInput) return null;
 
-  return (
-    <View key={index}>
-      {/* Title */}
-      <Text
-        style={[
-          commonStyles.heading,
-          // { color: Colors.headingColor, marginTop: 12 },
-        ]}
-      >
-        {item?.name}
-      </Text>
+              return (
+                <View key={index}>
+                  {/* Title */}
+                  <Text
+                    style={[
+                      commonStyles.heading,
+                      // { color: Colors.headingColor, marginTop: 12 },
+                    ]}
+                  >
+                    {item?.name}
+                  </Text>
 
-      {/* Input */}
-      <TextInput
-        placeholder="Enter here..."
-        placeholderTextColor="#999"
-        multiline={item?.type === "textarea"}
-        value={
-          selectedTextOptions[`option[${item?.product_option_id}]`] || ""
-        }
-        onChangeText={(text) =>
-          handleTextOptionChange(item?.product_option_id, text)
-        }
-        style={{
-          borderWidth: 1,
-          borderColor:
-            isSelectError &&
-            !selectedTextOptions[
-              `option[${item?.product_option_id}]`
-            ]?.trim()
-              ? "red"
-              : Colors.gray,
-          borderRadius: 8,
-          padding: 10,
-          height: item?.type === "textarea" ? 80 : 45,
-          color: "#fff",
-          marginTop: 10,
-          textAlignVertical:
-            item?.type === "textarea" ? "top" : "center",
-        }}
-      />
+                  {/* Input */}
+                  <TextInput
+                    placeholder="Enter here..."
+                    placeholderTextColor="#999"
+                    multiline={item?.type === "textarea"}
+                    value={
+                      selectedTextOptions[`option[${item?.product_option_id}]`] || ""
+                    }
+                    onChangeText={(text) =>
+                      handleTextOptionChange(item?.product_option_id, text)
+                    }
+                    style={{
+                      borderWidth: 1,
+                      borderColor:
+                        isSelectError &&
+                          !selectedTextOptions[
+                            `option[${item?.product_option_id}]`
+                          ]?.trim()
+                          ? "red"
+                          : Colors.gray,
+                      borderRadius: 8,
+                      padding: 10,
+                      height: item?.type === "textarea" ? 80 : 45,
+                      color: "#fff",
+                      marginTop: 10,
+                      textAlignVertical:
+                        item?.type === "textarea" ? "top" : "center",
+                    }}
+                  />
 
-      {/* Error */}
-      {isSelectError &&
-        !selectedTextOptions[
-          `option[${item?.product_option_id}]`
-        ]?.trim() && (
-          <Text style={{ color: "red" }}>
-            {productDetail?.please_select} {item?.name}
-          </Text>
-        )}
-    </View>
-  );
-})}
+                  {/* Error */}
+                  {isSelectError &&
+                    !selectedTextOptions[
+                      `option[${item?.product_option_id}]`
+                    ]?.trim() && (
+                      <Text style={{ color: "red" }}>
+                        {productDetail?.please_select} {item?.name}
+                      </Text>
+                    )}
+                </View>
+              );
+            })}
 
 
             <View
@@ -1412,7 +1450,7 @@ const ProductDetail = ({ navigation, route }) => {
 
         </ScrollView>
 
-        <View style={{ paddingHorizontal: 20, paddingBottom: 30 }}>
+        <View style={{ paddingHorizontal: 20, paddingBottom: 40 }}>
           <GlassmorphismButton
             onPress={productDetail?.optionsstatus
               ? () =>

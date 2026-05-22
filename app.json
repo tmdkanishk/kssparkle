@@ -35,7 +35,10 @@
           "ios": {
             "useFrameworks": "static",
             "buildReactNativeFromSource": true,
-            "extraCompilerFlags": ["-Wno-error=unused-command-line-argument", "-fpermissive"]
+            "extraCompilerFlags": [
+              "-Wno-error=unused-command-line-argument",
+              "-fpermissive"
+            ]
           }
         }
       ],
@@ -44,11 +47,12 @@
         {
           "iCloudContainerEnvironment": "Production"
         }
-      ]
+      ],
+      "expo-image"
     ],
     "android": {
       "package": "com.ksasparkle",
-      "newArchEnabled": false, 
+      "newArchEnabled": false,
       "buildReactNativeFromSource": false,
       "googleServicesFile": "./google-services.json",
       "permissions": [
@@ -74,7 +78,7 @@
           "NSAllowsArbitraryLoads": true,
           "FirebaseAppDelegateProxyEnabled": true
         },
-       "NSLocationWhenInUseUsageDescription": "We use your location to help you select your address on the map.",
+        "NSLocationWhenInUseUsageDescription": "We use your location to help you select your address on the map.",
         "NSPhotoLibraryUsageDescription": "We need access to your photos so you can upload your profile picture."
       },
       "appleTeamId": "BUTS4JS55S"

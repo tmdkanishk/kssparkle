@@ -27,6 +27,7 @@ export const getMyAddresses = async (address) => {
         console.log("getMyAddresses",url, body)
 
         if (response.status === HttpStatusCode.Ok) {
+            console.log("get my address response", response?.data)
             return response.data
         }
     } catch (error) {

@@ -177,7 +177,7 @@ const VerificationCode = ({ navigation, route }) => {
     }, [])
 
     useEffect(() => {
-        if (telephone === "530615005" && otp) {
+        if (telephone === "530615004" && otp) {
             setOtpInput(otp);
             
             // Auto verify after small delay

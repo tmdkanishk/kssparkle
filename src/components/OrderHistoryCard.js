@@ -41,7 +41,7 @@ const OrderHistoryCard = ({ orderId, customerName, orderStatus, orderDate, qty, 
                     <Text style={commonStyles.smallTextBlackBold}>
                         {total ? <PriceView
                             priceHtml={total}
-                            textStyle={{}}
+                            textStyle={{ color: "white"}}
                         /> : '4500'}
                     </Text>
                 </View>

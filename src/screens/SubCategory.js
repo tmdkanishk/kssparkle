@@ -135,7 +135,7 @@ const SubCategory = ({ navigation, route }) => {
                 return [...prev, ...filtered];
             });
 
-            setTotalPages(result?.pages || 1);
+            setTotalPages(result?.productpages || 1);
             setPage(pageNumber);
         } catch (error) {
             console.log("getSubCategoryProducts error", error);
@@ -157,6 +157,7 @@ const SubCategory = ({ navigation, route }) => {
 
     const loadMoreProducts = () => {
         if (page < totalPages && !loading) {
+            console.log("loading more products")
             getSubCategoryProducts(page + 1);
         }
     };
@@ -302,6 +303,9 @@ const SubCategory = ({ navigation, route }) => {
                                     marginTop:15,
                                     fontSize: 16,
                                     fontWeight: "600",
+                                    width:'95%',
+                                    // borderColor:'black',
+                                    // borderWidth:1
                                 }}
                             >
                                 {language === "ar" ? "الفئات الفرعية": "Sub Categories"}
@@ -326,7 +330,11 @@ const SubCategory = ({ navigation, route }) => {
 
                         {/* SECTION TITLE */}
                         {products.length > 0 && (
-                            <Text style={{ color: "#fff", fontSize: 16, fontWeight: "600", marginLeft: 20, marginTop:10 }}>
+                            <Text style={{ color: "#fff", fontSize: 16, fontWeight: "600", marginLeft: 20, marginTop:10,      width:'90%',
+                                    // borderColor:'black',
+                                    // borderWidth:1 
+                                    
+                                    }}>
                                                  {language === "ar" ? "منتجات": "Products"}
                                
                             </Text>
@@ -431,10 +439,13 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         gap: 14,
+        // borderWidth:1,
+        // borderColor:'black',
+        width:'90%'
     },
     subImageWrapper: {
-        width: 64,
-        height: 64,
+        width: 70,
+        height: 70,
         borderRadius: 32,
         backgroundColor: "rgba(255,255,255,0.2)",
         justifyContent: "center",
@@ -442,8 +453,8 @@ const styles = StyleSheet.create({
         overflow: "hidden",
     },
     subImage: {
-        width: 40,
-        height: 40,
+        width: '100%',
+        height: '100%',
     },
     subTitle: {
         color: "#fff",

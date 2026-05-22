@@ -94,6 +94,14 @@ const ShoppingBagProductCard = ({ item, toggleCart, cartItems, outOfStockText, l
                 </Pressable>
                 <Text style={styles.title} numberOfLines={2}>
                     {item?.name}
+
+             
+                </Text>
+
+                <Text style={{fontSize:25}}>
+                           {!item?.stock && (
+                        <Text style={{ color: "#ff4d4d" }}>{"***"}</Text>
+                    )}
                 </Text>
 
                 <Text style={styles.subText}>{item?.model}</Text>
@@ -156,8 +164,8 @@ const ShoppingBagProductCard = ({ item, toggleCart, cartItems, outOfStockText, l
 
 const styles = StyleSheet.create({
     image: {
-        width: 100,
-        height: 100,
+        width: 120,
+        height: 120,
         resizeMode: "contain",
     },
     title: {

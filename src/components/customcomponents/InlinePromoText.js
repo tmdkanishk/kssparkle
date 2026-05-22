@@ -12,7 +12,7 @@ const InlinePromoText = ({ text }) => {
         <Text style={{ color: '#fff', fontSize: 15, flexWrap: 'wrap' }}>
             {before + ' '}
             {priceHtml && (
-                <View style={{marginTop:50}}>
+                <View style={{marginTop:20}}>
                     <PriceView
                         priceHtml={priceHtml}
                         textStyle={{

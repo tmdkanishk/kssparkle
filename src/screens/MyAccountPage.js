@@ -403,7 +403,7 @@ const MyAccountScreen = ({ navigation }) => {
             flexDirection: "row",
             justifyContent: "space-between",
             alignItems: "center",
-            marginTop: Platform.OS === "ios" ? 40 : 40,
+            marginTop: Platform.OS === "ios" ? 60 : 40,
             paddingHorizontal: 20,
           }}
         >

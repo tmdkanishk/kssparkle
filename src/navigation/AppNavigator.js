@@ -174,74 +174,323 @@ const AppNavigator = () => {
               { backgroundColor: "rgba(0,0,0,0.4)" },
             ]}
           />
-          <StatusBar hidden={isLandscape ? true : false} />
-          <SafeAreaView style={{ height: "100%", backgroundColor: "transparent", paddingVertical: Platform.OS === 'ios' ? height * 0.05 : height * 0.0001 }}>
-            <Stack.Navigator screenOptions={{
-              headerShown: false,
-              cardStyle: { backgroundColor: "rgba(0,0,0,0.01)" },
-              ...TransitionPresets.ModalFadeTransition,
-              detachPreviousScreen: true,  // ✅ ADD THIS
-            }}>
-              <Stack.Screen name="Splash" component={Splash} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition, }} />
-              <Stack.Screen name="Home" component={Home} />
-              <Stack.Screen name="SideBar" component={SideBar} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-              <Stack.Screen name="Login" component={Login} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-              <Stack.Screen name="Register" component={Register} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-              <Stack.Screen name="VerificationCode" component={VerificationCode} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-              <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicy} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-              <Stack.Screen name="ForgetPassword" component={ForgetPassword} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-              <Stack.Screen name="Product" component={Product} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-              <Stack.Screen name="ProductDetail" component={ProductDetail} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-              <Stack.Screen name="ProductSearchScreen" component={ProductSearchScreen} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-              <Stack.Screen name="ShoppingBag" component={ShoppingBag} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-              <Stack.Screen name="ShippingMethod" component={ShippingMethod} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-              <Stack.Screen name="ChoosePaymentMethod" component={ChoosePaymentMethod} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-              <Stack.Screen name="ChooseDeliveryAddress" component={ChooseDeliveryAddress} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-              <Stack.Screen name="MyAccountScreen" component={MyAccountScreen} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-              <Stack.Screen name="MyOrderScreen" component={MyOrderScreen} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-              <Stack.Screen name="TrackingDetails" component={TrackingDetails} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-              <Stack.Screen name="SparkleScreen" component={SparkleScreen} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-              <Stack.Screen name="OrderDetailsScreen" component={OrderDetailsScreen} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-              <Stack.Screen name="ReviewMediaScreen" component={ReviewMediaScreen} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-              <Stack.Screen name="OrderSuccessScreen" component={OrderSuccessScreen} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-              <Stack.Screen name="Review" component={Review} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-              <Stack.Screen name="AccountDashboard" component={AccountDashboard} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-              <Stack.Screen name="CartScreen" component={CartScreen} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-              <Stack.Screen name="Checkout" component={Checkout} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-              <Stack.Screen name="OrderConfirmation" component={OrderConfirmation} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-              <Stack.Screen name="OrderHistory" component={OrderHistory} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition, ...TransitionPresets.ModalFadeTransition }} />
-              <Stack.Screen name="OrderView" component={OrderView} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-              <Stack.Screen name="Category" component={Category} />
-              <Stack.Screen name="SubCategory" component={SubCategory} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-              <Stack.Screen name="Contact" component={Contact} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-              <Stack.Screen name="Search" component={Search} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-              <Stack.Screen name="AllCategoryView" component={AllCategoryView} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-              <Stack.Screen name="CategoryView" component={CategoryView} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-              <Stack.Screen name="ChooseLanguage" component={ChooseLanguage} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-              <Stack.Screen name="ChooseCurrency" component={ChooseCurrency} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-              <Stack.Screen name="ResetPassword" component={ResetPassword} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-              <Stack.Screen name="Wishlist" component={Wishlist} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-              <Stack.Screen name="MyAddress" component={MyAddress} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-              <Stack.Screen name="UserDetail" component={UserDetail} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-              <Stack.Screen name="Rating" component={Rating} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-              <Stack.Screen name="Download" component={Download} options={{ headerShown: false }} />
-              <Stack.Screen name="ChangePassword" component={ChangePassword} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-              <Stack.Screen name="Compare" component={Compare} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-              <Stack.Screen name="Payment" component={Payment} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-              <Stack.Screen name="OrderPlace" component={OrderPlace} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-              <Stack.Screen name="TabbyCheckoutScreen" component={TabbyCheckoutScreen} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-              <Stack.Screen name="Notification" component={Notification} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-              <Stack.Screen name="ReturnOrder" component={ReturnOrder} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-              <Stack.Screen name="AddNewAddress" component={AddNewAddress} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-              <Stack.Screen name="EditAddress" component={EditAddress} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-              <Stack.Screen name="SpecialProducts" component={SpecialProducts} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-              <Stack.Screen name="TamaraPaymentScreen" component={TamaraPaymentScreen} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-              <Stack.Screen name="LatestCategoryView" component={LatestCategoryView} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-              <Stack.Screen name="AccountDelete" component={AccountDelete} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-              <Stack.Screen name="AccountDeleteReview" component={AccountDeleteReview} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-              <Stack.Screen name="Brands" component={Brands} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-              <Stack.Screen name="Products" component={Products} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
-              <Stack.Screen name="GlassTestScreen" component={GlassTestScreen} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+          {/* <StatusBar hidden={isLandscape ? true : false} /> */}
+          {/* <SafeAreaView style={{ flex:1 }}> */}
+          <SafeAreaView style={{ height: "100%", backgroundColor: "transparent", paddingVertical: Platform.OS === 'ios' ? height * 0.08 : height * 0.0001 }}>
+<Stack.Navigator screenOptions={{
+  headerShown: false,
+  cardStyle: { backgroundColor: "rgba(0,0,0,0.01)" },
+  ...TransitionPresets.ModalFadeTransition,
+  detachPreviousScreen: true,
+  gestureEnabled: false,        // ✅ prevents gesture conflicts
+  animationEnabled: true,
+  cardOverlayEnabled: false,    // ✅ removes overlay between cards during transition
+  cardShadowEnabled: false,     // ✅ removes shadow flickering
+}}>
+              <Stack.Screen
+                name="Splash"
+                component={Splash}
+                options={{
+                  headerShown: false,
+                  ...TransitionPresets.ModalFadeTransition,
+                  cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001), overflow:"hidden" } // ✅ cancels out the padding
+                }}
+              />
+              <Stack.Screen name="Home" component={Home} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001), overflow:"hidden" } // ✅ cancels out the padding
+              }} />
+              <Stack.Screen name="SideBar" component={SideBar} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001), overflow:"hidden" } // ✅ cancels out the padding
+              }}  />
+              <Stack.Screen name="Login" component={Login} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001), overflow:"hidden" } // ✅ cancels out the padding
+              }}  />
+              <Stack.Screen name="Register" component={Register} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001), overflow:"hidden" } // ✅ cancels out the padding
+              }}  />
+              <Stack.Screen name="VerificationCode" component={VerificationCode} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001), overflow:"hidden" } // ✅ cancels out the padding
+              }}  />
+              <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicy} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001), overflow:"hidden" } // ✅ cancels out the padding
+              }}  />
+              <Stack.Screen name="ForgetPassword" component={ForgetPassword} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001), overflow:"hidden" } // ✅ cancels out the padding
+              }}  />
+              <Stack.Screen name="Product" component={Product} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001), overflow:"hidden" } // ✅ cancels out the padding
+              }}  />
+              <Stack.Screen name="ProductDetail" component={ProductDetail} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001), overflow:"hidden" } // ✅ cancels out the padding
+              }}  />
+              <Stack.Screen name="ProductSearchScreen" component={ProductSearchScreen} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001), overflow:"hidden" } // ✅ cancels out the padding
+              }}  />
+              <Stack.Screen name="ShoppingBag" component={ShoppingBag} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001), overflow:"hidden" } // ✅ cancels out the padding
+              }}  />
+              <Stack.Screen name="ShippingMethod" component={ShippingMethod} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001), overflow:"hidden" } // ✅ cancels out the padding
+              }}  />
+              <Stack.Screen name="ChoosePaymentMethod" component={ChoosePaymentMethod} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001), overflow:"hidden" } // ✅ cancels out the padding
+              }}  />
+              <Stack.Screen name="ChooseDeliveryAddress" component={ChooseDeliveryAddress} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001), overflow:"hidden" } // ✅ cancels out the padding
+              }}  />
+              <Stack.Screen name="MyAccountScreen" component={MyAccountScreen} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001), overflow:"hidden" } // ✅ cancels out the padding
+              }}  />
+              <Stack.Screen name="MyOrderScreen" component={MyOrderScreen} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001), overflow:"hidden" } // ✅ cancels out the padding
+              }}  />
+              <Stack.Screen name="TrackingDetails" component={TrackingDetails} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001), overflow:"hidden" } // ✅ cancels out the padding
+              }}  />
+              <Stack.Screen name="SparkleScreen" component={SparkleScreen} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001), overflow:"hidden" } // ✅ cancels out the padding
+              }}  />
+              <Stack.Screen name="OrderDetailsScreen" component={OrderDetailsScreen} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001), overflow:"hidden" } // ✅ cancels out the padding
+              }}  />
+              <Stack.Screen name="ReviewMediaScreen" component={ReviewMediaScreen} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001), overflow:"hidden" } // ✅ cancels out the padding
+              }}  />
+              <Stack.Screen name="OrderSuccessScreen" component={OrderSuccessScreen} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001), overflow:"hidden" } // ✅ cancels out the padding
+              }}  />
+              <Stack.Screen name="Review" component={Review} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001), overflow:"hidden" } // ✅ cancels out the padding
+              }}  />
+              <Stack.Screen name="AccountDashboard" component={AccountDashboard} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001), overflow:"hidden" } // ✅ cancels out the padding
+              }}  />
+              <Stack.Screen name="CartScreen" component={CartScreen} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001), overflow:"hidden" } // ✅ cancels out the padding
+              }}  />
+              <Stack.Screen name="Checkout" component={Checkout} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001), overflow:"hidden" } // ✅ cancels out the padding
+              }}  />
+              <Stack.Screen name="OrderConfirmation" component={OrderConfirmation} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001), overflow:"hidden" } // ✅ cancels out the padding
+              }}  />
+              <Stack.Screen name="OrderHistory" component={OrderHistory} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001), overflow:"hidden" } // ✅ cancels out the padding
+              }} />
+              <Stack.Screen name="OrderView" component={OrderView} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001), overflow:"hidden" } // ✅ cancels out the padding
+              }}  />
+              <Stack.Screen name="Category" component={Category} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001), overflow:"hidden" } // ✅ cancels out the padding
+              }} />
+              <Stack.Screen name="SubCategory" component={SubCategory} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001), overflow:"hidden" } // ✅ cancels out the padding
+              }}  />
+              <Stack.Screen name="Contact" component={Contact} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001), overflow:"hidden" } // ✅ cancels out the padding
+              }}  />
+              <Stack.Screen name="Search" component={Search} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001), overflow:"hidden" } // ✅ cancels out the padding
+              }}  />
+              <Stack.Screen name="AllCategoryView" component={AllCategoryView} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001), overflow:"hidden" } // ✅ cancels out the padding
+              }}  />
+              <Stack.Screen name="CategoryView" component={CategoryView} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001), overflow:"hidden" } // ✅ cancels out the padding
+              }}  />
+              <Stack.Screen name="ChooseLanguage" component={ChooseLanguage} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001), overflow:"hidden" } // ✅ cancels out the padding
+              }}  />
+              <Stack.Screen name="ChooseCurrency" component={ChooseCurrency} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001), overflow:"hidden" } // ✅ cancels out the padding
+              }}  />
+              <Stack.Screen name="ResetPassword" component={ResetPassword} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001), overflow:"hidden" } // ✅ cancels out the padding
+              }}  />
+              <Stack.Screen name="Wishlist" component={Wishlist} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001), overflow:"hidden" } // ✅ cancels out the padding
+              }}  />
+              <Stack.Screen name="MyAddress" component={MyAddress} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001), overflow:"hidden" } // ✅ cancels out the padding
+              }}  />
+              <Stack.Screen name="UserDetail" component={UserDetail} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001) , overflow:"hidden"} // ✅ cancels out the padding
+              }}  />
+              <Stack.Screen name="Rating" component={Rating} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001), overflow:"hidden" } // ✅ cancels out the padding
+              }}  />
+              <Stack.Screen name="Download" component={Download} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001), overflow:"hidden" } // ✅ cancels out the padding
+              }} />
+              <Stack.Screen name="ChangePassword" component={ChangePassword} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001) , overflow:"hidden"} // ✅ cancels out the padding
+              }}  />
+              <Stack.Screen name="Compare" component={Compare} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001) , overflow:"hidden"} // ✅ cancels out the padding
+              }}  />
+              <Stack.Screen name="Payment" component={Payment} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001), overflow:"hidden" } // ✅ cancels out the padding
+              }}  />
+              <Stack.Screen name="OrderPlace" component={OrderPlace} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001) , overflow:"hidden"} // ✅ cancels out the padding
+              }}  />
+              <Stack.Screen name="TabbyCheckoutScreen" component={TabbyCheckoutScreen} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001) , overflow:"hidden"} // ✅ cancels out the padding
+              }}  />
+              <Stack.Screen name="Notification" component={Notification} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001) , overflow:"hidden"} // ✅ cancels out the padding
+              }}  />
+              <Stack.Screen name="ReturnOrder" component={ReturnOrder} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001) , overflow:"hidden"} // ✅ cancels out the padding
+              }}  />
+              <Stack.Screen name="AddNewAddress" component={AddNewAddress} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001) , overflow:"hidden"} // ✅ cancels out the padding
+              }}  />
+              <Stack.Screen name="EditAddress" component={EditAddress} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001), overflow:"hidden" } // ✅ cancels out the padding
+              }}  />
+              <Stack.Screen name="SpecialProducts" component={SpecialProducts} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001), overflow:"hidden" } // ✅ cancels out the padding
+              }}  />
+              <Stack.Screen name="TamaraPaymentScreen" component={TamaraPaymentScreen} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001), overflow:"hidden" } // ✅ cancels out the padding
+              }}  />
+              <Stack.Screen name="LatestCategoryView" component={LatestCategoryView} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001), overflow:"hidden" } // ✅ cancels out the padding
+              }}  />
+              <Stack.Screen name="AccountDelete" component={AccountDelete} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001), overflow:"hidden" } // ✅ cancels out the padding
+              }}  />
+              <Stack.Screen name="AccountDeleteReview" component={AccountDeleteReview} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001), overflow:"hidden" } // ✅ cancels out the padding
+              }}  />
+              <Stack.Screen name="Brands" component={Brands} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001), overflow:"hidden" } // ✅ cancels out the padding
+              }}  />
+              <Stack.Screen name="Products" component={Products} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001), overflow:"hidden" } // ✅ cancels out the padding
+              }}  />
+              <Stack.Screen name="GlassTestScreen" component={GlassTestScreen} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001), overflow:"hidden" } // ✅ cancels out the padding
+              }}  />
               <Stack.Screen
                 name="PromoWebView"
                 component={PromoWebViewScreen}
@@ -249,9 +498,14 @@ const AppNavigator = () => {
                 options={({ route }) => ({
                   title: route.params?.title || 'Payment Details',
                   headerShown: false, ...TransitionPresets.ModalFadeTransition,
+                   cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001), overflow:"hidden" }
                 })}
               />
-              <Stack.Screen name="MoyasarPayment" component={MoyasarPaymentScreen} options={{ headerShown: false, ...TransitionPresets.ModalFadeTransition }} />
+              <Stack.Screen name="MoyasarPayment" component={MoyasarPaymentScreen} options={{
+                headerShown: false,
+                ...TransitionPresets.ModalFadeTransition,
+                cardStyle: { backgroundColor: "transparent", marginVertical: -(Platform.OS === 'ios' ? height * 0.08 : height * 0.0001), overflow:"hidden" } // ✅ cancels out the padding
+              }}  />
 
             </Stack.Navigator>
           </SafeAreaView>

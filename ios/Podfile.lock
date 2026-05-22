@@ -50,6 +50,13 @@ PODS:
     - ExpoModulesCore
   - ExpoGlassEffect (55.0.10):
     - ExpoModulesCore
+  - ExpoImage (55.0.10):
+    - ExpoModulesCore
+    - libavif/libdav1d
+    - SDWebImage (~> 5.21.0)
+    - SDWebImageAVIFCoder (~> 0.11.0)
+    - SDWebImageSVGCoder (~> 1.7.0)
+    - SDWebImageWebPCoder (~> 0.14.6)
   - ExpoImagePicker (55.0.18):
     - ExpoModulesCore
   - ExpoKeepAwake (55.0.6):
@@ -194,6 +201,23 @@ PODS:
   - hermes-engine (0.14.1):
     - hermes-engine/Pre-built (= 0.14.1)
   - hermes-engine/Pre-built (0.14.1)
+  - libavif/core (1.0.0)
+  - libavif/libdav1d (1.0.0):
+    - libavif/core
+    - libdav1d (>= 0.6.0)
+  - libdav1d (1.2.0)
+  - libwebp (1.5.0):
+    - libwebp/demux (= 1.5.0)
+    - libwebp/mux (= 1.5.0)
+    - libwebp/sharpyuv (= 1.5.0)
+    - libwebp/webp (= 1.5.0)
+  - libwebp/demux (1.5.0):
+    - libwebp/webp
+  - libwebp/mux (1.5.0):
+    - libwebp/demux
+  - libwebp/sharpyuv (1.5.0)
+  - libwebp/webp (1.5.0):
+    - libwebp/sharpyuv
   - LiquidGlass (0.7.1):
     - boost
     - DoubleConversion
@@ -3583,6 +3607,17 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
+  - SDWebImage (5.21.7):
+    - SDWebImage/Core (= 5.21.7)
+  - SDWebImage/Core (5.21.7)
+  - SDWebImageAVIFCoder (0.11.1):
+    - libavif/core (>= 0.11.0)
+    - SDWebImage (~> 5.10)
+  - SDWebImageSVGCoder (1.7.0):
+    - SDWebImage/Core (~> 5.6)
+  - SDWebImageWebPCoder (0.14.6):
+    - libwebp (~> 1.0)
+    - SDWebImage/Core (~> 5.17)
   - SocketRocket (0.7.1)
   - Yoga (0.0.0)
 
@@ -3599,6 +3634,7 @@ DEPENDENCIES:
   - ExpoFileSystem (from `../node_modules/expo-file-system/ios`)
   - ExpoFont (from `../node_modules/expo/node_modules/expo-font/ios`)
   - ExpoGlassEffect (from `../node_modules/expo-glass-effect/ios`)
+  - ExpoImage (from `../node_modules/expo-image/ios`)
   - ExpoImagePicker (from `../node_modules/expo-image-picker/ios`)
   - ExpoKeepAwake (from `../node_modules/expo/node_modules/expo-keep-awake/ios`)
   - ExpoLiquidGlass (from `../node_modules/expo-liquid-glass-view/ios`)
@@ -3720,11 +3756,18 @@ SPEC REPOS:
     - GoogleAppMeasurement
     - GoogleDataTransport
     - GoogleUtilities
+    - libavif
+    - libdav1d
+    - libwebp
     - lottie-ios
     - nanopb
     - PromisesObjC
     - razorpay-core-pod
     - razorpay-pod
+    - SDWebImage
+    - SDWebImageAVIFCoder
+    - SDWebImageSVGCoder
+    - SDWebImageWebPCoder
     - SocketRocket
 
 EXTERNAL SOURCES:
@@ -3752,6 +3795,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/expo/node_modules/expo-font/ios"
   ExpoGlassEffect:
     :path: "../node_modules/expo-glass-effect/ios"
+  ExpoImage:
+    :path: "../node_modules/expo-image/ios"
   ExpoImagePicker:
     :path: "../node_modules/expo-image-picker/ios"
   ExpoKeepAwake:
@@ -3979,6 +4024,7 @@ SPEC CHECKSUMS:
   ExpoFileSystem: e7075f07fdadcd6e55f2de1af6065faa097d41b4
   ExpoFont: e4fe17baebfe22a21576d6efd8f27b0dad06d653
   ExpoGlassEffect: 174b96e3503cdc0c507fc53699029299891bf5a7
+  ExpoImage: 03001a07148ac60eddfec82ab0e6e2eb439cc4e7
   ExpoImagePicker: a2166588c8ee535bac8d39fb61705fa2c30a7535
   ExpoKeepAwake: 5e391c2c712b7af91e044be8ab44b7f542d81f3c
   ExpoLiquidGlass: d7ef61b0c80ffa88e0555177729ab4ddcf81b092
@@ -4002,6 +4048,9 @@ SPEC CHECKSUMS:
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleUtilities: 00c88b9a86066ef77f0da2fab05f65d7768ed8e1
   hermes-engine: 843fb33177c93e77d37ebd1d62a5e9ea2e4742c8
+  libavif: 5f8e715bea24debec477006f21ef9e95432e254d
+  libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
+  libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
   LiquidGlass: 6cb7600ddd3fc862693445f5fcce44c988172a78
   LiquidGlassView: 08cbd333f5c99ea1dc36b7205e4a0d073a491c9c
   lottie-ios: 8f959969761e9c45d70353667d00af0e5b9cadb3
@@ -4099,6 +4148,10 @@ SPEC CHECKSUMS:
   RNScreens: 32d204189c8c164da3aef640b6d1d8721c25a86f
   RNSVG: 7d61168bfce19c34046118e5018e237d1cea1d3f
   RNWorklets: 6c4441bf4c01fd1598099789264481d199d18968
+  SDWebImage: e9fc87c1aab89a8ab1bbd74eba378c6f53be8abf
+  SDWebImageAVIFCoder: afe194a084e851f70228e4be35ef651df0fc5c57
+  SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
+  SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   Yoga: c7fcecd3a5864321db161a74cf2cd735f800c119
 

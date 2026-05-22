@@ -38,8 +38,8 @@ const AccountDelete = ({ navigation }) => {
 
     const showAlert = () => {
         Alert.alert(
-            isLabel?.termserrorheading,
             isLabel?.termserrorlabel,
+            isLabel?.termserrorheading,
             [
                 {
                     text: isLabel?.okbtn,

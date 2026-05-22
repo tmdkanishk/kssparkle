@@ -1,4 +1,4 @@
-import { View, Text, Pressable, Image, TextInput, FlatList, Modal, ScrollView, BackHandler, Keyboard, I18nManager } from 'react-native'
+import { View, Text, Pressable, Image, TextInput, FlatList, Modal, ScrollView, BackHandler, Keyboard, I18nManager, Platform, useWindowDimensions } from 'react-native'
 import React, { memo, useEffect, useRef, useState } from 'react'
 import { IconComponentArrowBackSharp, IconComponentSearch } from '../constants/IconComponents';
 import { useNavigation } from '@react-navigation/native';
@@ -10,6 +10,8 @@ import BackgroundWrapper from '../components/customcomponents/BackgroundWrapper'
 
 const CustomSearchBar = ({ setActiveSeachingScreen }) => {
     const navigation = useNavigation();
+
+        const { width, height } = useWindowDimensions(); // ✅ correct place
     const { Colors, EndPoint, GlobalText } = useCustomContext();
     const [query, setQuery] = useState('');
     const [result, setResults] = useState([]);
@@ -118,7 +120,7 @@ const CustomSearchBar = ({ setActiveSeachingScreen }) => {
     return (
         <>
         <BackgroundWrapper>
-        <View style={{ flex: 1, paddingHorizontal:12, paddingVertical:30}}>
+        <View style={{ flex: 1, paddingHorizontal:12, paddingVertical:30, marginTop: Platform.OS === 'ios' ? height * 0.03 : 0}}>
             <View style={{ flexDirection: 'row', width: '100%', gap: 10, alignItems: 'center', marginTop:20,}}>
                 <Pressable onPress={() => setActiveSeachingScreen(false)}>
                     <IconComponentArrowBackSharp />

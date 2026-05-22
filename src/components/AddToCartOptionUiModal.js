@@ -26,7 +26,7 @@ const AddToCartOptionUiModal = ({ isModalVisibal, closeModal, items, productId }
     const [upadtedPrice, setUpdatedPrice] = useState(null);
     const [upadtedSpecialPrice, setUpadtedSpecialPrice] = useState(null);
     const [upadtedProductInfo, setUpadtedProductInfo] = useState(null);
-    const { width } = Dimensions.get('window');
+    const { width, height } = Dimensions.get('window');
 
     const handleSelectedRadioOptions = (productOptionId, productOptionValueId) => {
         console.log("productOptionId, productOptionValueId", productOptionId, productOptionValueId);
@@ -110,7 +110,7 @@ const AddToCartOptionUiModal = ({ isModalVisibal, closeModal, items, productId }
                 setSuccessMessage(null);
             }}
         >
-            <View style={{ flex: 1 }}>
+            <View style={{ flex: 1, }}>
                 {/* OVERLAY */}
                 <TouchableOpacity
                     activeOpacity={1}
@@ -140,12 +140,13 @@ const AddToCartOptionUiModal = ({ isModalVisibal, closeModal, items, productId }
                     />
 
                     {/* STOP CLOSE ON CARD CLICK */}
-                    <TouchableOpacity activeOpacity={1}>
+                    <TouchableOpacity style={{height:height * 0.80}} activeOpacity={1}>
                         <ImageBackground
                             source={require("../assets/images/backgroundimage.png")}
                             resizeMode="cover"
                             style={{
                                 width: width * 0.80,   // 👈 THIS FIXES IT
+                                maxHeight: height * 0.85,
                                 borderRadius: 16,
                                 overflow: 'hidden',
                             }}
@@ -308,7 +309,7 @@ const AddToCartOptionUiModal = ({ isModalVisibal, closeModal, items, productId }
                                             return (
                                                 <View
                                                     key={option.product_option_id}
-                                                    style={{ marginBottom: 16 }}
+                                                    style={{ marginBottom: 16, }}
                                                 >
                                                     {/* Option Title */}
                                                     <Text

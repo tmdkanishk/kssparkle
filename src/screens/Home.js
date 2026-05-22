@@ -311,7 +311,7 @@ useFocusEffect(
     const HomeHeader = () => (
         <View style={{ marginTop: Platform.OS === "ios" ? 20 : 0 }}>
             <Animated.View style={{ opacity: hideAnimation }}>
-                <Pressable style={{ width: Platform.OS === "ios" ? '100%' : "100%", paddingHorizontal: Platform.OS === "ios" ? 5 : 20 }}>
+                <Pressable style={{ width: Platform.OS === "ios" ? '100%' : "100%", paddingHorizontal: Platform.OS === "ios" ?5 : 20, paddingTop:10 }}>
                     <PromoCard specialInfo={isLabel?.text?.specialinfo} specialInfo_2={isLabel?.text?.specialinfo_2} specialInfo_3={isLabel?.text?.specialinfo_3} specialInfo_4={isLabel?.text?.specialinfo_4} specialInfo_5={isLabel?.text?.specialinfo_5} textInfo={isLabel?.text?.textinfo} onSearchPress={toggleSearch} />
                 </Pressable>
             </Animated.View>

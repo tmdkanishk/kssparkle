@@ -3,7 +3,7 @@ import { View, ActivityIndicator, Alert } from "react-native";
 import { WebView } from "react-native-webview";
 
 const TamaraPaymentScreen = ({ route, navigation }) => {
-    const { checkoutUrl } = route.params;
+    const { checkoutUrl, orderId, orderStatusId  } = route.params;
 
     const handleNavigation = (navState) => {
         const { url } = navState;
@@ -12,7 +12,7 @@ const TamaraPaymentScreen = ({ route, navigation }) => {
 
         // ✅ Success
         if (url.includes("success")) {
-            navigation.replace("OrderSuccessScreen");
+            navigation.replace("OrderSuccessScreen", { orderId,  orderStatusId});
         }
 
         // ❌ Failure
@@ -31,7 +31,7 @@ const TamaraPaymentScreen = ({ route, navigation }) => {
     };
 
     return (
-        <View style={{ flex: 1, marginTop: 40, backgroundColor:'white' }}>
+        <View style={{ flex: 1, marginTop: 70, backgroundColor:'white', marginBottom:70 }}>
             <WebView
                 source={{ uri: checkoutUrl }}
                 onNavigationStateChange={handleNavigation}

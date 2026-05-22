@@ -46,6 +46,7 @@ const CategoryCard = ({ item, onPress }) => {
           textStyle={{ fontSize: 8, fontWeight: "600" }}
           style={{ width:150}}
           innerStyle={{ }}
+           onPress={() => onPress(item)}
         />
       </GlassContainer>
     </TouchableOpacity>

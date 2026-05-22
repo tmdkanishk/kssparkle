@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useCallback, useEffect } from "react";
 import {
   View,
   Text,
@@ -6,46 +6,120 @@ import {
   FlatList,
   Dimensions,
   Animated,
-  Image,
 } from "react-native";
 
 import LinearGradient from "react-native-linear-gradient";
 import PriceView from "./PriceView";
-// import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
-
+import { Image } from "expo-image";
 
 const { width } = Dimensions.get("window");
 
-const DEFAULT_IMAGE = require("../../assets/images/headphones.png");
+// Image area height — same fixed approach as working reference
+const IMAGE_HEIGHT = 380;
 
-const ProductImageCard = ({ headingTitle, images = [], price }) => {
-  console.log("ProductImageCard price", price)
-  const [activeIndex, setActiveIndex] = useState(0);
-  // const [imageLoading, setImageLoading] = useState(true);
+// =====================
+// Shimmer Placeholder
+// =====================
+const ShimmerPlaceholder = () => {
+  const shimmerAnim = useRef(new Animated.Value(0)).current;
 
+  useEffect(() => {
+    Animated.loop(
+      Animated.timing(shimmerAnim, {
+        toValue: 1,
+        duration: 1200,
+        useNativeDriver: true,
+      })
+    ).start();
 
-  const safeImages =
-    images && images.length > 0 ? images : [{ popup: null }];
+    return () => shimmerAnim.stopAnimation();
+  }, []);
 
-  const onViewableItemsChanged = useRef(({ viewableItems }) => {
-    if (viewableItems?.length > 0) {
-      setActiveIndex(viewableItems[0].index);
-    }
-  }).current;
-
-  const ImageItem = React.memo(({ uri }) => {
-    return (
-      <Image
-        source={uri ? { uri } : DEFAULT_IMAGE}
-        style={styles.image}
-        resizeMode="contain"
-        fadeDuration={200}   // 👈 Native smooth fade (Android) 
-      />
-    );
+  const translateX = shimmerAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [-width, width],
   });
 
+  return (
+    <View style={styles.shimmerWrapper}>
+      <View style={styles.shimmerBase} />
+      <Animated.View
+        style={[styles.shimmerHighlight, { transform: [{ translateX }] }]}
+      />
+    </View>
+  );
+};
 
+// =====================
+// Lazy Image Item
+// =====================
+const LazyImageItem = React.memo(({ uri, isVisible }) => {
+  const [shouldLoad, setShouldLoad] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
 
+  // Latch: once visible, always load
+  if (isVisible && !shouldLoad) {
+    setShouldLoad(true);
+  }
+
+  return (
+    // Full-width fixed-height box — exactly like the reference.
+    // contentFit="contain" handles every image shape automatically:
+    // portrait, landscape, tiny, huge — all centred, none overflow.
+    <View style={styles.imageBox}>
+      {!isLoaded && <ShimmerPlaceholder />}
+
+      {shouldLoad && (
+        <Image
+          source={uri ? { uri: decodeURI(uri) } : null}
+          style={[styles.image, !isLoaded && styles.hiddenImage]}
+          contentFit="contain"
+          fadeDuration={200}
+          onLoad={() => setIsLoaded(true)}
+        />
+      )}
+    </View>
+  );
+});
+
+// =====================
+// Main Component
+// =====================
+const ProductImageCard = ({ headingTitle, images = [], price }) => {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const scrollX = useRef(new Animated.Value(0)).current;
+
+  const safeImages =
+    images?.filter((item) => item?.popup) || [{ popup: null }];
+
+  // Mirror the reference: derive active index from scroll offset
+  const handleScroll = useCallback(
+    (event) => {
+      const offsetX = event.nativeEvent.contentOffset.x;
+      const index = Math.round(offsetX / width);
+      setActiveIndex(index);
+      scrollX.setValue(offsetX);
+    },
+    [scrollX]
+  );
+
+  const isSlideVisible = useCallback(
+    (index) =>
+      index === activeIndex ||
+      index === activeIndex - 1 ||
+      index === activeIndex + 1,
+    [activeIndex]
+  );
+
+  const renderItem = useCallback(
+    ({ item, index }) => (
+      // Each slide = full screen width, identical to reference renderItem
+      <View style={styles.slide}>
+        <LazyImageItem uri={item?.popup} isVisible={isSlideVisible(index)} />
+      </View>
+    ),
+    [isSlideVisible]
+  );
 
   return (
     <LinearGradient
@@ -55,8 +129,8 @@ const ProductImageCard = ({ headingTitle, images = [], price }) => {
       style={styles.card}
     >
       <Text style={styles.mainTitle}>{headingTitle}</Text>
-      <View style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row' }}>
-        {/* <Text style={{color:'white', fontSize:25}}>Price:  </Text> */}
+
+      <View style={styles.priceRow}>
         <PriceView
           priceHtml={price}
           textStyle={styles.price}
@@ -65,28 +139,28 @@ const ProductImageCard = ({ headingTitle, images = [], price }) => {
         />
       </View>
 
-
+      {/*
+        FlatList is edge-to-edge — no horizontal padding here.
+        pagingEnabled snaps by full `width`, same as reference.
+      */}
       <FlatList
         data={safeImages}
         keyExtractor={(_, index) => index.toString()}
         horizontal
         pagingEnabled
         showsHorizontalScrollIndicator={false}
-        onViewableItemsChanged={onViewableItemsChanged}
-        viewabilityConfig={{ viewAreaCoveragePercentThreshold: 50 }}
-        renderItem={({ item }) => (
-          <View style={styles.imageWrapper}>
-            <View style={styles.imageContainer}>
-              <ImageItem uri={item?.popup} />
-            </View>
-          </View>
-        )}
-
-        removeClippedSubviews={false}
-        windowSize={5}
-        initialNumToRender={images.length}
-        maxToRenderPerBatch={images.length}
-
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
+        renderItem={renderItem}
+        removeClippedSubviews
+        windowSize={3}
+        initialNumToRender={1}
+        maxToRenderPerBatch={2}
+        getItemLayout={(_, index) => ({
+          length: width,
+          offset: width * index,
+          index,
+        })}
       />
 
       {safeImages.length > 1 && (
@@ -94,28 +168,26 @@ const ProductImageCard = ({ headingTitle, images = [], price }) => {
           {safeImages.map((_, index) => (
             <View
               key={index}
-              style={[
-                styles.dot,
-                activeIndex === index && styles.activeDot,
-              ]}
+              style={[styles.dot, activeIndex === index && styles.activeDot]}
             />
           ))}
         </View>
       )}
-
-
     </LinearGradient>
   );
 };
 
+// =====================
+// Styles
+// =====================
 const styles = StyleSheet.create({
   card: {
     width: "100%",
     minHeight: 520,
     borderRadius: 35,
-    padding: 15,
     overflow: "hidden",
     marginTop: 10,
+    paddingTop: 15,
   },
 
   mainTitle: {
@@ -126,26 +198,74 @@ const styles = StyleSheet.create({
     marginTop: 25,
     width: "90%",
     alignSelf: "center",
-    marginRight: 15
+    paddingHorizontal: 15,
   },
 
-imageWrapper: {
-  width: width - 36,
-  height: 400,
-  justifyContent: "center",
-  alignItems: "center",
-},
+  priceRow: {
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
+    paddingHorizontal: 15,
+  },
 
-  // image: {
-  //   width: '100%',
-  //   height: 260,
-  // },
+  price: {
+    fontSize: 31,
+    fontWeight: "700",
+    color: "white",
+    marginLeft: "auto",
+  },
 
+  // Each FlatList page = full screen width (reference pattern)
+  slide: {
+    width: width,
+    alignItems: "center",
+    justifyContent: "center",
+  },
 
+  // Fixed width + height + contentFit="contain" = the reference approach.
+  // Works for any image shape: tall, wide, tiny, square.
+  imageBox: {
+    width: width,
+    height: IMAGE_HEIGHT,
+    alignItems: "center",
+    justifyContent: "center",
+    overflow: "hidden",
+  },
+
+  image: {
+    width: "100%",
+    height: "100%",
+  },
+
+  hiddenImage: {
+    opacity: 0,
+    position: "absolute",
+  },
+
+  // ---- Shimmer ----
+  shimmerWrapper: {
+    ...StyleSheet.absoluteFillObject,
+    overflow: "hidden",
+    backgroundColor: "rgba(255,255,255,0.08)",
+  },
+
+  shimmerBase: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(255,255,255,0.08)",
+  },
+
+  shimmerHighlight: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(255,255,255,0.18)",
+    width: "50%",
+  },
+
+  // ---- Dots ----
   dotsContainer: {
     flexDirection: "row",
     justifyContent: "center",
     marginBottom: 25,
+    marginTop: 6,
   },
 
   dot: {
@@ -161,33 +281,6 @@ imageWrapper: {
     width: 10,
     height: 10,
   },
-  price: {
-    fontSize: 31,
-    fontWeight: "700",
-    color: "white",
-    marginLeft: 'auto', // Push to right
-  },
-  imageContainer: {
-    width: '100%',
-    height: 360,
-    justifyContent: 'center',
-    alignItems: 'center',
-    // backgroundColor:'red'
-  },
-
-  shimmer: {
-    position: 'absolute',
-    width: '80%',
-    height: 260,
-    borderRadius: 16,
-  },
-
-  image: {
-    width: '100%',
-    height: "100%",
-  },
-
-
 });
 
 export default React.memo(ProductImageCard);

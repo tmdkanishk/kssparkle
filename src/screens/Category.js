@@ -236,6 +236,7 @@ const Category = ({ navigation }) => {
                   title="Special Offers"
                   textStyle={{ fontSize: 10, fontWeight: "600" }}
                   innerStyle={{ paddingHorizontal: 80 }}
+                  onPress={()=>{navigation.navigate('SpecialProducts')}}
                 />
               </GlassContainer>
 

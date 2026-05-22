@@ -249,10 +249,10 @@ const ChooseDeliveryAddress = () => {
             // console.log("defaultAddress", defaultAddress)
             // setDefaultAddress(defaultAddress);
             // setOtherAddresses(others);
-            setSelectShippingAddress(defaultAddress);
-            setSelectBillingAddress(defaultAddress);
+            // setSelectShippingAddress(defaultAddress);
+            // setSelectBillingAddress(defaultAddress);
         } catch (error) {
-            console.log("error:", error.response.data);
+            console.log("error:", error);
         }
     }
 

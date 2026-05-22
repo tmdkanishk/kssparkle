@@ -3,7 +3,7 @@ import { View, StyleSheet } from "react-native";
 import { TabbyPaymentWebView } from "tabby-react-native-sdk";
 
 const TabbyCheckoutScreen = ({ route, navigation }) => {
-  const { url } = route.params;
+  const { url, orderId, orderStatusId } = route.params;
 
   const handleResult = (result) => {
     console.log("Tabby result:", result);
@@ -12,7 +12,7 @@ const TabbyCheckoutScreen = ({ route, navigation }) => {
       case "authorized":
         // ✅ Payment approved
         // call backend verify / place order
-        navigation.replace("OrderConfirmation");
+        navigation.replace('OrderSuccessScreen', { orderId,  orderStatusId});
         break;
 
       case "rejected":

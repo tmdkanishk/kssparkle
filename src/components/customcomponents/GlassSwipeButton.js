@@ -1,5 +1,5 @@
 import React, { forwardRef, useImperativeHandle, useRef } from 'react';
-import { StyleSheet, View, Text, Image, I18nManager } from "react-native";
+import { StyleSheet, View, Text, Image, I18nManager, Platform, useWindowDimensions } from "react-native";
 import SwipeButton from "rn-swipe-button";
 import LinearGradient from "react-native-linear-gradient";
 // import Icon from "react-native-vector-icons/MaterialIcons";
@@ -10,6 +10,9 @@ const GlassSwipeButton = forwardRef(
   ({ title = "Slide to Confirm", onSwipeSuccess, onSwipeStart, onSwipeEnd }, ref) => {
 
     const swipeRef = useRef(null);
+
+    const { width, height } = useWindowDimensions(); // ✅ correct place
+    
 
     // expose reset method
     useImperativeHandle(ref, () => ({
@@ -33,7 +36,7 @@ const GlassSwipeButton = forwardRef(
     );
 
     return (
-      <View style={styles.wrapper}>
+      <View style={[styles.wrapper,  { marginBottom: Platform.OS === 'ios' ? height * 0.05 : 0 }]}>
         <LinearGradient
           colors={['rgba(255,255,255,1)', 'rgba(0,0,0,0.55)']}
           start={{ x: 0, y: 0 }}

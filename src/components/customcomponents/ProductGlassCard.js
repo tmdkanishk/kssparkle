@@ -109,7 +109,9 @@ const ProductGlassCard = ({ item, onPress, onAddToCart }) => {
                             <View style={{ marginLeft: 10 }}>
                                 <PriceView
                                     priceHtml={item?.price}
+                                    specialHtml={item?.special}
                                     textStyle={styles.price}
+                                    isRow={false}
                                 />
                             </View>
 
@@ -144,7 +146,7 @@ export default memo(ProductGlassCard);
 const styles = StyleSheet.create({
     cardWrapper: {
         width: "45%",
-        marginBottom: 15,
+        marginBottom: 10,
         // shadowColor: "#000",
         // shadowOffset: { width: 0, height: 4 },
         // shadowOpacity: 0.2,
@@ -152,7 +154,7 @@ const styles = StyleSheet.create({
         // elevation: 5,
     },
     glassBackground: {
-        height: 200,
+        height: 220,
         borderRadius: 20,
         // overflow: "hidden",
         // borderWidth: 0.6,
@@ -161,6 +163,7 @@ const styles = StyleSheet.create({
     },
     content: {
         flex: 1,
+
     },
     headerStrip: {
         flexDirection: "row",
@@ -189,11 +192,17 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
-        marginVertical: 5,
+        width:170,
+        // height:100,
+        // marginTop: 2,
+        // marginBottom: -2,
+        // borderWidth:1
+        // marginVertical: 5,
     },
     productImage: {
-        width: "90%",
-        height: "90%",
+        width: "100%",
+        height: "100%",
+        // borderWidth:1,
     },
     infoContainer: {
         flexDirection: "row",
@@ -209,7 +218,7 @@ const styles = StyleSheet.create({
         fontWeight: '500',
     },
     price: {
-        fontSize: 11,
+        fontSize: 14,
         fontWeight: "700",
         color: "white",
         marginLeft: 'auto', // Push to right

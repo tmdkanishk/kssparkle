@@ -77,8 +77,8 @@ const styles = StyleSheet.create({
   },
 
   image: {
-    width: 48,
-    height: 48,
+    width: 70,
+    height: 70,
     zIndex: 2, // ✅ on top of blur + gradient
   },
 

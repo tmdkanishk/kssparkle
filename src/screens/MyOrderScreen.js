@@ -49,6 +49,8 @@ const MyOrderScreen = ({ navigation }) => {
     const [isLogin, setLogin] = useState(false);
     const [loading, setLoading] = useState(false);
     const [isLabel, setLabel] = useState();
+    const [productText, setProductText] = useState();
+    const [trackText, setTrackText] = useState();
     const [orderHistoryData, setOrderHistoryData] = useState([]);
     const [loadingMore, setLoadingMore] = useState(false);
     const [hasMoreData, setHasMoreData] = useState(true);
@@ -73,6 +75,8 @@ const MyOrderScreen = ({ navigation }) => {
             setLoadingMore(true)
             const result = await getOrderHistoryAndText(page, EndPoint?.order_orderhistory);
             console.log("my order result", result)
+            setProductText(result?.text_product)
+            setTrackText(result?.track);
             setLabel(result?.text);
             setOrderHistoryData((prevData) => {
                 const existingIds = new Set(prevData.map(item => item.order_id));
@@ -150,7 +154,7 @@ const MyOrderScreen = ({ navigation }) => {
             <View style={styles.productRow}>
 
                 {/* STATIC IMAGE (API doesn't give image) */}
-                <LinearGradient
+                {/* <LinearGradient
                     colors={["#505050", "#808080"]}
                     start={{ x: 0.5, y: 0 }}
                     end={{ x: 0.5, y: 1 }}
@@ -160,7 +164,7 @@ const MyOrderScreen = ({ navigation }) => {
                         source={require("../assets/images/headphones.png")}
                         style={styles.productImage}
                     />
-                </LinearGradient>
+                </LinearGradient> */}
 
                 <View style={styles.productDetails}>
 
@@ -181,12 +185,12 @@ const MyOrderScreen = ({ navigation }) => {
 
                     {/* PRODUCTS COUNT */}
                     <Text style={styles.shareText}>
-                        {item.products} product(s)
+                        {item.products} {productText}
                     </Text>
 
                     <Text style={[styles.shareText]}>
                         {
-                            item?.total ? <PriceView priceHtml={item?.total} textStyle={{}} /> : ""
+                            item?.total ? <PriceView priceHtml={item?.total} textStyle={{ color: "white"}} /> : ""
                         }
                     </Text>
 
@@ -214,7 +218,7 @@ const MyOrderScreen = ({ navigation }) => {
                 </TouchableOpacity>
 
                 {item?.tracking === "1" ? <TouchableOpacity onPress={() => { navigation.navigate("TrackingDetails", {orderId: item?.order_id})}} style={styles.actionButton}>
-                    <Text style={styles.actionText}>{"Track"}</Text>
+                    <Text style={styles.actionText}>{trackText}</Text>
                 </TouchableOpacity> : <></>}
 
                 
@@ -290,6 +294,14 @@ const MyOrderScreen = ({ navigation }) => {
                             {/* <Text style={styles.sectionTitle}>Completed</Text> */}
                         </>
                     }
+
+                                          ListEmptyComponent={
+                                                <View style={{ width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center' }}>
+                                                    <View style={{ width: 200, height: 400, alignSelf: 'center' }}>
+                                                        <Image source={require('../assets/images/notfound.png')} style={{ width: '100%', height: '100%', resizeMode: 'contain', }} />
+                                                    </View>
+                                                </View>
+                                            }
                 />
             </BackgroundWrapper>
         </>
@@ -302,7 +314,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     header: {
-        marginTop: 60,
+        marginTop: 80,
         marginHorizontal: 20,
         flexDirection: "row",
         alignItems: "center",

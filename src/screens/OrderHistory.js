@@ -167,14 +167,14 @@ const OrderHistory = ({ navigation }) => {
 
                 {/* <View style={[commonStyles.bodyConatiner]}> */}
 
-                <View style={{ marginTop: 30, marginLeft: 10 }}>
+                <View style={{ marginTop: 50, marginLeft: 10 }}>
                     <CustomHeader pageName={isLabel?.orderhstrypagename_label} />
                 </View>
                 {/* <View style={{ paddingHorizontal: 12, backgroundColor: '#F5F5F5' }}>
                             <TopStatusBar onChangeCurren={handleOnChangeCurrency} onChangeLang={handleOnChangeLang} scrollY={scrollY} />
                         </View> */}
                 {/* <TitleBarSearchComponent titleName={isLabel?.orderhstrypagename_label} Component1={Cart} onClickBackIcon={() => navigation.goBack()} Component2={SearchbarComponent} /> */}
-                <TouchableOpacity onPress={toggleSearch} style={{ marginLeft: 40 }}>
+                {/* <TouchableOpacity onPress={toggleSearch} style={{ marginLeft: 40 }}>
                     <GlassContainer
                         style={{
                             flexDirection: "row",
@@ -185,11 +185,11 @@ const OrderHistory = ({ navigation }) => {
                         }}
                         borderRadius={12}
 
-                    >
+                    > */}
                         {/* <Text style={{ color: "#fff", fontSize: 13, marginLeft: 3, }}>Find Items</Text> */}
-                        <Image source={require("../assets/images/search.png")} style={{ width: 15, height: 15, tintColor: "#fff", marginTop: 3 }} />
+                        {/* <Image source={require("../assets/images/search.png")} style={{ width: 15, height: 15, tintColor: "#fff", marginTop: 3 }} />
                     </GlassContainer>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
 
                 <View style={{ paddingHorizontal: 12 }}>
                     <Animated.FlatList

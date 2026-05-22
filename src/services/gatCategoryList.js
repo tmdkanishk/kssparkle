@@ -20,8 +20,10 @@ export const gatCategoryList = async (page, category) => {
             currency: cur?.code,
             sessionid: sessionId,
             customer_id: user ? user: null,
-            // page:page
+            page:page
         }
+
+        console.log("category list body",body)
 
         const response = await axios.post(url, body, { headers: headers });
 

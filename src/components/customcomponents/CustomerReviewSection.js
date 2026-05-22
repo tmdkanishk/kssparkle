@@ -266,7 +266,7 @@ const CustomerReviewSection = ({ scrollY,
                                             {item.special && (
                                                 <PriceView
                                                     priceHtml={item.special}
-                                                    textStyle={{ fontWeight: '700' }}
+                                                    textStyle={{ fontWeight: '700',  color: "white" }}
                                                 />
                                             )}
                                             {/* <Text style={styles.price}>

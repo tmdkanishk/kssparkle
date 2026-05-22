@@ -36,10 +36,10 @@ const WishlistCard = ({ image, productName, price, discountPrice, onClickWishLis
                                 {/* product price */}
                                 {discountPrice ? <PriceView
                                     priceHtml={discountPrice}
-                                    textStyle={{}}
+                                    textStyle={{ color: "white"}}
                                 /> : <PriceView
                                     priceHtml={price}
-                                    textStyle={{}}
+                                    textStyle={{ color: "white"}}
                                 />}
                             </Text>
 
@@ -48,12 +48,12 @@ const WishlistCard = ({ image, productName, price, discountPrice, onClickWishLis
                                 discountPrice ? <View>
                                     <PriceView
                                         priceHtml={discountPrice}
-                                        textStyle={{}}
+                                        textStyle={{ color: "white"}}
                                     /> :
                                     {
                                         price ? <PriceView
                                             priceHtml={price}
-                                            textStyle={{}}
+                                            textStyle={{ color: "white"}}
                                         /> : null
                                     }
 

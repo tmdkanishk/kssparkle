@@ -154,7 +154,7 @@
 
 
 import React, { memo } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image, useWindowDimensions, Platform } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
 const GlassmorphismButton = ({ 
@@ -165,8 +165,18 @@ const GlassmorphismButton = ({
   disabled
 }) => {
 
+const { width, height } = useWindowDimensions(); // ✅ correct place
+
   return (
-    <TouchableOpacity onPress={onPress} activeOpacity={0.7}   style={[styles.buttonContainer, disabled && { opacity: 0.5 }]} >
+    <TouchableOpacity
+      onPress={onPress}
+      activeOpacity={0.7}
+      style={[
+        styles.buttonContainer,
+        disabled && { opacity: 0.5 },
+        { marginBottom: Platform.OS === 'ios' ? height * 0.03 : 0 } // 👈 dynamic style here
+      ]}
+    >
       <LinearGradient
         style={styles.gradient}
         colors={[
@@ -202,6 +212,7 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255,255,255,0.4)',
     overflow: 'hidden',
     alignSelf: 'center',
+  // marginBottom: Platform.OS === 'ios' ? height * 0.09 : 0,
   },
   gradient: {
     flex: 1,
