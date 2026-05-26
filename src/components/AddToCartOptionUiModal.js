@@ -27,6 +27,7 @@ const AddToCartOptionUiModal = ({ isModalVisibal, closeModal, items, productId }
     const [upadtedSpecialPrice, setUpadtedSpecialPrice] = useState(null);
     const [upadtedProductInfo, setUpadtedProductInfo] = useState(null);
     const { width, height } = Dimensions.get('window');
+      const [isQtySize, setQtySize] = useState("1");
 
     const handleSelectedRadioOptions = (productOptionId, productOptionValueId) => {
         console.log("productOptionId, productOptionValueId", productOptionId, productOptionValueId);
@@ -69,7 +70,8 @@ const AddToCartOptionUiModal = ({ isModalVisibal, closeModal, items, productId }
     const onClickAddToCartButtonWithOption = async (selectedRadioOptions, selectedCheckboxOptions, selectedSelectOptions) => {
         try {
             setLoading(true);
-            const results = await addToCartWithOptionCopy(productId, 1, selectedRadioOptions, selectedCheckboxOptions, selectedSelectOptions, EndPoint?.cart_add);
+            const results = await addToCartWithOptionCopy(productId, 1, selectedRadioOptions, selectedCheckboxOptions, selectedSelectOptions, "", EndPoint?.cart_add);
+            console.log("functions calling")
             if (results?.success) {
                 console.log("results", results?.success);
                 updateCartCount(results?.cartproductcount);
@@ -90,12 +92,13 @@ const AddToCartOptionUiModal = ({ isModalVisibal, closeModal, items, productId }
 
     const fetchProductInfo = async (key, value) => {
         try {
+                                                        // console.log("function fetchProductInfo getting called", response)
             const response = await getProductInfo(productId, isQtySize, key, value, EndPoint?.productdetails_loadprice);
             setUpdatedPrice(response?.price);
             setUpadtedSpecialPrice(response?.special);
             setUpadtedProductInfo(response?.productsdetail);
         } catch (error) {
-            console.log("error", error.response.data);
+            console.log("error", error);
         }
     }
 
@@ -367,6 +370,21 @@ const AddToCartOptionUiModal = ({ isModalVisibal, closeModal, items, productId }
                                         })}
 
                                     </View>
+
+                                     {/* SUCCESS MESSAGE */}
+                                    {isSuccessMessage && (
+                                        <Text
+                                            style={{
+                                                fontSize: 18,
+                                                fontWeight: "600",
+                                                color: Colors.success,
+                                                textAlign: "center",
+                                                marginTop: 16,
+                                            }}
+                                        >
+                                            {isSuccessMessage}
+                                        </Text>
+                                    )}
                                     <TouchableOpacity
                                         disabled={loading}
                                         onPress={() =>
@@ -390,20 +408,7 @@ const AddToCartOptionUiModal = ({ isModalVisibal, closeModal, items, productId }
                                         </Text>
                                     </TouchableOpacity>
 
-                                    {/* SUCCESS MESSAGE */}
-                                    {isSuccessMessage && (
-                                        <Text
-                                            style={{
-                                                fontSize: 18,
-                                                fontWeight: "600",
-                                                color: Colors.success,
-                                                textAlign: "center",
-                                                marginTop: 16,
-                                            }}
-                                        >
-                                            {isSuccessMessage}
-                                        </Text>
-                                    )}
+                                   
                                 </ScrollView>
                             </View>
                         </ImageBackground>

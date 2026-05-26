@@ -16,32 +16,32 @@ const OptionCard = ({ item, selected, onPress }) => {
     : require("../../assets/images/headphonesblack.png");
 
   return (
-    <GlassContainer padding={0.1} borderRadius={25}>
-    <TouchableOpacity
-      activeOpacity={0.85}
-      onPress={onPress}
-      style={[
-        styles.optionCard,
-        selected && styles.optionCardSelected,
-      ]}
-    >
-{item?.image ? (
-  <Image
-    source={{ uri: item.image }}
-    style={styles.optionImage}
-  />
-) : (
-  <View style={styles.optionFallback}>
-    <IconComponentImage
-      size={28}
-      color="black"
-    />
-  </View>
-)}
+    // <GlassContainer padding={0.1} borderRadius={25}>
+      <TouchableOpacity
+        activeOpacity={0.85}
+        onPress={onPress}
+        style={[
+          styles.optionCard,
+          selected && styles.optionCardSelected,
+        ]}
+      >
+        {item?.image ? (
+          <Image
+            source={{ uri: item.image }}
+            style={styles.optionImage}
+          />
+        ) : (
+          <View style={styles.optionFallback}>
+            <IconComponentImage
+              size={28}
+              color="black"
+            />
+          </View>
+        )}
 
-      <Text style={styles.optionLabel}>{item?.name}</Text>
-    </TouchableOpacity>
-   </GlassContainer>
+        <Text style={styles.optionLabel}>{item?.name}</Text>
+      </TouchableOpacity>
+    // </GlassContainer>
   );
 };
 
@@ -58,12 +58,12 @@ const styles = StyleSheet.create({
     padding: 8,
     borderRadius: 12,
     alignItems: 'center',
-   
+
     // borderColor: Colors.gray,
     backgroundColor: 'rgba(255,255,255,0.08)',
   },
   optionCardSelected: {
-     borderWidth: 1,
+    borderWidth: 1,
     borderColor: Colors.primary,
     backgroundColor: 'rgba(255,255,255,0.15)',
   },

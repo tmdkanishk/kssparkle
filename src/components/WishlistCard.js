@@ -12,7 +12,7 @@ const WishlistCard = ({ image, productName, price, discountPrice, onClickWishLis
     return (
         <GlassContainer padding={0.1}>
             <View style={{ flexDirection: 'row', paddingVertical: 10, borderColor: Colors.gray, borderRadius: 10, justifyContent: 'space-between', alignItems: 'center', opacity: isLoading ? 0.5 : 1 }}>
-                <TouchableOpacity onPress={() => onClickProduct()} style={{ width: '40%', height: 130, padding: 10, alignItems: 'center', justifyContent: 'center' }}>
+                <TouchableOpacity style={{ width: '40%', height: 130, padding: 10, alignItems: 'center', justifyContent: 'center' }}>
                     {
                         image ? (
                             <Image source={{ uri: image }} style={{ width: '100%', height: '100%', resizeMode: 'contain' }} />
@@ -24,7 +24,7 @@ const WishlistCard = ({ image, productName, price, discountPrice, onClickWishLis
                 </TouchableOpacity>
                 <View style={{ width: '60%', }}>
                     <View style={{ gap: 5 }}>
-                        <TouchableOpacity onPress={() => onClickProduct()}>
+                        <TouchableOpacity >
                             <Text style={commonStyles.text_lg}>
                                 {productName}
                             </Text>

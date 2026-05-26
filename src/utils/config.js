@@ -23,8 +23,12 @@ export const API_KEY = "qclJaSv7sE2A6Y670qydtwv2kJm5nVZ0bhOXPoWIfQHP0fts5GTmQLKY
 // export const BASE_URL = "https://dev.sparkleksa.com/index.php?route=extension/";
 // export const API_KEY = "qclJaSv7sE2A6Y670qydtwv2kJm5nVZ0bhOXPoWIfQHP0fts5GTmQLKYiTLQyC0nLGEhKev7tIhtIRhxKVeX4cV4LUkdfxdaVhrFrUFsm20jrYLKMzT3T8HuUDB1f0hz1mQkoFb0hJxDgLkFVkFqbp14Khyeik1pZRol2bSO0eczvDb10BYYtxoWQ5c2jfXGmXAjJsNYuWiuSckKzdA2v1qsi45EhxuEQpWRLvqMthlHY6n7GTqP24roItjYbSbM";
 
+
+//<---------------------- TEST KEY ------------------------>
 // export const MOYASAR3_PUBLIC_KEY = "pk_test_7vVptpmr8sepK4fUNnVyyrUs31F14vsv5Wuuy3t7"
 
+
+//<--------------------- LIVE KEY ----------------------->
 export const MOYASAR3_PUBLIC_KEY = "pk_live_Mijc7Htr4NhyQG27DUdp9DgALzzWSN4yhXS5eH8M"
 
 // export const APPLE_PUBLIC_KEY = "pk_live_Mijc7Htr4NhyQG27DUdp9DgALzzWSN4yhXS5eH8M"

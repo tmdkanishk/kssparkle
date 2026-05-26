@@ -8,7 +8,7 @@ export const addToCartWithOptionCopy = async (productid, quantity, radioData, ch
         const url = `${BASE_URL}${cart_add}`;
         const lang = await _retrieveData('SELECT_LANG');
         const cur = await _retrieveData('SELECT_CURRENCY');
-        const user = await _retrieveData("USER");
+        const user = await _retrieveData("CUSTOMER_ID");
         const sessionId = await _retrieveData('SESSION_ID');
 
         const headers = {
@@ -19,17 +19,20 @@ export const addToCartWithOptionCopy = async (productid, quantity, radioData, ch
         const body = {
             code: lang?.code,
             currency: cur?.code,
-            customer_id: user ? user[0]?.customer_id : null,
+            customer_id: user ? user : null,
             product_id: productid,
             sessionid: sessionId,
             quantity: quantity ? quantity : "1",
         }
 
       const mergedObj = { ...body, ...radioData, ...checkboxData, ...selectData, ...textAreaData };
+
+                           console.log("functions calling", mergedObj)
+
+         console.log("function is hitting", url, mergedObj)
         
         const response = await axios.post(url, mergedObj, { headers: headers });
 
-         console.log("function is hitting", url, mergedObj)
 
         if (response.status === HttpStatusCode.Ok) {
             await _storeData("CART_PRODUCT_COUNT", response.data?.cartproductcount);
@@ -38,6 +41,7 @@ export const addToCartWithOptionCopy = async (productid, quantity, radioData, ch
         }
 
     } catch (error) {
+        console.log("error in addToCartWithOptionCopy", error.response.data)
         throw error;
     }
 

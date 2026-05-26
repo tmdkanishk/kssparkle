@@ -406,7 +406,7 @@ const AddNewAddress = ({ navigation }) => {
                         <CustomHeader pageName={isLabel?.addrsadd_heading} />
                         <View style={{ marginBottom: 20 }}></View>
 
-                        <ScrollView keyboardShouldPersistTaps='always' showsVerticalScrollIndicator={false}>
+                        <ScrollView  keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
                             <View style={{ gap: 20, width: '100%', paddingHorizontal: 12, marginVertical: 12 }}>
 
                                 <InputBox
@@ -457,7 +457,6 @@ const AddNewAddress = ({ navigation }) => {
                                     label={isLabel?.addraddrs1_label}
                                     apiKey={"AIzaSyAU0LmfMrzU4oiUvTn3c2UhFs6y-DPQsFU"}
                                 />
-
                                 {/* <MapView
                                     style={{ flex: 1, height: 200 }}
                                     onPress={(e) => {
@@ -821,6 +820,8 @@ const AddNewAddress = ({ navigation }) => {
                                 <TouchableOpacity onPress={onAddAdreesBtn} style={{ width: '100%', height: 50, borderRadius: 12, alignSelf: 'center', justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.primary, marginBottom: 20 }}>
                                     <Text style={commonStyles.textWhite_lg}>{isLabel?.addrnewaddrsbtn_label}</Text>
                                 </TouchableOpacity>
+
+                                <View style={{marginBottom:50}}/>
 
                             </View>
                         </ScrollView>

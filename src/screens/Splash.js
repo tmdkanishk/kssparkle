@@ -20,7 +20,7 @@ const Splash = ({ navigation }) => {
 
     console.log("SPLASH SCREEN LOADED")
     // const { Colors, Features, EndPoint, GlobalText } = useCustomContext();
-      const { Colors, EndPoint, GlobalText } = useCustomContext();
+    const { Colors, EndPoint, GlobalText } = useCustomContext();
 
     const [isWidth, setWidth] = useState(200);
     const [isHeight, setHeight] = useState(200);
@@ -49,7 +49,7 @@ const Splash = ({ navigation }) => {
                     }
                 }); */
 
-                
+
         // getMessaging(getApp()).onMessage(async (remoteMessage) => {
         //     console.log("remote Message foreground 2", remoteMessage);
         //     Alert.alert(
@@ -125,7 +125,7 @@ const Splash = ({ navigation }) => {
                 if (!isMounted) return;
 
                 // 🔥 MARK APP READY HERE (before navigation)
-                 setAppReady(true);
+                setAppReady(true);
 
                 // 🔥 Decision Logic
                 if (!isLanguageAndCurrency) {
@@ -299,16 +299,31 @@ const Splash = ({ navigation }) => {
 
     return (
 
-      
-<View style={styles.container}>
-  <Image
-    source={require('../assets/sparkle_logo.gif')}
-    style={styles.gif}
-    resizeMode="cover"
-  />
 
-  <View style={styles.overlay} />
-</View>
+        <View style={styles.container}>
+
+            {Platform.OS === 'ios' ? (
+                <Image
+                    source={require('../assets/sparkle_logo.gif')}
+                    style={styles.gif}
+                    resizeMode="cover"
+                />
+            ) : (
+                <Video
+                    source={require('../assets/sparkle_logo.mp4')}
+                    style={styles.gif}
+                    resizeMode="cover"
+                    repeat
+                    muted
+                    paused={false}
+                    playInBackground={false}
+                    playWhenInactive={false}
+                />
+            )}
+
+
+            <View style={styles.overlay} />
+        </View>
 
     )
 }
@@ -317,18 +332,18 @@ export default Splash
 
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+    container: {
+        flex: 1,
+    },
 
-  gif: {
-    width: '100%',
-    height: '100%',
-    position: 'absolute',
-  },
+    gif: {
+        width: '100%',
+        height: '100%',
+        position: 'absolute',
+    },
 
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.4)', // adjust darkness here
-  },
+    overlay: {
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: 'rgba(0,0,0,0.4)', // adjust darkness here
+    },
 });

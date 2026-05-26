@@ -9,6 +9,7 @@ import { _retrieveData } from "../utils/storage";
 import axios, { HttpStatusCode } from "axios";
 import { checkAutoLogin } from "../utils/helpers";
 import NotificationAlert from "../components/NotificationAlert";
+import InAppReview from "react-native-in-app-review"; // 👈 Handles both iOS & Android automatically
 
 const OrderSuccessScreen = ({ navigation, route }) => {
     const { orderId, orderStatusId } = route.params;
@@ -18,7 +19,7 @@ const OrderSuccessScreen = ({ navigation, route }) => {
 
     const [loading, setLoading] = useState();
     const [isLabel, setLabel] = useState();
-    const [feedbackScanner, setFeedbackScanner] = useState();
+    // const [feedbackScanner, setFeedbackScanner] = useState();
 
     useEffect(() => {
         checkAutoLogin();
@@ -33,6 +34,23 @@ const OrderSuccessScreen = ({ navigation, route }) => {
         const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
         return () => backHandler.remove();
     }, [navigation]);
+
+     // 👈 Created a separate function to safely handle store reviews
+    const triggerStoreReviewFlow = async () => {
+        const isAvailable = InAppReview.isAvailable();
+        
+        if (!isAvailable) {
+            console.log("In-app review not supported on this device/environment.");
+            return;
+        }
+
+        try {
+            const hasFlowFinishedSuccessfully = await InAppReview.RequestInAppReview();
+            console.log("In-App Review triggered successfully:", hasFlowFinishedSuccessfully);
+        } catch (error) {
+            console.error("In-App Review Error:", error);
+        }
+    };
 
     const fetchOrderConfirmationText = async () => {
         try {
@@ -61,7 +79,9 @@ const OrderSuccessScreen = ({ navigation, route }) => {
 
             if (response.status === HttpStatusCode.Ok) {
                 setLabel(response?.data?.text);
-                setFeedbackScanner(response?.data?.forea_review_qr_image);
+                // setFeedbackScanner(response?.data?.forea_review_qr_image);
+                 // 👈 Triggers immediately after your successful API call finishes
+                triggerStoreReviewFlow(); 
             }
         } catch (error) {
             alert(GlobalText?.extrafield_somethingwrong);
@@ -164,14 +184,14 @@ const OrderSuccessScreen = ({ navigation, route }) => {
                     </GlassContainer>
 
                     {/* Feedback QR */}
-                    {feedbackScanner && (
+                    {/* {feedbackScanner && (
                         <View style={{ width: '100%', height: 150, marginVertical: 20 }}>
                             <Image
                                 source={{ uri: feedbackScanner }}
                                 style={{ width: '100%', height: '100%', resizeMode: 'contain' }}
                             />
                         </View>
-                    )}
+                    )} */}
 
                 </View>
             </BackgroundWrapper>

@@ -703,6 +703,8 @@ const EditAddress = ({ navigation, route }) => {
                                         <Text style={commonStyles.textWhite_lg}>{isLabel?.addreditbtn_label}</Text>
                                     </TouchableOpacity>
 
+                                                <View style={{marginBottom:50}}/>
+
                                 </View>
 
                             </ScrollView>

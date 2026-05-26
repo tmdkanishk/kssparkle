@@ -2200,6 +2200,8 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
+  - react-native-in-app-review (4.4.2):
+    - React-Core
   - react-native-maps (1.27.2):
     - react-native-maps/Maps (= 1.27.2)
   - react-native-maps/Generated (1.27.2):
@@ -3689,6 +3691,7 @@ DEPENDENCIES:
   - React-Mapbuffer (from `../node_modules/react-native/ReactCommon`)
   - React-microtasksnativemodule (from `../node_modules/react-native/ReactCommon/react/nativemodule/microtasks`)
   - react-native-image-picker (from `../node_modules/react-native-image-picker`)
+  - react-native-in-app-review (from `../node_modules/react-native-in-app-review`)
   - react-native-maps (from `../node_modules/react-native-maps`)
   - react-native-moyasar-sdk (from `../node_modules/react-native-moyasar-sdk`)
   - react-native-razorpay (from `../node_modules/react-native-razorpay`)
@@ -3904,6 +3907,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/react/nativemodule/microtasks"
   react-native-image-picker:
     :path: "../node_modules/react-native-image-picker"
+  react-native-in-app-review:
+    :path: "../node_modules/react-native-in-app-review"
   react-native-maps:
     :path: "../node_modules/react-native-maps"
   react-native-moyasar-sdk:
@@ -4096,6 +4101,7 @@ SPEC CHECKSUMS:
   React-Mapbuffer: 2475460b57076a927c3817517d540f2fe3f95022
   React-microtasksnativemodule: 93566ea522d50f3f2a8187eb3aa0a547896a34a5
   react-native-image-picker: b99d9c1f2ddbef491eb49e1103e5c2ce78b9ab37
+  react-native-in-app-review: bb863fb300f2c716479c4285201df746cf5e20a2
   react-native-maps: 0272104f074a1397e44464ef7692d6fa0ec26aaa
   react-native-moyasar-sdk: 3fae0e95ee250166881c00a2238845ade29d91da
   react-native-razorpay: 41a407f4367b5b0e1bba89a77f9cab1918860844

@@ -8,7 +8,7 @@ import { useNavigation } from "@react-navigation/native";
 import { LiquidGlassView } from "@callstack/liquid-glass";
 
 const width = Dimensions.get('window')
-const PromoCard = ({ onSearchPress, textInfo, specialInfo, specialInfo_2,  specialInfo_3,  specialInfo_4, specialInfo_5 }) => {
+const PromoCard = ({ onSearchPress, textInfo, specialInfo, specialInfo_2, specialInfo_3, specialInfo_4, specialInfo_5 }) => {
   const navigation = useNavigation();
   return (
     <LinearGradient
@@ -19,14 +19,27 @@ const PromoCard = ({ onSearchPress, textInfo, specialInfo, specialInfo_2,  speci
     >
 
       <View style={styles.videoWrapper}>
-        <Video
-          source={require("../../assets/videowork.mp4")}
-          style={styles.video}
-          resizeMode="contain"
-          repeat
-          muted
-          isLooping={true}
-        />
+
+        {Platform.OS === 'ios' ? (
+          <Video
+            source={require("../../assets/videowork.mp4")}
+            style={styles.video}
+            resizeMode="contain"
+            repeat
+            muted
+            isLooping={true}
+          />
+        ) : (
+          <Video
+            source={require("../../assets/videowork_android.mp4")}
+            style={styles.video}
+            resizeMode="contain"
+            repeat
+            muted
+            isLooping={true}
+          />
+        )}
+
       </View>
 
 
