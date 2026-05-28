@@ -655,10 +655,14 @@ const MyAccountScreen = ({ navigation }) => {
             <TouchableOpacity onPress={() => { navigation.navigate("Notification") }}>
               <AccountItem image={require("../assets/images/notification.png")} label={isLabel?.notification} />
             </TouchableOpacity>
-            {/* 
-            <TouchableOpacity onPress={() => { navigation.navigate("ChooseDeliveryAddress") }}>
+            
+            <TouchableOpacity  onPress={() => {
+    navigation.navigate("ChooseDeliveryAddress", {
+      hideProceedButton: true,
+    });
+  }}>
               <AccountItem image={require("../assets/images/address.png")} label={isLabel?.acntdbmyaddrs_label} />
-            </TouchableOpacity> */}
+            </TouchableOpacity>
 
             <TouchableOpacity onPress={() => { navigation.navigate("OrderHistory") }}>
               <AccountItem image={require("../assets/images/wallet.png")} label={isLabel?.preparing} />
@@ -807,147 +811,156 @@ const MyAccountScreen = ({ navigation }) => {
           visible={modalVisible}
           onRequestClose={() => setModalVisible(false)}
         >
+          {/* 1. Remove KeyboardAvoidingView entirely for Android - use View instead */}
+          <View style={{ flex: 1 }}>
 
-          <KeyboardAvoidingView
-            style={{ flex: 1 }}
-            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-          >
+            {/* 2. Replace backdrop TouchableOpacity with a View — avoids gesture conflict */}
+            <View
+              style={{
+                flex: 1,
+                backgroundColor: 'rgba(0,0,0,0.6)',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              <BlurView
+                style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+                tint="dark"
+                intensity={75}
+              />
 
-            <View style={{ flex: 1 }}>
+              {/* 3. Backdrop tap area — sits behind the card only */}
               <TouchableOpacity
                 activeOpacity={1}
                 onPress={() => { setModalVisible(false); setEnableUpdate(false); }}
-                style={{
-                  flex: 1,
-                  backgroundColor: 'rgba(0,0,0,0.6)',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
+                style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+              />
+
+              {/* 4. Card — no TouchableOpacity wrapper needed */}
+              <KeyboardAvoidingView
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                style={{ width: width * 0.80, borderRadius: 16, overflow: 'hidden' }}
               >
-
-                <BlurView
-                  style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                  }}
-                  tint="dark"      // Matches blurType="dark"
-                  intensity={75}   // Roughly matches blurAmount={15}. Adjust between 60-90 to taste.
-                />
-
-                <TouchableOpacity activeOpacity={1}>
-                  <ImageBackground
-                    source={require('../assets/images/backgroundimage.png')}
-                    resizeMode="cover"
-                    style={{
-                      width: width * 0.80,   // 👈 THIS FIXES IT
-                      borderRadius: 16,
-                      overflow: 'hidden',
-                    }}
-                  >
-
-                    <View style={{ width: '100%', height: isLandscape && 350, paddingHorizontal: 12, paddingBottom: isLandscape ? 10 : 30, borderRadius: 10, paddingTop: isLandscape && 10, backgroundColor: "rgba(0,0,0,0.5)" }}>
-                      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginVertical: 12, }}>
-                        <Text style={commonStyles.heading}>{userInfoLabel?.userdetailpersnl_label}</Text>
-                        <TouchableOpacity onPress={() => { setModalVisible(false); setEnableUpdate(false); }}>
-                          <IconComponentClose />
-                        </TouchableOpacity>
-                      </View>
-                      <ScrollView showsVerticalScrollIndicator={false}>
-                        {
-                          enableUpdate ? (
-                            <View style={{ gap: 10 }}>
-                              <View style={{ marginTop: 1, flexDirection: 'row' }}>
-                                <TouchableOpacity onPress={pickImage} style={{
-                                  width: 80, height: 80, borderRadius: 40, borderWidth: 1, alignItems: 'center', justifyContent: 'center', borderColor: Colors?.border_color,
-                                }}>
-                                  {
-                                    formData?.image ? <Image source={{ uri: `${formData?.image}?t=${new Date().getTime()}` }} style={{ width: 80, height: 80, resizeMode: 'cover', borderRadius: 40 }} /> : <IconComponentImage />
-                                  }
-                                </TouchableOpacity>
-
-                                <View style={{ marginTop: 40, marginLeft: -12 }}>
-                                  <IconComponentEdit color={Colors?.primary} size={28} />
-                                </View>
-                              </View>
-
-                              <InputBox label={userInfoLabel?.userdetailfname_label}
-                                placeholder={userInfoLabel?.userdetailfname_label}
-                                inputStyle={{ w: '100%', h: 50, ph: 20, }}
-                                InputType="text"
-                                textVlaue={formData?.firstname}
-                                onChangeText={(value) => handleInputChange('firstname', value)}
-                                isRequired={true}
-                                ErrorMessage={errors?.firstname}
-                              />
-                              <InputBox label={userInfoLabel?.userdetaillname_label}
-                                placeholder={userInfoLabel?.userdetaillname_label}
-                                inputStyle={{ w: '100%', h: 50, ph: 20, }}
-                                InputType="text"
-                                textVlaue={formData?.lastname}
-                                onChangeText={(value) => handleInputChange('lastname', value)}
-                                isRequired={true}
-                                ErrorMessage={errors?.lastname}
-                              />
-                              <InputBox label={userInfoLabel?.userdetailphn_label}
-                                placeholder={userInfoLabel?.userdetailphn_label}
-                                inputStyle={{ w: '100%', h: 50, ph: 20, }}
-                                InputType="numeric"
-                                textVlaue={formData?.telephone}
-                                onChangeText={(value) => handleInputChange('telephone', value)}
-                                //  ErrorMessage={errors?.telephone}
-                                editable={false}
-
-                              // isRequired={true}
-                              />
-
-                              <InputBox label={userInfoLabel?.userdetailemail_label}
-                                placeholder={userInfoLabel?.userdetailemail_label}
-                                inputStyle={{ w: '100%', h: 50, ph: 20, }}
-                                InputType="email"
-                                textVlaue={formData?.email}
-                                onChangeText={(value) => handleInputChange('email', value)}
-                                isRequired={true}
-                                ErrorMessage={errors?.email}
-                              />
-                              <TouchableOpacity
-                                onPress={() => onClickUpdateProfile()}
-                                style={{ backgroundColor: Colors.primary, gap: 10, padding: 10, borderRadius: 10, justifyContent: 'center', alignItems: 'center', height: isLandscape && 50 }}>
-                                <Text style={commonStyles.textWhite_lg}>{isLabel?.acntdbupdatebtn_label}</Text>
-                              </TouchableOpacity>
-                            </View>
-                          ) : <View style={{ gap: 10, }}>
-                            <ImageContainer img={{ uri: `${userInfo?.image}?t=${new Date().getTime()}` }} imgStatus={userInfo?.image ? true : false} />
-
-                            <View>
-                              <Text style={commonStyles.text_lg}>{userInfo?.firstname} {userInfo?.lastname}</Text>
-                              {userInfo?.telephone && <Text style={commonStyles.text_lg}>{userInfo?.telephone}</Text>}
-                              <Text style={commonStyles.text_lg}>{userInfo?.email}</Text>
-                            </View>
-                            <TouchableOpacity
-                              onPress={() => setEnableUpdate(true)}
-                              style={{ backgroundColor: Colors.primary, gap: 10, padding: 10, borderRadius: 10, justifyContent: 'center', alignItems: 'center', flexDirection: 'row' }}>
-                              <Text style={commonStyles.textWhite_lg}>{isLabel?.acntdbeditbtn_label}</Text>
-                              <IconComponentEdit size={20} color={Colors.white} />
-                            </TouchableOpacity>
-
-                          </View>
-                        }
-                      </ScrollView>
+                <ImageBackground
+                  source={require('../assets/images/backgroundimage.png')}
+                  resizeMode="cover"
+                  style={{ width: '100%', borderRadius: 16, overflow: 'hidden' }}
+                >
+                  <View style={{
+                    width: '100%',
+                    height: isLandscape ? 250 : undefined,
+                    maxHeight: height * 0.70,   // 👈 apply to both platforms, constrains card so KAV has room
+                    paddingHorizontal: 12,
+                    paddingBottom: isLandscape ? 10 : 30,
+                    borderRadius: 10,
+                    paddingTop: isLandscape ? 10 : undefined,
+                    backgroundColor: "rgba(0,0,0,0.5)"
+                  }}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginVertical: 12 }}>
+                      <Text style={commonStyles.heading}>{userInfoLabel?.userdetailpersnl_label}</Text>
+                      <TouchableOpacity onPress={() => { setModalVisible(false); setEnableUpdate(false); }}>
+                        <IconComponentClose />
+                      </TouchableOpacity>
                     </View>
-                  </ImageBackground>
-                </TouchableOpacity>
 
-              </TouchableOpacity>
+                    {/* 5. ScrollView with Android scroll fix */}
+                    <ScrollView
+                      showsVerticalScrollIndicator={false}
+                      keyboardShouldPersistTaps="handled"
+                      nestedScrollEnabled={true}
+                      contentContainerStyle={{
+                        flexGrow: 1,
+                        paddingBottom: Platform.OS === 'android' ? 10 : 0  // 👈 adjust this value
+                      }}
+                    >
+                      {
+                        enableUpdate ? (
+                          <View style={{ gap: 10 }}>
+                            <View style={{ marginTop: 1, flexDirection: 'row' }}>
+                              <TouchableOpacity onPress={pickImage} style={{
+                                width: 80, height: 80, borderRadius: 40, borderWidth: 1, alignItems: 'center', justifyContent: 'center', borderColor: Colors?.border_color,
+                              }}>
+                                {
+                                  formData?.image ? <Image source={{ uri: `${formData?.image}?t=${new Date().getTime()}` }} style={{ width: 80, height: 80, resizeMode: 'cover', borderRadius: 40 }} /> : <IconComponentImage />
+                                }
+                              </TouchableOpacity>
+
+                              <View style={{ marginTop: 40, marginLeft: -12 }}>
+                                <IconComponentEdit color={Colors?.primary} size={28} />
+                              </View>
+                            </View>
+
+                            <InputBox label={userInfoLabel?.userdetailfname_label}
+                              placeholder={userInfoLabel?.userdetailfname_label}
+                              inputStyle={{ w: '100%', h: 50, ph: 20, }}
+                              InputType="text"
+                              textVlaue={formData?.firstname}
+                              onChangeText={(value) => handleInputChange('firstname', value)}
+                              isRequired={true}
+                              ErrorMessage={errors?.firstname}
+                            />
+                            <InputBox label={userInfoLabel?.userdetaillname_label}
+                              placeholder={userInfoLabel?.userdetaillname_label}
+                              inputStyle={{ w: '100%', h: 50, ph: 20, }}
+                              InputType="text"
+                              textVlaue={formData?.lastname}
+                              onChangeText={(value) => handleInputChange('lastname', value)}
+                              isRequired={true}
+                              ErrorMessage={errors?.lastname}
+                            />
+                            <InputBox label={userInfoLabel?.userdetailphn_label}
+                              placeholder={userInfoLabel?.userdetailphn_label}
+                              inputStyle={{ w: '100%', h: 50, ph: 20, }}
+                              InputType="numeric"
+                              textVlaue={formData?.telephone}
+                              onChangeText={(value) => handleInputChange('telephone', value)}
+                              //  ErrorMessage={errors?.telephone}
+                              editable={false}
+
+                            // isRequired={true}
+                            />
+
+                            <InputBox label={userInfoLabel?.userdetailemail_label}
+                              placeholder={userInfoLabel?.userdetailemail_label}
+                              inputStyle={{ w: '100%', h: 50, ph: 20, }}
+                              InputType="email"
+                              textVlaue={formData?.email}
+                              onChangeText={(value) => handleInputChange('email', value)}
+                              isRequired={true}
+                              ErrorMessage={errors?.email}
+                            />
+                            <TouchableOpacity
+                              onPress={() => onClickUpdateProfile()}
+                              style={{ backgroundColor: Colors.primary, gap: 10, padding: 10, borderRadius: 10, justifyContent: 'center', alignItems: 'center', height: isLandscape && 50 }}>
+                              <Text style={commonStyles.textWhite_lg}>{isLabel?.acntdbupdatebtn_label}</Text>
+                            </TouchableOpacity>
+                          </View>
+                        ) : <View style={{ gap: 10, }}>
+                          <ImageContainer img={{ uri: `${userInfo?.image}?t=${new Date().getTime()}` }} imgStatus={userInfo?.image ? true : false} />
+
+                          <View>
+                            <Text style={commonStyles.text_lg}>{userInfo?.firstname} {userInfo?.lastname}</Text>
+                            {userInfo?.telephone && <Text style={commonStyles.text_lg}>{userInfo?.telephone}</Text>}
+                            <Text style={commonStyles.text_lg}>{userInfo?.email}</Text>
+                          </View>
+                          <TouchableOpacity
+                            onPress={() => setEnableUpdate(true)}
+                            style={{ backgroundColor: Colors.primary, gap: 10, padding: 10, borderRadius: 10, justifyContent: 'center', alignItems: 'center', flexDirection: 'row' }}>
+                            <Text style={commonStyles.textWhite_lg}>{isLabel?.acntdbeditbtn_label}</Text>
+                            <IconComponentEdit size={20} color={Colors.white} />
+                          </TouchableOpacity>
+
+                        </View>
+                      }
+                    </ScrollView>
+
+                  </View>
+                </ImageBackground>
+              </KeyboardAvoidingView>
+
             </View>
-
-          </KeyboardAvoidingView>
-
-
+          </View>
         </Modal>
-
       </BackgroundWrapper>
       <SuccessModal
         isSuccessMessage={isSuccessMgs}

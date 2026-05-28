@@ -58,6 +58,7 @@ const LocationPicker = ({
 
 
     const fetchAddress = async (lat, lng) => {
+        console.log("function working")
         try {
 
             const url =
@@ -92,7 +93,7 @@ const LocationPicker = ({
                 inputStyle={{ w: '100%', h: 50, ph: 20 }}
                 InputType={'numeric'}
                 onChangeText={(text) => { setLatitude(text) }}
-                textVlaue={latitude?.toString() || ""} 
+                textVlaue={latitude?.toString() || ""}
                 isRequired={true}
                 editable={false}
             />
@@ -103,7 +104,7 @@ const LocationPicker = ({
                 inputStyle={{ w: '100%', h: 50, ph: 20 }}
                 InputType={'numeric'}
                 onChangeText={(text) => { setLongitude(text) }}
-                    textVlaue={longitude?.toString() || ""}
+                textVlaue={longitude?.toString() || ""}
                 isRequired={true}
                 editable={false}
             />
@@ -120,9 +121,15 @@ const LocationPicker = ({
                 <GooglePlacesAutocomplete
                     ref={googleRef}
                     placeholder={label}
-                    fetchDetails
+                    fetchDetails={true}
+                    debounce={300}
+                    enablePoweredByContainer={false}
+                    keyboardShouldPersistTaps="handled"
+                    query={{
+                        key: apiKey,
+                        language: 'en',
+                    }}
                     onPress={(data, details = null) => {
-
                         const lat = details.geometry.location.lat;
                         const lng = details.geometry.location.lng;
 
@@ -130,29 +137,22 @@ const LocationPicker = ({
                         setLongitude(lng);
 
                         setAddress(data.description);
-                        setError(null);
-                    }}
-                    query={{
-                        key: apiKey,
-                        language: "en",
-                    }}
-                    textInputProps={{
-                        value: address,
-                        onChangeText: (text) => {
-                            setAddress(text);
-                            setError(null);
-                        }
                     }}
                     styles={{
+                        container: {
+                            flex: 0,
+                            zIndex: 9999,
+                        },
+                        listView: {
+                            zIndex: 9999,
+                            elevation: 10,
+                            backgroundColor: '#222',
+                        },
                         textInput: {
-                            height: 45,
-                            // borderWidth: 1,
-                            borderColor: error ? "red" : "#ccc",
-                            paddingHorizontal: 10,
-                            borderRadius: 8,
+                            color: '#fff',
                             backgroundColor: 'transparent',
-                            color: '#fff'
-                        }
+                            height: 45,
+                        },
                     }}
                 />
             </GlassContainer>
@@ -162,7 +162,7 @@ const LocationPicker = ({
                     {error}
                 </Text>
             )}
-{/* 
+            {/* 
             <TouchableOpacity
                 onPress={getCurrentLocation}
                 style={{ backgroundColor: '#007AFF', padding: 10, borderRadius: 5, marginTop: 10 }}

@@ -386,7 +386,7 @@ const AddNewAddress = ({ navigation }) => {
                 googleRef.current?.setAddressText(formattedAddress);
 
             } else {
-                console.warn("No address found:", response.data.status);
+                console.warn("No address found:", response.data);
             }
         } catch (error) {
             console.error("Geocoding error with Axios:", error.message);

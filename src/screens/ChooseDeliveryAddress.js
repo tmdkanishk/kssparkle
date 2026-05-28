@@ -23,9 +23,9 @@ import MapView, { Marker } from "react-native-maps";
 import * as Location from 'expo-location';
 import { IconComponentLocation } from "../constants/IconComponents";
 
-const ChooseDeliveryAddress = () => {
+const ChooseDeliveryAddress = ({ route }) => {
 
-
+    const hideProceedButton = route?.params?.hideProceedButton;
     const { language, currency, changeLanguage, changeCurrency } = useLanguageCurrency();
     const { Colors, EndPoint, GlobalText } = useCustomContext();
     const [loading, setLoading] = useState(false);
@@ -506,31 +506,35 @@ const ChooseDeliveryAddress = () => {
                         > */}
                         {/* 🔹 Gift Section */}
                         <View style={styles.giftSection}>
-                            <TouchableOpacity
-                                style={styles.giftWrapRow}
-                                activeOpacity={0.8}
-                                // onPress={() => setIsGiftWrap(prev => !prev)}
-                                onPress={() => {
-                                    setIsGiftWrap(prev => {
-                                        const newValue = !prev;
+                            {!hideProceedButton && (
+                                <TouchableOpacity
+                                    style={styles.giftWrapRow}
+                                    activeOpacity={0.8}
+                                    // onPress={() => setIsGiftWrap(prev => !prev)}
+                                    onPress={() => {
+                                        setIsGiftWrap(prev => {
+                                            const newValue = !prev;
 
-                                        // if (newValue) {
-                                        //     // If gift wrap is selected → unselect address
-                                        //     setSelectedAddress(null);
-                                        // }
+                                            // if (newValue) {
+                                            //     // If gift wrap is selected → unselect address
+                                            //     setSelectedAddress(null);
+                                            // }
 
-                                        return newValue;
-                                    });
-                                }}
+                                            return newValue;
+                                        });
+                                    }}
 
-                                hitSlop={20}
-                            >
-                                <View style={styles.radioOuterSmall}>
-                                    {isGiftWrap && <View style={styles.radioInnerSmall} />}
-                                </View>
+                                    hitSlop={20}
+                                >
+                                    <View style={styles.radioOuterSmall}>
+                                        {isGiftWrap && <View style={styles.radioInnerSmall} />}
+                                    </View>
 
-                                <Text style={styles.giftWrapText}>{isLabel?.giftwrap}</Text>
-                            </TouchableOpacity>
+                                    <Text style={styles.giftWrapText}>{isLabel?.giftwrap}</Text>
+                                </TouchableOpacity>
+                            )}
+
+
 
                             {isGiftWrap && (
                                 <>
@@ -698,10 +702,15 @@ const ChooseDeliveryAddress = () => {
 
 
                                     <GlassContainer borderRadius={20} padding={0.1}>
+
+                                      
                                         <GooglePlacesAutocomplete
                                             ref={googleRef}
                                             placeholder={isLabel?.addraddrs1_label}
                                             fetchDetails={true}
+                                            debounce={300}
+                                            enablePoweredByContainer={false}
+                                            keyboardShouldPersistTaps="handled"
                                             onPress={(data, details = null) => {
                                                 const lat = details.geometry.location.lat;
                                                 const lng = details.geometry.location.lng;
@@ -728,15 +737,20 @@ const ChooseDeliveryAddress = () => {
                                             }}
 
                                             styles={{
+                                                container: {
+                                                    flex: 0,
+                                                    zIndex: 9999,
+                                                },
+                                                listView: {
+                                                    zIndex: 9999,
+                                                    elevation: 10,
+                                                    backgroundColor: '#222',
+                                                },
                                                 textInput: {
-                                                    height: 45,
-                                                    // borderWidth: 1,
-                                                    // borderColor: error ? "red" : "#ccc",
-                                                    paddingHorizontal: 10,
-                                                    borderRadius: 8,
+                                                    color: '#fff',
                                                     backgroundColor: 'transparent',
-                                                    color: '#fff'
-                                                }
+                                                    height: 45,
+                                                },
                                             }}
                                         />
 
@@ -849,16 +863,20 @@ const ChooseDeliveryAddress = () => {
                             <View style={styles.horizontalLine} />
                         </View> */}
 
-                        <GlassmorphismButton
-                            title={isLabel?.proceedbtn}
-                            // disabled={
-                            //     isGiftWrap &&
-                            //     (!giftDetails.fullName || !giftDetails.phone)
-                            // }
+                        {!hideProceedButton && (
+                            <GlassmorphismButton
+                                title={isLabel?.proceedbtn}
+                                // disabled={
+                                //     isGiftWrap &&
+                                //     (!giftDetails.fullName || !giftDetails.phone)
+                                // }
 
-                            onPress={() => onClickCheckoutContinueBtn()}
+                                onPress={() => onClickCheckoutContinueBtn()}
+                            />
+                        )}
 
-                        />
+
+
 
                         {/* <View style={styles.footerBottomRow}>
                             <Text style={styles.totalText}>₹16669.25</Text>
@@ -906,7 +924,7 @@ const styles = StyleSheet.create({
         borderRadius: 6,
         paddingHorizontal: 5,
         paddingVertical: 4,
-        width:'35%'
+        width: '35%'
     },
     addNewText: {
         color: "#fff",
