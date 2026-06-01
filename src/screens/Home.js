@@ -49,6 +49,7 @@ import { getSessionHasShownPopup, getSessionHidePopup, setSessionHasShownPopup }
 import LiquidGlassOrb from '../components/customcomponents/LiquidGlassOrb';
 import SkiaGlassCard from '../components/customcomponents/SkiaGlassCard';
 import SkiaGlassOrb from '../components/customcomponents/SkiaGlassCard';
+import { scaleH, scaleW } from '../utils/scale';
 
 
 
@@ -100,55 +101,55 @@ const Home = ({ navigation }) => {
     const hasShownPopup = useRef(false);
     const popupTimerRef = useRef(null);
 
-useFocusEffect(
-  React.useCallback(() => {
-    console.log("🏠 Home focused");
+    useFocusEffect(
+        React.useCallback(() => {
+            console.log("🏠 Home focused");
 
-    // ❌ Don't show if user disabled it
-    if (getSessionHidePopup()) {
-      console.log("🚫 Popup disabled for session");
-      return;
-    }
+            // ❌ Don't show if user disabled it
+            if (getSessionHidePopup()) {
+                console.log("🚫 Popup disabled for session");
+                return;
+            }
 
-    // ❌ Don't show again if already shown
-    if (getSessionHasShownPopup()) {
-      console.log("⚠️ Popup already shown this session");
-      return;
-    }
+            // ❌ Don't show again if already shown
+            if (getSessionHasShownPopup()) {
+                console.log("⚠️ Popup already shown this session");
+                return;
+            }
 
-    const loadPopup = async () => {
-      try {
-        console.log("📡 Calling popup API...");
+            const loadPopup = async () => {
+                try {
+                    console.log("📡 Calling popup API...");
 
-        const result = await getGlobalPopupData(EndPoint?.global_popup);
-        const shouldShow = await shouldShowPopup(result);
+                    const result = await getGlobalPopupData(EndPoint?.global_popup);
+                    const shouldShow = await shouldShowPopup(result);
 
-        console.log("🤔 Should show popup?", shouldShow);
+                    console.log("🤔 Should show popup?", shouldShow);
 
-        if (result && shouldShow) {
-          console.log("🔥 SHOWING POPUP");
+                    if (result && shouldShow) {
+                        console.log("🔥 SHOWING POPUP");
 
-          setTimeout(() => {
-            setPopupData(result);
-            setPopupVisible(true);
+                        setTimeout(() => {
+                            setPopupData(result);
+                            setPopupVisible(true);
 
-            // ✅ mark as shown globally (persists across screens)
-            setSessionHasShownPopup(true);
+                            // ✅ mark as shown globally (persists across screens)
+                            setSessionHasShownPopup(true);
 
-          }, 500);
-        } else {
-          console.log("❌ Conditions failed");
-        }
+                        }, 500);
+                    } else {
+                        console.log("❌ Conditions failed");
+                    }
 
-      } catch (e) {
-        console.log("💥 ERROR:", e);
-      }
-    };
+                } catch (e) {
+                    console.log("💥 ERROR:", e);
+                }
+            };
 
-    loadPopup();
+            loadPopup();
 
-  }, [])
-);
+        }, [])
+    );
 
 
     // useFocusEffect(
@@ -311,7 +312,11 @@ useFocusEffect(
     const HomeHeader = () => (
         <View style={{ marginTop: Platform.OS === "ios" ? 20 : 0 }}>
             <Animated.View style={{ opacity: hideAnimation }}>
-                <Pressable style={{ width: Platform.OS === "ios" ? '100%' : "100%", paddingHorizontal: Platform.OS === "ios" ?5 : 20, paddingTop:10 }}>
+                <Pressable style={{
+                    width: "100%",
+                    paddingHorizontal:  Platform.OS==="android" ? scaleW(5) : null,  // 👈 consistent on both platforms
+                    paddingTop: scaleH(10)
+                }}>
                     <PromoCard specialInfo={isLabel?.text?.specialinfo} specialInfo_2={isLabel?.text?.specialinfo_2} specialInfo_3={isLabel?.text?.specialinfo_3} specialInfo_4={isLabel?.text?.specialinfo_4} specialInfo_5={isLabel?.text?.specialinfo_5} textInfo={isLabel?.text?.textinfo} onSearchPress={toggleSearch} />
                 </Pressable>
             </Animated.View>
@@ -434,12 +439,12 @@ useFocusEffect(
                 ) : (
                     <View style={{ paddingHorizontal: 12 }}>
 
-                      {/* <SkiaGlassOrb /> */}
+                        {/* <SkiaGlassOrb /> */}
 
                         {/* <TouchableOpacity onPress={()=>navigation.navigate("GlassTestScreen")}>
                             <Text>random text</Text>
                         </TouchableOpacity> */}
-                      
+
                         <CustomProductList header={
                             <HomeHeader />
                         } moduleProducts={moduleProducts} scrollY={scrollY} />

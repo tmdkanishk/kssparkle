@@ -67,7 +67,8 @@ const Category = ({ navigation }) => {
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
   const [activeSeachingScreen, setActiveSeachingScreen] = useState(false);
-  const [isLabel, setLabel] = useState()
+  const [isLabel, setLabel] = useState();
+  const {width, height} = Dimensions.get('window')
 
   const handleCategoryPress = useCallback(
     (item) => {
@@ -210,7 +211,7 @@ const Category = ({ navigation }) => {
             >
               <GlassContainer
                 style={{
-                  width: 360,
+                  width: width *0.86,
                   height: 220,
                   justifyContent: "center",
                   alignItems: "center",

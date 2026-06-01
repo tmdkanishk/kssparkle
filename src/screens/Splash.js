@@ -1,5 +1,5 @@
 import { View, Image, StyleSheet, PermissionsAndroid, Platform, Alert } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { _retrieveData, _storeData } from '../utils/storage'
 import { useCustomContext } from '../hooks/CustomeContext'
 import { getApp, initializeApp } from '@react-native-firebase/app';
@@ -15,6 +15,7 @@ import { getAnalytics } from '@react-native-firebase/analytics';
 import BackgroundWrapper from '../components/customcomponents/BackgroundWrapper';
 import Video from 'react-native-video';
 import { setAppReady } from '../utils/appState';
+import LottieView from 'lottie-react-native';
 
 const Splash = ({ navigation }) => {
 
@@ -24,6 +25,8 @@ const Splash = ({ navigation }) => {
 
     const [isWidth, setWidth] = useState(200);
     const [isHeight, setHeight] = useState(200);
+    const [videoFailed, setVideoFailed] = useState(false);
+    const animationRef = useRef(null);
 
     useEffect(() => {
         if (Platform.OS === 'android') {
@@ -302,22 +305,20 @@ const Splash = ({ navigation }) => {
 
         <View style={styles.container}>
 
-            {Platform.OS === 'ios' ? (
+            {Platform.OS === 'ios' || videoFailed ? (
                 <Image
                     source={require('../assets/sparkle_logo.gif')}
                     style={styles.gif}
                     resizeMode="cover"
                 />
             ) : (
-                <Video
-                    source={require('../assets/sparkle_logo.mp4')}
-                    style={styles.gif}
+                <LottieView
+                    ref={animationRef}
+                    source={require('../assets/sparkle_lottie_animation.json')}
+                    autoPlay
+                    loop
                     resizeMode="cover"
-                    repeat
-                    muted
-                    paused={false}
-                    playInBackground={false}
-                    playWhenInactive={false}
+                        style={styles.lottie}
                 />
             )}
 
@@ -341,6 +342,17 @@ const styles = StyleSheet.create({
         height: '100%',
         position: 'absolute',
     },
+
+     lottie: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        width: '100%',
+        height: '100%',
+    },
+
 
     overlay: {
         ...StyleSheet.absoluteFillObject,

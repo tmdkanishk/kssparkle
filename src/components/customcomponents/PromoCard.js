@@ -1,11 +1,12 @@
 import React from "react";
-import { View, Text, Image, StyleSheet, Platform, Dimensions, Linking, TouchableOpacity } from "react-native";
+import { View, Text, Image, StyleSheet, Platform, Dimensions, Linking, TouchableOpacity, I18nManager } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import Header from "./Header";
 import Video from "react-native-video";
 import LottieView from "lottie-react-native";
 import { useNavigation } from "@react-navigation/native";
 import { LiquidGlassView } from "@callstack/liquid-glass";
+import { scaleFont, scaleH, scaleW } from "../../utils/scale";
 
 const width = Dimensions.get('window')
 const PromoCard = ({ onSearchPress, textInfo, specialInfo, specialInfo_2, specialInfo_3, specialInfo_4, specialInfo_5 }) => {
@@ -30,13 +31,12 @@ const PromoCard = ({ onSearchPress, textInfo, specialInfo, specialInfo_2, specia
             isLooping={true}
           />
         ) : (
-          <Video
-            source={require("../../assets/videowork_android.mp4")}
-            style={styles.video}
+          <LottieView
+            source={require("../../assets/videowork_android_lottie.json")}
+            autoPlay
+            loop
             resizeMode="contain"
-            repeat
-            muted
-            isLooping={true}
+            style={styles.video}
           />
         )}
 
@@ -55,10 +55,10 @@ const PromoCard = ({ onSearchPress, textInfo, specialInfo, specialInfo_2, specia
 
       {/* ✅ Sale Text Row */}
       <View style={styles.textRow}>
-        <View>
+        <View style={{ marginLeft: I18nManager.isRTL ? 20 : null, }}>
           <Text style={styles.mainTitle}>{specialInfo}</Text>
-          <Text style={[styles.mainTitle, { fontSize: 24 }]}>{specialInfo_2}</Text>
-          <Text style={[styles.mainTitle, { fontSize: 24 }]}>{specialInfo_3}</Text>
+          <Text style={[styles.mainTitle, { fontSize: scaleFont(24) }]}>{specialInfo_2}</Text>
+          <Text style={[styles.mainTitle, { fontSize: scaleFont(24) }]}>{specialInfo_3}</Text>
         </View>
 
         <View style={{ alignItems: "flex-end", flexDirection: 'row', marginRight: Platform.OS === "ios" ? 15 : 0 }}>
@@ -78,16 +78,12 @@ const PromoCard = ({ onSearchPress, textInfo, specialInfo, specialInfo_2, specia
         interactive
         style={{
           position: "absolute",
-          right: Platform.OS === "ios" ? 47 : 7,
-          bottom: 40,
-          paddingVertical: 5,
-          paddingHorizontal: 12,
-          maxWidth: 150,
-          borderRadius: 18,
-          // backgroundColor: "rgba(255,255,255,0.18)",
-          // borderWidth: 0.4,
-          // borderColor: "rgba(255,255,255,0.4)",
-          // backdropFilter: "blur(6px)", // iOS only, optional
+          right: scaleW(Platform.OS === "ios" ? 47 : 7),
+          bottom: scaleH(40),
+          paddingVertical: scaleH(5),
+          paddingHorizontal: scaleW(12),
+          maxWidth: scaleW(150),
+          borderRadius: scaleW(18),
           zIndex: 2,
         }}
       >
@@ -104,11 +100,11 @@ const PromoCard = ({ onSearchPress, textInfo, specialInfo, specialInfo_2, specia
 const styles = StyleSheet.create({
   card: {
     width: "100%",
-    height: 480,
-    borderRadius: 35,
-    padding: 13,
+    height: scaleH(480),       // 👈 scales with screen height
+    borderRadius: scaleW(35),
+    padding: scaleW(13),
     overflow: "hidden",
-    marginTop: 10,
+    marginTop: scaleH(10),
   },
 
   headerInside: {
@@ -119,28 +115,29 @@ const styles = StyleSheet.create({
   textRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: 12,
-    paddingHorizontal: 5,
-    zIndex: 2, // ⬅️ ensures text stays visible
+    marginTop: scaleH(12),
+    paddingHorizontal: scaleW(5),
+    zIndex: 2,
   },
 
-
   mainTitle: {
-    fontSize: 32,
+    fontSize: scaleFont(32),   // 👈 scales with screen width
     fontWeight: "700",
     color: "#FFFFFF",
   },
 
   subTitle: {
-    fontSize: 18,
+    fontSize: scaleFont(18),
     color: "#FFFFFF",
-    marginBottom: 14,
+    marginBottom: scaleH(14),
+    marginLeft: I18nManager.isRTL ? 10 : null,
   },
 
   percent: {
-    fontSize: 40,
+    fontSize: scaleFont(35),
     fontWeight: "800",
     color: "#FFFFFF",
+    // marginLeft:I18nManager.isRTL ?10 : null,
   },
 
   imageWrapper: {
@@ -172,7 +169,7 @@ const styles = StyleSheet.create({
   },
 
   infoText: {
-    fontSize: 10,
+    fontSize: scaleFont(10),
     color: "#FFFFFF",
     fontWeight: "400",
     textAlign: "left",
@@ -184,12 +181,12 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     alignItems: "center",
-    zIndex: 1, // ⬅️ behind text
+    zIndex: 1,
   },
 
   video: {
-    width: 300,
-    height: 300,
+    width: scaleW(300),        // 👈 scales with screen width
+    height: scaleH(300),
   },
 
 });

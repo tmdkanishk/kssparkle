@@ -22,6 +22,7 @@ import BackgroundWrapper from '../components/customcomponents/BackgroundWrapper'
 import GlassmorphismButton from '../components/customcomponents/GlassmorphismButton';
 import GlassSwipeButton from '../components/customcomponents/GlassSwipeButton';
 import GlassContainer from '../components/customcomponents/GlassContainer';
+import { scaleFont, scaleH, scaleW } from '../utils/scale';
 
 
 const Login = ({ navigation }) => {
@@ -73,7 +74,7 @@ const Login = ({ navigation }) => {
                 customer_id: user ? user : null,
                 sessionid: sessionId,
             }
-            console.log("fetch login text",body)
+            console.log("fetch login text", body)
             setLang(lang?.code)
             const response = await axios.post(url, body, { headers: headers });
 
@@ -153,25 +154,25 @@ const Login = ({ navigation }) => {
                 <TouchableOpacity
                     onPress={handleSkipLogin}
                     style={{
-                        // borderWidth: 1,
-                        padding: 10,
-                        width: lang === "en-gb" ? "30%" : '50%',
-                        alignItems: "center",
-                        borderRadius: 12,
+                        padding: scaleW(10),
                         alignSelf: "flex-end",
-                        marginTop: 12,
-                        // backgroundColor: 'rgba(255,255,255,0.15)',
-                        // borderWidth: 0.6,
-                        // borderColor: 'rgba(255,255,255,0.35)',
-                        marginRight: 20,
-                        marginTop: Platform.OS === "ios" ? 60 : 40
+                        borderRadius: scaleW(12),
+                        marginRight: scaleW(20),
+                        marginTop: Platform.OS === "ios" ? scaleH(60) : scaleH(40),
                     }}
                 >
                     <GlassContainer>
-                    <Text style={{ color: "white" }}>{isLabel?.text_skiplogin}</Text>
-                     </GlassContainer>
+                        <Text style={{
+                            color: "white",
+                            fontSize: scaleFont(14),
+                            paddingHorizontal: scaleW(12),
+                            paddingVertical: scaleH(4),
+                        }}>
+                            {isLabel?.text_skiplogin}
+                        </Text>
+                    </GlassContainer>
                 </TouchableOpacity>
-               
+
                 <View style={{ backgroundColor: "transparent", justifyContent: "center", alignItems: 'center', flex: 1 }}>
 
 
