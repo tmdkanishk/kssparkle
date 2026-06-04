@@ -1,9 +1,10 @@
 import React from "react";
-import { View, ActivityIndicator, Alert } from "react-native";
+import { View, ActivityIndicator, Alert, TouchableOpacity, Image } from "react-native";
 import { WebView } from "react-native-webview";
+import CustomHeader from "../components/customcomponents/CustomHeader";
 
 const TamaraPaymentScreen = ({ route, navigation }) => {
-    const { checkoutUrl, orderId, orderStatusId  } = route.params;
+    const { checkoutUrl, orderId, orderStatusId } = route.params;
 
     const handleNavigation = (navState) => {
         const { url } = navState;
@@ -12,7 +13,7 @@ const TamaraPaymentScreen = ({ route, navigation }) => {
 
         // ✅ Success
         if (url.includes("success")) {
-            navigation.replace("OrderSuccessScreen", { orderId,  orderStatusId});
+            navigation.replace("OrderSuccessScreen", { orderId, orderStatusId });
         }
 
         // ❌ Failure
@@ -31,7 +32,10 @@ const TamaraPaymentScreen = ({ route, navigation }) => {
     };
 
     return (
-        <View style={{ flex: 1, marginTop: 70, backgroundColor:'white', marginBottom:70 }}>
+        <View style={{ flex: 1, marginTop: 70, backgroundColor: 'white', marginBottom: 70 }}>
+            <TouchableOpacity style={{ padding: 25 }} onPress={() => navigation.goBack()} hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}>
+                <Image source={require("../assets/images/back.png")} style={{ width: 24, height: 24, tintColor: "black", }} />
+            </TouchableOpacity>
             <WebView
                 source={{ uri: checkoutUrl }}
                 onNavigationStateChange={handleNavigation}

@@ -25,6 +25,8 @@ export const applyVoucher = async (voucher, cart_voucher) => {
             customer_id: user
         }
 
+        console.log("voucher code post", body)
+
         const response = await axios.post(url, body, { headers: headers });
 
         if (response.status === HttpStatusCode.Ok) {

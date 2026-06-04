@@ -184,6 +184,7 @@ const checkUserLogin = async () => {
 
 
     const applyVoucherCode = async (voucher) => {
+                  console.log("applyVoucherCode function getting called");
         try {
             setGlobalLoading(true);
             const response = await applyVoucher(voucher, EndPoint?.list_coupons);
