@@ -50,9 +50,14 @@ const SelectModalField = ({
               { borderColor: error ? 'red' : 'rgba(255,255,255,0.6)' },
             ]}
           >
-            <Text style={{ color: '#fff', paddingStart: 20, textAlign: I18nManager.isRTL ? 'right' : 'left', writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr' }}>
-              {value ? renderItemLabel(value) : placeholder}
-            </Text>
+<Text style={{
+  color: value ? '#fff' : 'rgba(255,255,255,0.4)',  // ← dim when no value
+  paddingStart: 20,
+  textAlign: I18nManager.isRTL ? 'right' : 'left',
+  writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr'
+}}>
+  {value ? renderItemLabel(value) : placeholder}
+</Text>
           </TouchableOpacity>
         </GlassContainer>
 
@@ -116,13 +121,13 @@ const SelectModalField = ({
 
                 {/* LIST */}
                 <FlatList
-                  data={data}
+                   data={[null, ...data]}
                   keyExtractor={(item, index) => index.toString()}
                   contentContainerStyle={{ padding: 16, gap: 20 }}
                   renderItem={({ item }) => (
                     <TouchableOpacity
                       onPress={() => {
-                        onSelect(item);
+                        onSelect(item ?? null);  // passes null when placeholder selected
                         setVisible(false);
                       }}
                       style={{
@@ -132,7 +137,7 @@ const SelectModalField = ({
                       }}
                     >
                       <Text style={{ color: '#fff' }}>
-                        {renderItemLabel(item)}
+                        {item ? renderItemLabel(item) : placeholder}
                       </Text>
                     </TouchableOpacity>
                   )}

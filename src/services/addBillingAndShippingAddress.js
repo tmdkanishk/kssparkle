@@ -31,15 +31,19 @@ export const addBillingAndShippingAddress = async (
         }; 
 
 
-        if (giftDetails) {
-            body.gift_flag = 1
-            body.gift_full_name = giftDetails.fullName;
-            body.gift_phone = giftDetails.phone;
-            body.gift_address = giftDetails.address;
-            body.gift_city = giftDetails.city;
-            body.gift_postcode = giftDetails.postCode;
-            body.gift_message = giftDetails.message;
-        }
+if (giftDetails) {
+    body.gift_flag = 1;
+    body.gift_name = giftDetails.fullName;
+    body.gift_phone = giftDetails.phone;
+    body.gift_address_1 = giftDetails.address; 
+    body.gift_city = giftDetails.city;
+    body.gift_postcode = giftDetails.postCode;
+    body.gift_message = giftDetails.message;
+    // body.gift_latitude = giftDetails.latitude;     
+    // body.gift_longitude = giftDetails.longitude;    
+    body.gift_country_id = giftDetails.country_id;  // ← ADD
+    body.gift_zone_id = giftDetails.zone_id;        // ← ADD
+}
 
 
 
@@ -53,6 +57,7 @@ export const addBillingAndShippingAddress = async (
         }
 
     } catch (error) {
+        console.log(error.response.data)
         throw error;
     }
 };

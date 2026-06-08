@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Image, Alert, Animated, useWindowDimensions, KeyboardAvoidingView, TextInput, I18nManager } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Image, Alert, Animated, useWindowDimensions, KeyboardAvoidingView, TextInput, I18nManager, Modal, FlatList } from "react-native";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import GlassContainer from "../components/customcomponents/GlassContainer";
 import GlassButton from "../components/customcomponents/GlassButton";
@@ -21,7 +21,9 @@ import LocationPicker from "../components/LocationPicker";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import MapView, { Marker } from "react-native-maps";
 import * as Location from 'expo-location';
-import { IconComponentLocation } from "../constants/IconComponents";
+import { IconComponentClose, IconComponentLocation } from "../constants/IconComponents";
+import { BlurView } from "expo-blur";
+import SelectModalField from "../components/customcomponents/SelectModalField";
 
 const ChooseDeliveryAddress = ({ route }) => {
 
@@ -51,10 +53,12 @@ const ChooseDeliveryAddress = ({ route }) => {
     const [giftDetails, setGiftDetails] = useState({
         fullName: '',
         phone: '',
-        latitude: 24.7136, // Riyadh Default
+        latitude: 24.7136,
         longitude: 46.6753,
         address: '',
         city: '',
+        country_id: null,   // ← ADD
+        zone_id: null,      // ← ADD
         postCode: '',
         message: ''
     });
@@ -65,6 +69,16 @@ const ChooseDeliveryAddress = ({ route }) => {
     const [latitude, setLatitude] = useState(23.8859);
     const [longitude, setLongitude] = useState(45.0792);
     const [isAddress1, setAddress1] = useState();
+    const [countryList, setCountryList] = useState([]);
+    const [isDefaultCountry, setDefaultCountry] = useState(null);
+    const [isDefaultState, setDefaultState] = useState(null);
+    const [isStateList, setStateList] = useState([]);
+    const [isStateModal, setStateModal] = useState(false);
+    const [citylist, setCityList] = useState([]);
+    const [isDefaultCity, setDefaultCity] = useState(null);
+    const [isZoneError, setZoneError] = useState();
+    const [isCountryError, setCountryError] = useState();
+    const [isCityError, setCityError] = useState();
 
     const scrollRef = useRef(null);
 
@@ -105,6 +119,16 @@ const ChooseDeliveryAddress = ({ route }) => {
     //         fetchAddress(giftDetails.latitude, giftDetails.longitude);
     //     }
     // }, []); // Runs once on load
+
+    // Sync dropdown selections into giftDetails so validation passes on first submit
+    useEffect(() => {
+        setGiftDetails(prev => ({
+            ...prev,
+            city: isDefaultCity?.name || prev.city,
+            country_id: isDefaultCountry?.country_id || prev.country_id,
+            zone_id: isDefaultState?.zone_id || prev.zone_id,
+        }));
+    }, [isDefaultCity, isDefaultCountry, isDefaultState]);
 
 
     useEffect(() => {
@@ -352,6 +376,142 @@ const ChooseDeliveryAddress = ({ route }) => {
     const closeFailedModal = () => {
         setFailedModal(false);
         setFailedModalText(null);
+    }
+
+
+    useEffect(() => {
+        // fetchCustomFeilds();
+        fetchCountry();
+
+    }, []);
+
+
+
+    const fetchCountry = async () => {
+        try {
+            // setLoading(true);
+            const url = `${BASE_URL}${EndPoint?.address_countrylist}`;
+            const lang = await _retrieveData('SELECT_LANG');
+            const cur = await _retrieveData('SELECT_CURRENCY');
+
+            const headers = {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                Key: API_KEY,
+            };
+
+            const body = {
+                code: lang?.code,
+                currency: cur?.code,
+            }
+
+            const response = await axios.post(url, body, { headers: headers });
+
+            if (response.status === HttpStatusCode.Ok) {
+                setCountryList(response.data?.countries);
+                if (response.data?.countries?.length > 0) {
+                    setDefaultCountry(response.data?.countries[0]);
+                    fetchState(response.data?.countries[0]?.country_id);
+                }
+            }
+
+        } catch (error) {
+            console.log("error", error.response.data);
+        } finally {
+            // setLoading(false);
+        }
+    }
+
+    const fetchState = async (countryId) => {
+        try {
+            console.log("countryId", countryId)
+            const url = `${BASE_URL}${EndPoint?.address_zonelist}`;
+            const lang = await _retrieveData('SELECT_LANG');
+            const cur = await _retrieveData('SELECT_CURRENCY');
+
+            const headers = {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                Key: API_KEY,
+            };
+
+            const body = {
+                code: lang?.code,
+                currency: cur?.code,
+                country_id: countryId
+            }
+
+            const response = await axios.post(url, body, { headers: headers });
+
+            if (response.status === HttpStatusCode.Ok) {
+
+                // console.log("response.data?.zones", response.data?.zones[0]);
+                // if (response.data?.zones.length > 0) {
+                //     setDefaultState(response.data?.zones[0]);
+                //     await fetchCity(response.data?.zones[0]?.zone_id);
+                // } else {
+                //     setDefaultState(null);
+                // }
+                // setStateList(response.data?.zones);
+
+                                    if (response.data?.zones.length > 0) {
+        setStateList(response.data?.zones);
+        setDefaultState(null);  // ← no auto-select
+    } else {
+        setStateList([]);
+        setDefaultState(null);
+    }
+            }
+
+        } catch (error) {
+            console.log('error:', error.response.data);
+        }
+    }
+
+
+    const fetchCity = async (zoneid) => {
+        console.log("fetchCity functions calling");
+        try {
+
+            const url = `${BASE_URL}${EndPoint?.address_citylist}`;
+            const lang = await _retrieveData('SELECT_LANG');
+            const cur = await _retrieveData('SELECT_CURRENCY');
+
+            const headers = {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                Key: API_KEY,
+            };
+
+            const body = {
+                code: lang?.code,
+                currency: cur?.code,
+                zone_id: zoneid
+            }
+
+
+            const response = await axios.post(url, body, { headers: headers });
+
+            console.log("zoneid", zoneid, body, url, response?.data)
+            if (response.status === HttpStatusCode.Ok) {
+
+                // console.log("response.data?.city", response.data?.city[0]);
+                // if (response.data?.cities.length > 0) {
+                //     setDefaultCity(response.data?.cities[0])
+                // } else {
+                //     setDefaultCity(null);
+                // }
+                // setCityList(response.data?.cities);
+
+                    if (response.data?.cities.length > 0) {
+        setCityList(response.data?.cities);
+        setDefaultCity(null);  // ← no auto-select
+    } else {
+        setCityList([]);
+        setDefaultCity(null);
+    }
+            }
+
+        } catch (error) {
+            console.log('error:', error.response.data);
+        }
     }
 
 
@@ -703,7 +863,7 @@ const ChooseDeliveryAddress = ({ route }) => {
 
                                     <GlassContainer borderRadius={20} padding={0.1}>
 
-                                      
+
                                         <GooglePlacesAutocomplete
                                             ref={googleRef}
                                             placeholder={isLabel?.addraddrs1_label}
@@ -722,7 +882,10 @@ const ChooseDeliveryAddress = ({ route }) => {
                                                     address: data.description
                                                 }));
 
-                                                setGiftErrors(prev => ({ ...prev, gift_address_1: null }));
+                                                setGiftErrors(prev => ({
+                                                    ...prev,
+                                                    gift_address_1: null
+                                                }));
                                             }}
 
                                             query={{
@@ -730,9 +893,19 @@ const ChooseDeliveryAddress = ({ route }) => {
                                                 language: "en",
                                             }}
                                             textInputProps={{
+                                                value: giftDetails.address,
                                                 onChangeText: (text) => {
-                                                    setGiftDetails(prev => ({ ...prev, address: text }));
-                                                    setGiftErrors(prev => ({ ...prev, gift_address_1: null }));
+                                                    setGiftDetails(prev => ({
+                                                        ...prev,
+                                                        address: text
+                                                    }));
+
+                                                    if (text.trim()) {
+                                                        setGiftErrors(prev => ({
+                                                            ...prev,
+                                                            gift_address_1: null,
+                                                        }));
+                                                    }
                                                 }
                                             }}
 
@@ -781,25 +954,56 @@ const ChooseDeliveryAddress = ({ route }) => {
                                     )}
 
 
-                                    <GlassContainer padding={4} borderRadius={20}>
-                                        <TextInput
-                                            placeholder={isLabel?.addrescity_label}
-                                            placeholderTextColor="#fff"
-                                            value={giftDetails.city}
-                                            onChangeText={(text) => {
-                                                setGiftDetails(prev => ({ ...prev, city: text }));
-                                                setGiftErrors(prev => ({ ...prev, gift_city: null }));
-                                            }}
+                                    
 
-                                            style={styles.input}
-                                        />
-                                    </GlassContainer>
+                                <SelectModalField
+                                    label={isLabel?.addrcntry_label}
+                                    value={isDefaultCountry}
+                                    data={countryList}
+                                    error={isCountryError}
+                                    onSelect={(item) => {
+        setDefaultCountry(item);
+        setDefaultState(null);
+        setCityList([]);
+        setDefaultCity(null);
+        setGiftErrors(prev => ({ ...prev, gift_country: null }));
+        setGiftDetails(prev => ({ ...prev, country_id: item?.country_id }));
+        fetchState(item?.country_id);
+    }}
+                                />
 
-                                    {giftErrors?.gift_city && (
-                                        <Text style={{ color: 'red', marginTop: 4 }}>
-                                            {GlobalText?.[giftErrors.gift_city] || giftErrors.gift_city}
-                                        </Text>
-                                    )}
+
+
+
+<SelectModalField
+    label={isLabel?.addrstate_label}
+    value={isDefaultState}
+    data={isStateList}
+    error={giftErrors?.gift_zone}      // ← from giftErrors
+    onSelect={(item) => {
+        setDefaultState(item);
+        setDefaultCity(null);
+        setCityList([]);
+        setGiftErrors(prev => ({ ...prev, gift_zone: null }));
+        setGiftDetails(prev => ({ ...prev, zone_id: item?.zone_id }));
+        fetchCity(item?.zone_id);
+    }}
+/>
+
+<SelectModalField
+    label={isLabel?.addrcity_label}
+    value={isDefaultCity}
+    data={citylist}
+    error={giftErrors?.gift_city}      // ← from giftErrors
+    onSelect={(item) => {
+        setDefaultCity(item);
+        setGiftErrors(prev => ({ ...prev, gift_city: null }));
+        setGiftDetails(prev => ({ ...prev, city: item?.name }));
+    }}
+/>
+
+
+
 
 
                                     <GlassContainer padding={4} borderRadius={20}>
@@ -822,6 +1026,7 @@ const ChooseDeliveryAddress = ({ route }) => {
                                             {GlobalText?.[giftErrors.gift_postcode] || giftErrors.gift_postcode}
                                         </Text>
                                     )}
+
 
 
                                     <View style={{}}>
@@ -885,6 +1090,10 @@ const ChooseDeliveryAddress = ({ route }) => {
                     </View>
                     {/* </View> */}
 
+
+
+
+           
                     <FailedModal
                         isModal={failedModal}
                         isSuccessMessage={failedModalText}

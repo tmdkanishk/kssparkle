@@ -105,6 +105,7 @@ const CustomSearchBar = ({ setActiveSeachingScreen }) => {
         style={{
           flexWrap: 'wrap',
           color: '#FFFFFF', // ✅ text white
+          width:'90%'
         }}
       >
         {item?.name}

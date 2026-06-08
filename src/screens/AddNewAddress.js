@@ -187,13 +187,21 @@ const AddNewAddress = ({ navigation }) => {
             if (response.status === HttpStatusCode.Ok) {
 
                 // console.log("response.data?.zones", response.data?.zones[0]);
-                if (response.data?.zones.length > 0) {
-                    setDefaultState(response.data?.zones[0]);
-                    await fetchCity(response.data?.zones[0]?.zone_id);
-                } else {
-                    setDefaultState(null);
-                }
-                setStateList(response.data?.zones);
+                // if (response.data?.zones.length > 0) {
+                //     setDefaultState(response.data?.zones[0]);
+                //     await fetchCity(response.data?.zones[0]?.zone_id);
+                // } else {
+                //     setDefaultState(null);
+                // }
+                // setStateList(response.data?.zones);
+
+                    if (response.data?.zones.length > 0) {
+        setStateList(response.data?.zones);
+        setDefaultState(null);  // ← no auto-select
+    } else {
+        setStateList([]);
+        setDefaultState(null);
+    }
             }
 
         } catch (error) {
@@ -228,12 +236,20 @@ const AddNewAddress = ({ navigation }) => {
             if (response.status === HttpStatusCode.Ok) {
 
                 // console.log("response.data?.city", response.data?.city[0]);
+                // if (response.data?.cities.length > 0) {
+                //     setDefaultCity(response.data?.cities[0])
+                // } else {
+                //     setDefaultCity(null);
+                // }
+                // setCityList(response.data?.cities);
+
                 if (response.data?.cities.length > 0) {
-                    setDefaultCity(response.data?.cities[0])
-                } else {
-                    setDefaultCity(null);
-                }
-                setCityList(response.data?.cities);
+        setCityList(response.data?.cities);
+        setDefaultCity(null);  // ← no auto-select
+    } else {
+        setCityList([]);
+        setDefaultCity(null);
+    }
             }
 
         } catch (error) {
@@ -300,18 +316,18 @@ const AddNewAddress = ({ navigation }) => {
             };
 
             const body = {
-                code: lang?.code,
-                currency: cur?.code,
-                customer_id: user,
-                firstname: isName,
-                lastname: isLastname,
-                company: isCompany || "",
+                code: lang?.code || null,
+                currency: cur?.code || null,
+                customer_id: user || null,
+                firstname: isName || null,
+                lastname: isLastname || null,
+                company: isCompany || null,
                 address_1: isAddress1,
-                address_2: isAddress2,
-                city: isDefaultCity?.name || "",
-                postcode: isPostalCode,
-                country_id: isDefaultCountry?.country_id,
-                zone_id: isDefaultState?.zone_id,
+                address_2: isAddress2 || null,
+                city: isDefaultCity?.name || null,
+                postcode: isPostalCode || null,
+                country_id: isDefaultCountry?.country_id || null,
+                zone_id: isDefaultState?.zone_id || null,
                 latitude: String(latitude),
                 longitude: String(longitude),
                 // city_id: isDefaultCity?.city_id,
@@ -636,7 +652,24 @@ const AddNewAddress = ({ navigation }) => {
                                 />
 
 
-                                <View style={styles.container}>
+                                <SelectModalField
+    label={isLabel?.addrstate_label}                            
+    value={isDefaultState}
+    data={isStateList}
+    required
+    // placeholder="Please Select State"
+    error={isZoneError}
+    onSelect={(item) => {
+        setDefaultState(item);
+        setDefaultCity(null);  // ← reset city when state changes
+        setCityList([]);
+        setZoneError(null);
+        fetchCity(item?.zone_id);  // ← fetch cities for selected state
+    }}
+/>
+
+
+                                {/* <View style={styles.container}>
                                     <View style={{ flexDirection: 'row' }}>
                                         <Text style={{ color: 'red' }}>*</Text>
                                         <Text style={[styles.label, { color: '#fff' }]}>{isLabel?.addrstate_label}</Text>
@@ -664,7 +697,7 @@ const AddNewAddress = ({ navigation }) => {
                                             <Text style={{ color: 'red' }}>{isZoneError}</Text>
                                         )
                                     }
-                                </View>
+                                </View> */}
 
                                 {
                                     customFieldList?.length > 0 && (
@@ -830,175 +863,7 @@ const AddNewAddress = ({ navigation }) => {
                 </KeyboardAvoidingView>
             </BackgroundWrapper>
 
-            {/* contry list modal */}
-            <Modal
-                animationType="fade"
-                transparent
-                visible={isCountryModal}
-                onRequestClose={() => setCountryModal(false)}
-            >
-                <View style={{ flex: 1 }}>
-
-                    {/* 🔥 BLUR BACKGROUND */}
-                    <BlurView
-                        style={StyleSheet.absoluteFill}
-                        blurType="dark"
-                        blurAmount={15}
-                        reducedTransparencyFallbackColor="rgba(0,0,0,0.6)"
-                    />
-
-                    {/* Optional dark overlay for contrast */}
-                    <View
-                        style={{
-                            ...StyleSheet.absoluteFillObject,
-                            backgroundColor: 'rgba(0,0,0,0.25)',
-                        }}
-                    />
-
-                    {/* MODAL CONTENT */}
-                    <View
-                        style={{
-                            flex: 1,
-                            width: '100%',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                        }}
-                    >
-                        <View style={{ width: '90%', height: '80%' }}>
-                            <BackgroundWrapper>
-
-                                <View
-                                    style={{
-                                        flexDirection: 'row',
-                                        justifyContent: 'space-between',
-                                        alignItems: 'center',
-                                        margin: 12,
-                                    }}
-                                >
-                                    <View />
-                                    <TouchableOpacity onPress={() => setCountryModal(false)}>
-                                        <IconComponentClose color="rgba(255,255,255,0.6)" />
-                                    </TouchableOpacity>
-                                </View>
-
-                                <FlatList
-                                    data={countryList}
-                                    keyExtractor={(item, index) => index.toString()}
-                                    renderItem={({ item }) => (
-                                        <TouchableOpacity onPress={() => onSelectCountry(item)}>
-                                            <Text
-                                                style={{
-                                                    borderBottomWidth: 1,
-                                                    paddingBottom: 10,
-                                                    color: 'white',
-                                                    borderBottomColor: 'rgba(255,255,255,0.6)',
-                                                }}
-                                            >
-                                                {item.name}
-                                            </Text>
-                                        </TouchableOpacity>
-                                    )}
-                                    contentContainerStyle={{ margin: 10, gap: 20 }}
-                                />
-
-                            </BackgroundWrapper>
-                        </View>
-                    </View>
-                </View>
-            </Modal>
-
-
-            {/* State list modal */}
-
-            <Modal
-                animationType="fade"
-                transparent
-                visible={isStateModal}
-                onRequestClose={() => setStateModal(false)}
-            >
-                <View style={{ flex: 1 }}>
-
-                    {/* 🔥 BLUR BACKGROUND */}
-                    <BlurView
-                        style={StyleSheet.absoluteFill}
-                        blurType="dark"
-                        blurAmount={15}
-                        reducedTransparencyFallbackColor="rgba(0,0,0,0.6)"
-                          tint="dark"      // Matches blurType="dark"
-                                                intensity={75}   // Roughly matches blurAmount={15}. Adjust between 60-90 to taste.
-                    />
-
-                    {/* Optional dark overlay for better contrast */}
-                    <View
-                        style={{
-                            ...StyleSheet.absoluteFillObject,
-                            backgroundColor: 'rgba(0,0,0,0.25)',
-                        }}
-                    />
-
-                    {/* MODAL CONTENT */}
-                    <View
-                        style={{
-                            flex: 1,
-                            width: '100%',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                        }}
-                    >
-                        <View style={{ width: '90%', height: '80%' }}>
-                            <BackgroundWrapper>
-
-                                <View
-                                    style={{
-                                        flexDirection: 'row',
-                                        justifyContent: 'space-between',
-                                        alignItems: 'center',
-                                        margin: 12,
-                                    }}
-                                >
-                                    <View />
-                                    <TouchableOpacity onPress={() => setStateModal(false)}>
-                                        <IconComponentClose color="rgba(255,255,255,0.6)" />
-                                    </TouchableOpacity>
-                                </View>
-
-                                <FlatList
-                                    data={isStateList}
-                                    keyExtractor={(item, index) => index.toString()}
-                                    renderItem={({ item }) => (
-                                        <TouchableOpacity
-                                            onPress={() => {
-                                                setDefaultState(item);
-                                                fetchCity(item?.zone_id)
-                                                setStateModal(false);
-                                            }}
-                                        >
-                                            <Text
-                                                style={{
-                                                    borderBottomWidth: 1,
-                                                    paddingBottom: 10,
-                                                    borderBottomColor: 'rgba(255,255,255,0.6)',
-                                                    color: '#fff',
-                                                }}
-                                            >
-                                                {item.name}
-                                            </Text>
-                                        </TouchableOpacity>
-                                    )}
-                                    contentContainerStyle={{ margin: 10, gap: 20 }}
-                                    ListEmptyComponent={
-                                        <Text style={{ textAlign: 'center', color: '#fff' }}>
-                                            nema podataka
-                                        </Text>
-                                    }
-                                />
-
-                            </BackgroundWrapper>
-                        </View>
-                    </View>
-
-                </View>
-            </Modal>
+ 
 
 
             {/* success modal */}
