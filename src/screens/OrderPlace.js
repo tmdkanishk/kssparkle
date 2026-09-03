@@ -61,6 +61,11 @@ import { parsePriceHtml } from "../utils/parsePriceHtml";
 import { API_KEY, BASE_URL, MOYASAR3_PUBLIC_KEY } from "../utils/config";
 import axios, { HttpStatusCode } from "axios";
 import { buildUnifiedPaymentConfig } from "../utils/buildUnifiedPaymentConfig";
+import {
+  trackAddPaymentInfo,
+  saveCheckoutForPurchase,
+  parseNumericPrice,
+} from "../services/analytics";
 
 const OrderPlace = ({ navigation }) => {
   const { Colors, EndPoint, GlobalText } = useCustomContext();
@@ -173,6 +178,21 @@ const OrderPlace = ({ navigation }) => {
       // setGlobalLoading(true);
       const user = await _retrieveData("CUSTOMER_ID");
       const cur = await _retrieveData("SELECT_CURRENCY");
+
+      const checkoutSnapshot = {
+        products: isProductInfo || [],
+        value: parseNumericPrice(isTotal) || parseNumericPrice(isTotalPrice),
+        currency: cur?.code || 'SAR',
+        paymentType: isOtherInfo?.payment_method?.code,
+      };
+      await saveCheckoutForPurchase(checkoutSnapshot);
+      trackAddPaymentInfo(isProductInfo || [], {
+        value: checkoutSnapshot.value,
+        currency: checkoutSnapshot.currency,
+        paymentType: checkoutSnapshot.paymentType,
+        screenName: 'OrderPlace',
+      }).catch(() => {});
+
       switch (isOtherInfo?.payment_method?.code) {
         case "pp_pro":
           // Code to run if expression === value1

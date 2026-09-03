@@ -17,6 +17,7 @@ import {
 } from 'react-native-moyasar-sdk';
 import { IconComponentArrowBackSharp } from '../constants/IconComponents';
 import FailedModal from '../components/FailedModal';
+import { trackPurchase } from '../services/analytics';
 
 export default function MoyasarPaymentScreen({ route, navigation }) {
   const { paymentConfig, orderId, orderStatusId } = route.params;
@@ -60,6 +61,11 @@ export default function MoyasarPaymentScreen({ route, navigation }) {
   const onPaymentResult = (result) => {
     if (result instanceof PaymentResponse) {
       if (result.status === PaymentStatus.paid) {
+        trackPurchase({
+          orderId,
+          screenName: 'MoyasarPaymentScreen',
+          paymentType: 'moyasar3',
+        }).catch(() => {});
         navigation.replace('OrderSuccessScreen', { orderId, orderStatusId });
       } else {
         const failMessage = result?.message || result?.source?.message || '';

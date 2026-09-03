@@ -26,6 +26,7 @@ import BackgroundWrapper from '../components/customcomponents/BackgroundWrapper'
 import { useLoading } from '../hooks/LoadingProvider'
 import Header from '../components/customcomponents/Header'
 import CustomSearchBar from './CustomSearchBar'
+import { trackSearch } from '../services/analytics'
 
 
 
@@ -67,6 +68,12 @@ const Search = ({ route }) => {
       console.log("results serach", results);
       setSearchResult(results?.products);
       setSearchResultText(results?.text);
+      if (query) {
+        trackSearch(query, {
+          products: results?.products || [],
+          screenName: 'Search',
+        }).catch(() => {});
+      }
     } catch (error) {
       console.log('error:', error.response.data);
     } finally {
@@ -154,6 +161,10 @@ const Search = ({ route }) => {
       const results = await searchProductsApi(query, EndPoint?.search);
       setSearchResult(results?.products);
       setSearchResultText(results?.text);
+      trackSearch(query, {
+        products: results?.products || [],
+        screenName: 'Search',
+      }).catch(() => {});
     } catch (error) {
       console.log('error:', error.response.data);
     } finally {

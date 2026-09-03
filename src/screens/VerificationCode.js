@@ -17,6 +17,7 @@ import FailedModal from '../components/FailedModal'
 import TitleBarName from '../components/TitleBarName'
 import SuccessModal from '../components/SuccessModal'
 import { login } from '../services/login'
+import { setAnalyticsUserId } from '../services/analytics'
 import { IconComponentCheckSquare, IconComponentClose, IconComponentImage, IconComponentSquare } from '../constants/IconComponents'
 import NotificationAlert from '../components/NotificationAlert'
 import { getCustomFields } from '../services/getCustomFields'
@@ -253,6 +254,11 @@ const VerificationCode = ({ navigation, route }) => {
                     console.log("telephone",telephone)
                     await _storeData("CUSTOMER_ID", result?.customer_id)
                     await _storeData("telephone", telephone)
+                    setAnalyticsUserId(result?.customer_id, {
+                        phone: telephone || '',
+                        userName: String(result?.customer_id),
+                        email: '',
+                    }).catch(() => {});
                       navigation.replace('MyAccountScreen')
                 }
             }

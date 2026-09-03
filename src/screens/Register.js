@@ -32,6 +32,7 @@ import { getCartItem } from '../services/getCartItem'
 import BackgroundWrapper from '../components/customcomponents/BackgroundWrapper'
 import GlassmorphismInput from '../components/customcomponents/GlassmorphismInput'
 import GlassmorphismButton from '../components/customcomponents/GlassmorphismButton'
+import { trackCompleteRegistration } from '../services/analytics'
 
 const Register = ({ navigation, route }) => {
     const { Colors, Features, EndPoint, GlobalText } = useCustomContext();
@@ -205,10 +206,20 @@ const Register = ({ navigation, route }) => {
                 console.log("register account ", response?.data);
                 setSuccessMgs(response.data?.success);
                 setSuccess(true);
-                navigation.replace("Home");
                 if (response.data.customer_id) {
                     await _storeData("CUSTOMER_ID", response.data.customer_id)
+                    trackCompleteRegistration({
+                        userId: response.data.customer_id,
+                        method: 'register',
+                        screenName: 'Register',
+                        profile: {
+                            phone: formData?.telephone || telephone || '',
+                            email: formData?.email || '',
+                            userName: [formData?.firstname, formData?.lastname].filter(Boolean).join(' ') || String(response.data.customer_id),
+                        },
+                    }).catch(() => {});
                 }
+                navigation.replace("Home");
             }
         }
         catch (error) {

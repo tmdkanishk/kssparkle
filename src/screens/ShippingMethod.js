@@ -29,6 +29,7 @@ import { _retrieveData } from "../utils/storage";
 import { useLoading } from "../hooks/LoadingProvider";
 import FailedModal from "../components/FailedModal";
 import PriceView from "../components/customcomponents/PriceView";
+import { trackBeginCheckout } from "../services/analytics";
 // import { ArrowLeft, ArrowRight, Gift } from "lucide-react-native";
 
 const ShippingMethod = ({ navigation }) => {
@@ -157,6 +158,10 @@ const ShippingMethod = ({ navigation }) => {
                         isTC,
                         EndPoint?.checkout_Shippingandpaymentmethodsave
                     );
+                    trackBeginCheckout([], {
+                        paymentType: isPaymentMethodCode,
+                        screenName: 'ShippingMethod',
+                    }).catch(() => {});
                     navigation.navigate("OrderPlace")
                 } catch (error) {
                     console.log("error", error.response.data);

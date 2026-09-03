@@ -9,6 +9,7 @@ import { LoadingProvider } from './src/hooks/LoadingProvider';
 import { UserProvider } from './src/hooks/UserContext';
 import BackgroundWrapper from './src/components/customcomponents/BackgroundWrapper';
 import { BackgroundReadyProvider } from './src/hooks/BackgroundReadyContext';
+import { initAnalytics } from './src/services/analytics';
 // import TamaraSdk from 'react-native-tamara-sdk';
 // import { Tabby } from 'tabby-react-native-sdk';
 
@@ -18,6 +19,11 @@ import { BackgroundReadyProvider } from './src/hooks/BackgroundReadyContext';
 
 
 export default function App() {
+  useEffect(() => {
+    initAnalytics().catch((err) => {
+      console.warn('[analytics] init failed', err?.message || err);
+    });
+  }, []);
   // const [isConnected, setIsConnected] = useState(true);
   // useEffect(() => {
   //   const checkConnection = async () => {

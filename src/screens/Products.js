@@ -28,6 +28,7 @@ import { IconComponentCaretdown, IconComponentCaretup } from '../constants/IconC
 import ProductGlassCard from '../components/customcomponents/ProductGlassCard';
 import BackgroundWrapper from '../components/customcomponents/BackgroundWrapper';
 import Header from '../components/customcomponents/Header';
+import { trackViewItemList } from '../services/analytics';
 
 
 const Products = ({ navigation, route }) => {
@@ -74,7 +75,14 @@ const Products = ({ navigation, route }) => {
           setLoadingMore(false);
           return prevData;
         }
-        return [...prevData, ...newProducts];
+        const next = [...prevData, ...newProducts];
+        if (page === 1 || prevData.length === 0) {
+          trackViewItemList(next, {
+            itemListName: titleName || 'Product List',
+            screenName: 'Products',
+          }).catch(() => {});
+        }
+        return next;
       });
 
       if (page >= response?.pages) {

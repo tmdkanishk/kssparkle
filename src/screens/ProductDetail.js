@@ -44,6 +44,7 @@ import CustomSearchBar from './CustomSearchBar'
 import PriceView from '../components/customcomponents/PriceView'
 import SuccessModal from '../components/SuccessModal'
 import PaymentPromoSection from '../components/customcomponents/PaymentPromoSection'
+import { trackViewItem, trackAddToCart } from '../services/analytics'
 
 const ProductDetail = ({ navigation, route }) => {
   const [showSpecs, setShowSpecs] = useState(false);
@@ -248,6 +249,10 @@ const ProductDetail = ({ navigation, route }) => {
         setAttributeGroups(response.data.attribute_groups)
         setDescriptionData(response.data?.description);
         setRelatedProduct(response.data?.products);
+        trackViewItem(response.data, {
+          quantity: 1,
+          screenName: 'ProductDetail',
+        }).catch(() => {});
       }
     } catch (error) {
       console.log("error inside prodyct", error.response)
@@ -366,6 +371,10 @@ const ProductDetail = ({ navigation, route }) => {
         setModalMessage(response);
         setShowModal(true);
         setCartAnimation(true);
+        trackAddToCart(productDetail || { product_id: productId }, {
+          quantity: isQtySize || 1,
+          screenName: 'ProductDetail',
+        }).catch(() => {});
         setTimeout(() => {
           closeModal();
         }, 2000)
@@ -411,6 +420,10 @@ const ProductDetail = ({ navigation, route }) => {
         scrollToHeader();
         setSuccessMgs("Sucessfully Add to Cart");
         setSuccessModal(true);
+        trackAddToCart(productDetail || { product_id: productId }, {
+          quantity: isQtySize || 1,
+          screenName: 'ProductDetail',
+        }).catch(() => {});
         // navigation.navigate("ShoppingBag");
       }
     } catch (error) {
@@ -452,6 +465,10 @@ const ProductDetail = ({ navigation, route }) => {
         scrollToHeader();
         setSuccessMgs("Sucessfully Add to Cart");
         setSuccessModal(true);
+        trackAddToCart(productDetail || { product_id: productId }, {
+          quantity: isQtySize || 1,
+          screenName: 'ProductDetail',
+        }).catch(() => {});
         // navigation.navigate("ShoppingBag");
       }
 
@@ -493,6 +510,10 @@ const ProductDetail = ({ navigation, route }) => {
         setModalMessage(results);
         setShowModal(true);
         setCartAnimation(true);
+        trackAddToCart(productDetail || { product_id: productId }, {
+          quantity: isQtySize || 1,
+          screenName: 'ProductDetail',
+        }).catch(() => {});
         setTimeout(() => {
           closeModal();
         }, 2000)

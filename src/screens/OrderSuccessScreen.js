@@ -10,6 +10,7 @@ import axios, { HttpStatusCode } from "axios";
 import { checkAutoLogin } from "../utils/helpers";
 import NotificationAlert from "../components/NotificationAlert";
 import InAppReview from "react-native-in-app-review"; // 👈 Handles both iOS & Android automatically
+import { trackPurchase } from "../services/analytics";
 
 const OrderSuccessScreen = ({ navigation, route }) => {
     const { orderId, orderStatusId } = route.params;
@@ -24,6 +25,12 @@ const OrderSuccessScreen = ({ navigation, route }) => {
     useEffect(() => {
         checkAutoLogin();
         fetchOrderConfirmationText();
+        if (orderId) {
+            trackPurchase({
+                orderId,
+                screenName: 'OrderSuccessScreen',
+            }).catch(() => {});
+        }
     }, []);
 
     useEffect(() => {

@@ -6,6 +6,7 @@ import { _retrieveData } from '../utils/storage';
 import { getAllWishlistProducts } from '../services/getAllWishlistProducts';
 import { addAllWishlistProduct } from '../services/addAllWishlistProduct';
 import { useLoading } from './LoadingProvider';
+import { trackAddToWishlist } from '../services/analytics';
 const WishlistContext = createContext();
 
 export const WishlistProvider = ({ children }) => {
@@ -42,6 +43,9 @@ export const WishlistProvider = ({ children }) => {
             if (!isWishlisted) {
                 await addWishlistProduct(productId, EndPoint?.accountdashboard_wishlistadd);
                 setWishlist((prev) => [...prev, productId]);
+                trackAddToWishlist({ product_id: productId }, {
+                    screenName: 'Wishlist',
+                }).catch(() => {});
             } else {
                 await removeWishlistProduct(productId, EndPoint?.accountdashboard_wishlistremove);
                 setWishlist((prev) => prev.filter((id) => id !== productId));
@@ -67,6 +71,11 @@ export const WishlistProvider = ({ children }) => {
                 console.log("addAllWishlistProduct response", response);
                 setWishlist((prev) => [...prev, ...productIds]);
                 setSuccess(response?.success);
+                productIds.forEach((id) => {
+                    trackAddToWishlist({ product_id: id }, {
+                        screenName: 'ShoppingBag',
+                    }).catch(() => {});
+                });
             }
 
         } catch (error) {

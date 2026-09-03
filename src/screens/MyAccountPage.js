@@ -26,6 +26,7 @@ import { useUser } from "../hooks/UserContext";
 import TopStatusBar from '../components/TopStatusBar'
 import { isLiquidGlassSupported, LiquidGlassView } from "@callstack/liquid-glass";
 import RNRestart from "react-native-restart-newarch";
+import { setAnalyticsUserId } from "../services/analytics";
 
 const MyAccountScreen = ({ navigation }) => {
 
@@ -354,6 +355,7 @@ const MyAccountScreen = ({ navigation }) => {
     await _clearData('email');
     await _clearData('telephone');
     SetLogin(false);
+    setAnalyticsUserId(null).catch(() => {});
     //  const cartresponse = await getCartItem(EndPoint?.cart_total);
     //  updateCartCount(cartresponse?.cartproductcount);
     navigation.reset({

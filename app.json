@@ -76,7 +76,8 @@
           "FirebaseAppDelegateProxyEnabled": true
         },
         "NSLocationWhenInUseUsageDescription": "We use your location to help you select your address on the map.",
-        "NSPhotoLibraryUsageDescription": "We need access to your photos so you can upload your profile picture."
+        "NSPhotoLibraryUsageDescription": "We need access to your photos so you can upload your profile picture.",
+        "NSUserTrackingUsageDescription": "This identifier will be used to deliver personalized ads and measure campaign performance."
       },
       "appleTeamId": "BUTS4JS55S"
     },

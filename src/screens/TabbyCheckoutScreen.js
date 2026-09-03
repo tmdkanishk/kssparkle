@@ -1,6 +1,7 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
 import { TabbyPaymentWebView } from "tabby-react-native-sdk";
+import { trackPurchase } from "../services/analytics";
 
 const TabbyCheckoutScreen = ({ route, navigation }) => {
   const { url, orderId, orderStatusId } = route.params;
@@ -10,8 +11,11 @@ const TabbyCheckoutScreen = ({ route, navigation }) => {
 
     switch (result) {
       case "authorized":
-        // ✅ Payment approved
-        // call backend verify / place order
+        trackPurchase({
+          orderId,
+          screenName: "TabbyCheckoutScreen",
+          paymentType: "tabby_installments",
+        }).catch(() => {});
         navigation.replace('OrderSuccessScreen', { orderId,  orderStatusId});
         break;
 
